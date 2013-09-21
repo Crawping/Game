@@ -29,8 +29,8 @@ local.properties
 .buildpath
 
 #CSO
-Game/
 *.cso
+Game/*.cso
 
 #################
 ## Visual Studio
