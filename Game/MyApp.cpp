@@ -404,6 +404,10 @@ bool MyApp::OnUpdate()
 
 	case CAR_DRIVEMASK:
 		{
+			if(KeyPressed('R'))
+			{
+				mCar->Create();
+			}
 			Graphics::SetViewport(0, 0, Graphics::Width(), Graphics::Height());
 
 			UpdateCamera();
