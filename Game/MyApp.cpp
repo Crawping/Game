@@ -470,9 +470,9 @@ void MyApp::CountParameters()
 	for(auto s: ParameterSet::mSets)
 	{
 		++mNumParameterLines;
-		for(auto p: s->mParameters)
+		if(s->mExpanded)
 		{
-			++mNumParameterLines;
+			mNumParameterLines += s->mParameters.size();
 		}
 	}
 }
@@ -503,7 +503,7 @@ void MyApp::DrawParameters()
 	float sbw = 10;
 	int screenPosY = 0;
 	int fh = mFixedSysFont->GetHeight();
-	float height = (float)(mNumParameterLines * fh);
+	float height = (float)(max(Graphics::Height(), mNumParameterLines * fh));
 	float ratio = Graphics::FHeight() / height;
 	float scrollBarHeight = ratio * Graphics::FHeight();
 	float maxS = Graphics::FHeight() - scrollBarHeight;
@@ -546,83 +546,78 @@ void MyApp::DrawParameters()
 		}
 		y += fh;
 
-		for(auto p: s->mParameters)
+		if(s->mExpanded)
 		{
-			Vec2 tl(0.0f, y);
-			if(tl.y > -fh && tl.y < Graphics::FHeight())
+			for(auto p: s->mParameters)
 			{
-				bool enabled = (p->mask & mEditMode) != 0;
-
-				bool drawRect = false;
-				Color textColor(0);
-				Color rectColor(0);
-
-				bool hover = MousePosition.x < margin - sbw && MousePosition.y >= tl.y && MousePosition.y < tl.y + fh;
-
-				if(hover && mode == Pick && enabled && (MousePressed & MouseButton::Left))
+				Vec2 tl(0.0f, y);
+				if(tl.y > -fh && tl.y < Graphics::FHeight())
 				{
-					// yes, set it as the selected one and start tracking the mouse delta
-					SetMouseMode(MouseMode::Captured);
-					currentParameterIndex = p->index;
-					mode = Modify;
-				}
+					bool drawRect = false;
+					Color textColor(0);
+					Color rectColor(0);
 
-				if(mode == Modify && currentParameterIndex == p->index)
-				{
-					textColor = 0xffffffff;
-					rectColor = 0xff000000;
-					drawRect = true;
-				}
-				else if(mode == Pick && hover && enabled)
-				{
-					textColor = 0xffffffff;
-					rectColor = 0xff808080;
-					drawRect = true;
-				}
-				else if(enabled)
-				{
-					textColor = 0xffd0d0d0;
-					drawRect = false;
-				}
-				else
-				{
-					textColor = 0xff606060;
-					drawRect = false;
-				}
+					bool hover = MousePosition.x < margin - sbw && MousePosition.y >= tl.y && MousePosition.y < tl.y + fh;
 
-				if(mode == Modify && p->index == currentParameterIndex)
-				{
-					const int ts = 9;
-					const int tw = 13;
-					Draw2DUntexturedRectangle(m2DUntexturedIC, tl + Vec2(margin, 0.0f), tl + Vec2((int)margin + 500 + tw, fh), 0xff000000);
-
-					// one percent for each pixel
-					float low = p->minValue;
-					float high = p->maxValue;
-					float range = high - low;
-					float tick = range / 500.0f;
-					p->mValue += MouseDelta.x * tick;
-					if(p->mValue < low)
+					if(hover && mode == Pick && (MousePressed & MouseButton::Left))
 					{
-						p->mValue = low;
+						// yes, set it as the selected one and start tracking the mouse delta
+						SetMouseMode(MouseMode::Captured);
+						currentParameterIndex = p->index;
+						mode = Modify;
 					}
-					if(p->mValue > high)
+
+					if(mode == Modify && currentParameterIndex == p->index)
 					{
-						p->mValue = high;
+						textColor = 0xffffffff;
+						rectColor = 0xff000000;
+						drawRect = true;
 					}
-					float xpos = (p->mValue - low) / range * 500;
-					DrawTriangle(m2DUntexturedIC, tl + Vec2(margin + xpos, 0.0f), tl + Vec2(margin + xpos + tw, (float)fh), 0xffffffff);
-					mCar->ApplyParameters();
-					DebugText(Vec2(300, 300), "%f", mCar->mFrontWheelParams.WheelOffsetX.mValue);
+					else if(mode == Pick && hover)
+					{
+						textColor = 0xffffffff;
+						rectColor = 0xff808080;
+						drawRect = true;
+					}
+					else
+					{
+						textColor = 0xffd0d0d0;
+						drawRect = false;
+					}
+
+					if(mode == Modify && p->index == currentParameterIndex)
+					{
+						const int ts = 9;
+						const int tw = 13;
+						Draw2DUntexturedRectangle(m2DUntexturedIC, tl + Vec2(margin, 0.0f), tl + Vec2((int)margin + 500 + tw, fh), 0xff000000);
+
+						// one percent for each pixel
+						float low = p->minValue;
+						float high = p->maxValue;
+						float range = high - low;
+						float tick = range / 500.0f;
+						p->mValue += MouseDelta.x * tick;
+						if(p->mValue < low)
+						{
+							p->mValue = low;
+						}
+						if(p->mValue > high)
+						{
+							p->mValue = high;
+						}
+						float xpos = (p->mValue - low) / range * 500;
+						DrawTriangle(m2DUntexturedIC, tl + Vec2(margin + xpos, 0.0f), tl + Vec2(margin + xpos + tw, (float)fh), 0xffffffff);
+						mCar->ApplyParameters();
+					}
+					if(drawRect)
+					{
+						Draw2DUntexturedRectangle(m2DUntexturedIC, tl, tl + Vec2(margin - sbw, (float)fh), rectColor);
+					}
+					string s = Format("#%08x#%-24.24s %10.3f", textColor, p->strName.c_str(), p->mValue);
+					mFixedSysFont->DrawStringMultiple( s.c_str(), tl);
 				}
-				if(drawRect)
-				{
-					Draw2DUntexturedRectangle(m2DUntexturedIC, tl, tl + Vec2(margin - sbw, (float)fh), rectColor);
-				}
-				string s = Format("#%08x#%-24.24s %10.3f", textColor, p->strName.c_str(), p->mValue);
-				mFixedSysFont->DrawStringMultiple( s.c_str(), tl);
+				y += fh;
 			}
-			y += fh;
 		}
 	}
 	// Draw the scroll bar

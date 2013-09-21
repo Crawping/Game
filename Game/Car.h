@@ -104,9 +104,11 @@ struct ParameterSet
 
 	vector<Parameter *> mParameters;
 	string mName;
+	bool mExpanded;
 
 	void CopyParameterSet(char const *name)
 	{
+		mExpanded = true;
 		mName = name;
 		mSets.push_back(this);
 		mParameters = mParameterList;	// Yoink!
