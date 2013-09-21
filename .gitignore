@@ -78,6 +78,10 @@ build/
 *.log
 *.scc
 
+# Assimp Bin
+assimp/lib/
+*
+
 # Visual C++ cache files
 ipch/
 *.aps
