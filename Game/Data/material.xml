@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Material>
+  <Config>
+    <Blending value="disabled" />
+    <BlendMode value="none" />
+    <DepthWrite value="enabled" />
+    <DepthRead value="enabled" />
+    <CullMode value="default" />
+  </Config>
+  <PixelShader file="2DPixelShader">
+    <Texture Channel="0" File="redball.dds" />
+    <Sampler Channel="0" />
+  </PixelShader>
+  <VertexShader file="2DVertexShader">
+    <Vertex>
+      <Component Name="POSITION" Type="float" Count="3" />
+      <Component Name="TEXCOORD" Type="float" Count="2" />
+      <Component Name="COLOR" Type="byte" Count="4" />
+    </Vertex>
+    <Constants>
+      <Constant Name="projection" Type="matrix" />
+      <Constant Name="model" Type="matrix" />
+    </Constants>
+  </VertexShader>
+</Material>

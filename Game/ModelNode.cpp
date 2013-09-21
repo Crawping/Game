@@ -1,0 +1,93 @@
+//////////////////////////////////////////////////////////////////////
+
+#include "stdafx.h"
+
+//////////////////////////////////////////////////////////////////////
+
+uint ModelNode::AddChild(ModelNode *child)
+{
+	mChildren.push_back(child);
+	return 0;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void ModelNode::SetIndex(uint index)
+{
+	mIndex = index;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+uint ModelNode::GetIndex() const
+{
+	return mIndex;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void ModelNode::RemoveChild(uint index)
+{
+	assert(false);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+uint ModelNode::GetNumChildren()
+{
+	return mChildren.size();
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void ModelNode::AddMesh(Mesh *mesh)
+{
+	mesh->AddRef();
+	mMeshes.push_back(mesh);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void ModelNode::SetTransform(Matrix const &transformMatrix)
+{
+	mTransform = transformMatrix;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+ModelNode *ModelNode::GetChild(uint index)
+{
+	return mChildren[index];
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void ModelNode::Release()
+{
+	for(auto mesh : mMeshes)
+	{
+		mesh->Release();
+	}
+	for(auto child : mChildren)
+	{
+		child->Release();
+	}
+	mMeshes.clear();
+	mChildren.clear();
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void ModelNode::Draw(Matrix const &modelMatrix, Camera &camera)
+{
+	Matrix transform = camera.GetTransformMatrix(modelMatrix);
+	for(auto mesh: mMeshes)
+	{
+		mesh->GetMaterial()->UpdateConstants(0, &transform);
+		mesh->Draw();
+	}
+	for(auto child: mChildren)
+	{
+		child->Draw(transform, camera);
+	}
+}

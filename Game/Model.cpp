@@ -1,0 +1,51 @@
+//////////////////////////////////////////////////////////////////////
+
+#include "stdafx.h"
+
+//////////////////////////////////////////////////////////////////////
+
+ModelNode *Model::GetRootNode()
+{
+	return &mRootNode;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void Model::Draw(Camera &camera)
+{
+	mVertexBuffer->Activate();
+	mIndexBuffer->Activate();
+	mRootNode.Draw(IdentityMatrix, camera);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+Model *Model::Create(VertexBuffer *vertexBuffer, IndexBuffer *indexBuffer)
+{
+	Model *m = new Model();
+
+	m->mVertexBuffer = vertexBuffer;
+	vertexBuffer->AddRef();
+
+	m->mIndexBuffer = indexBuffer;
+	indexBuffer->AddRef();
+
+	return m;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+Model::Model()
+	: mVertexBuffer(null)
+	, mIndexBuffer(null)
+{
+}
+
+//////////////////////////////////////////////////////////////////////
+
+Model::~Model()
+{
+	mRootNode.Release();
+	::Release(mVertexBuffer);
+	::Release(mIndexBuffer);
+}

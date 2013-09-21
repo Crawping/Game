@@ -1,0 +1,31 @@
+//////////////////////////////////////////////////////////////////////
+
+#pragma once
+
+//////////////////////////////////////////////////////////////////////
+
+class IndexBuffer : public RefCount
+{
+public:
+
+	enum Type
+	{
+		IT_UINT16 = 0,
+		IT_UINT32 = 1
+	};
+
+	static IndexBuffer *	Create(void *indices, uint numIndices, Type type);
+
+	void					Activate();
+
+private:
+
+	IndexBuffer();
+	~IndexBuffer();
+
+	class IndexBufferImpl;
+	IndexBufferImpl *pImpl;
+};
+
+//////////////////////////////////////////////////////////////////////
+

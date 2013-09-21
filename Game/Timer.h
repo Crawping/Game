@@ -1,0 +1,32 @@
+//////////////////////////////////////////////////////////////////////
+
+#pragma once
+
+//////////////////////////////////////////////////////////////////////
+
+class Timer
+{
+public:
+
+	void	Reset();
+	void	Update();
+
+	double	Delta() const;
+	double	Elapsed() const;
+
+private:
+
+	uint64			mBeginning;
+	uint64			mCurrent;
+	uint64			mPrevious;
+
+	double			mResolution;
+
+	double			mElapsed;
+	double			mDelta;
+
+};
+
+//////////////////////////////////////////////////////////////////////
+
+#include "Timer.inl"	// WIN32

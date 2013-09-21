@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game\Game.vcxproj", "{9B033525-B4A3-4FE7-996E-DCE50849C8B6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5691E159-2D9B-407F-971F-EA5C592DC524} = {5691E159-2D9B-407F-971F-EA5C592DC524}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assimp", "assimp\workspaces\vc9\assimp.vcxproj", "{5691E159-2D9B-407F-971F-EA5C592DC524}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9B033525-B4A3-4FE7-996E-DCE50849C8B6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9B033525-B4A3-4FE7-996E-DCE50849C8B6}.Debug|Win32.Build.0 = Debug|Win32
+		{9B033525-B4A3-4FE7-996E-DCE50849C8B6}.Debug|x64.ActiveCfg = Debug|Win32
+		{9B033525-B4A3-4FE7-996E-DCE50849C8B6}.Release|Win32.ActiveCfg = Release|Win32
+		{9B033525-B4A3-4FE7-996E-DCE50849C8B6}.Release|Win32.Build.0 = Release|Win32
+		{9B033525-B4A3-4FE7-996E-DCE50849C8B6}.Release|x64.ActiveCfg = Release|Win32
+		{5691E159-2D9B-407F-971F-EA5C592DC524}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5691E159-2D9B-407F-971F-EA5C592DC524}.Debug|Win32.Build.0 = Debug|Win32
+		{5691E159-2D9B-407F-971F-EA5C592DC524}.Debug|x64.ActiveCfg = debug|x64
+		{5691E159-2D9B-407F-971F-EA5C592DC524}.Debug|x64.Build.0 = debug|x64
+		{5691E159-2D9B-407F-971F-EA5C592DC524}.Release|Win32.ActiveCfg = release|Win32
+		{5691E159-2D9B-407F-971F-EA5C592DC524}.Release|Win32.Build.0 = release|Win32
+		{5691E159-2D9B-407F-971F-EA5C592DC524}.Release|x64.ActiveCfg = release|x64
+		{5691E159-2D9B-407F-971F-EA5C592DC524}.Release|x64.Build.0 = release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

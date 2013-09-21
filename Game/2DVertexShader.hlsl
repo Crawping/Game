@@ -1,0 +1,35 @@
+//////////////////////////////////////////////////////////////////////
+
+cbuffer Transform : register(b0)
+{
+	matrix projection;
+};
+
+//////////////////////////////////////////////////////////////////////
+
+struct VS_Input
+{
+	float2 pos		: POSITION;
+	float2 uv		: TEXCOORD0;
+	float4 color	: COLOR;
+};
+
+//////////////////////////////////////////////////////////////////////
+
+struct VS_Output
+{
+	float4	pos		: SV_POSITION;
+	float2	uv		: TEXCOORD0;
+	float4	color	: COLOR;
+};
+
+//////////////////////////////////////////////////////////////////////
+
+VS_Output main(VS_Input i)
+{
+	VS_Output o;
+	o.pos = mul(projection, float4(i.pos.x, i.pos.y, 0.0f, 1.0f));
+	o.color = i.color;
+	o.uv = i.uv;
+	return o;
+}

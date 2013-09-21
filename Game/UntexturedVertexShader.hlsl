@@ -1,0 +1,32 @@
+//////////////////////////////////////////////////////////////////////
+
+cbuffer TransformMatrix : register(b0)
+{
+	matrix modelViewProjection;
+};
+
+//////////////////////////////////////////////////////////////////////
+
+struct VS_Input
+{
+	float3 pos		: POSITION;
+	float4 color	: COLOR;
+};
+
+//////////////////////////////////////////////////////////////////////
+
+struct VS_Output
+{
+	float4	pos		: SV_POSITION;
+	float4	color	: COLOR;
+};
+
+//////////////////////////////////////////////////////////////////////
+
+VS_Output main(VS_Input i)
+{
+	VS_Output o;
+	o.pos = mul(modelViewProjection, float4(i.pos.x, i.pos.y, i.pos.z, 1.0f));
+	o.color = i.color;
+	return o;
+}
