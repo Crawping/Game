@@ -11,79 +11,6 @@ int Parameter::numParameters = 0;
 
 //////////////////////////////////////////////////////////////////////
 
-char const *test =
-"<xml>\n\
-	<ParameterSet Name=\"Car\" ParameterCount=\"4\">\n\
-		<Parameter Name=\"bodyMass\" Value=\"70.000000\" MinValue=\"1.000000\" MaxValue=\"500.000000\" DefaultValue=\"70.000000\" />\n\
-		<Parameter Name=\"bodyLength\" Value=\"20.000000\" MinValue=\"10.000000\" MaxValue=\"30.000000\" DefaultValue=\"20.000000\" />\n\
-		<Parameter Name=\"bodyWidth\" Value=\"4.000000\" MinValue=\"0.500000\" MaxValue=\"10.000000\" DefaultValue=\"4.000000\" />\n\
-		<Parameter Name=\"bodyHeight\" Value=\"3.000000\" MinValue=\"0.500000\" MaxValue=\"5.000000\" DefaultValue=\"3.000000\" />\n\
-	</ParameterSet>\n\
-	<ParameterSet Name=\"Rear Wheels\" ParameterCount=\"30\">\n\
-		<Parameter Name=\"WheelMass\" Value=\"1.000000\" MinValue=\"0.100000\" MaxValue=\"50.000000\" DefaultValue=\"1.000000\" />\n\
-		<Parameter Name=\"WheelFriction\" Value=\"1.200000\" MinValue=\"0.500000\" MaxValue=\"16.000000\" DefaultValue=\"1.200000\" />\n\
-		<Parameter Name=\"WheelLinearDamping\" Value=\"0.600000\" MinValue=\"0.000000\" MaxValue=\"5.000000\" DefaultValue=\"0.600000\" />\n\
-		<Parameter Name=\"WheelAngularDamping\" Value=\"0.500000\" MinValue=\"0.000000\" MaxValue=\"1.000000\" DefaultValue=\"0.500000\" />\n\
-		<Parameter Name=\"WheelRestitution\" Value=\"0.000000\" MinValue=\"0.000000\" MaxValue=\"1.000000\" DefaultValue=\"0.000000\" />\n\
-		<Parameter Name=\"AxleMass\" Value=\"4.000000\" MinValue=\"1.000000\" MaxValue=\"50.000000\" DefaultValue=\"4.000000\" />\n\
-		<Parameter Name=\"AxleLinearDamping\" Value=\"0.100000\" MinValue=\"0.000000\" MaxValue=\"1.000000\" DefaultValue=\"0.100000\" />\n\
-		<Parameter Name=\"AxleAngularDamping\" Value=\"1.000000\" MinValue=\"0.000000\" MaxValue=\"2.000000\" DefaultValue=\"1.000000\" />\n\
-		<Parameter Name=\"WishBoneMass\" Value=\"4.000000\" MinValue=\"1.000000\" MaxValue=\"50.000000\" DefaultValue=\"4.000000\" />\n\
-		<Parameter Name=\"SteeringArmMass\" Value=\"8.000000\" MinValue=\"1.000000\" MaxValue=\"16.000000\" DefaultValue=\"8.000000\" />\n\
-		<Parameter Name=\"WishBoneLinearDamping\" Value=\"0.250000\" MinValue=\"0.000000\" MaxValue=\"1.000000\" DefaultValue=\"0.250000\" />\n\
-		<Parameter Name=\"WishBoneAngularDamping\" Value=\"0.50000\" MinValue=\"0.000000\" MaxValue=\"1.000000\" DefaultValue=\"0.50000\" />\n\
-		<Parameter Name=\"SpringStiffness\" Value=\"1200.000000\" MinValue=\"10.000000\" MaxValue=\"2000.000000\" DefaultValue=\"1200.000000\" />\n\
-		<Parameter Name=\"SpringDamping\" Value=\"0.5000\" MinValue=\"0.0001\" MaxValue=\"1.000000\" DefaultValue=\"0.5000\" />\n\
-		<Parameter Name=\"SpringLoad\" Value=\"0.750000\" MinValue=\"0.150000\" MaxValue=\"4.500000\" DefaultValue=\"0.750000\" />\n\
-		<Parameter Name=\"WheelOffsetX\" Value=\"2.000000\" MinValue=\"-4.000000\" MaxValue=\"4.000000\" DefaultValue=\"2.000000\" />\n\
-		<Parameter Name=\"WheelOffsetY\" Value=\"5.500000\" MinValue=\"2.500000\" MaxValue=\"10.000000\" DefaultValue=\"5.500000\" />\n\
-		<Parameter Name=\"WheelRadius\" Value=\"2.500000\" MinValue=\"2.000000\" MaxValue=\"5.000000\" DefaultValue=\"2.500000\" />\n\
-		<Parameter Name=\"WheelWidth\" Value=\"1.000000\" MinValue=\"0.150000\" MaxValue=\"4.000000\" DefaultValue=\"1.000000\" />\n\
-		<Parameter Name=\"AxleHeight\" Value=\"0.250000\" MinValue=\"0.100000\" MaxValue=\"2.000000\" DefaultValue=\"0.250000\" />\n\
-		<Parameter Name=\"AxleWidth\" Value=\"0.250000\" MinValue=\"0.100000\" MaxValue=\"2.000000\" DefaultValue=\"0.250000\" />\n\
-		<Parameter Name=\"WishBoneWidth\" Value=\"0.600000\" MinValue=\"0.100000\" MaxValue=\"1.500000\" DefaultValue=\"0.600000\" />\n\
-		<Parameter Name=\"WishBoneHeight\" Value=\"0.020000\" MinValue=\"0.010000\" MaxValue=\"0.200000\" DefaultValue=\"0.020000\" />\n\
-		<Parameter Name=\"SteeringArmWidth\" Value=\"1.000000\" MinValue=\"0.100000\" MaxValue=\"2.000000\" DefaultValue=\"1.000000\" />\n\
-		<Parameter Name=\"SteeringArmHeight\" Value=\"1.000000\" MinValue=\"0.100000\" MaxValue=\"2.000000\" DefaultValue=\"1.000000\" />\n\
-		<Parameter Name=\"SteeringArmLength\" Value=\"1.000000\" MinValue=\"0.100000\" MaxValue=\"2.000000\" DefaultValue=\"1.000000\" />\n\
-		<Parameter Name=\"WishBoneLowerOffset\" Value=\"0.250000\" MinValue=\"-1.000000\" MaxValue=\"2.000000\" DefaultValue=\"0.250000\" />\n\
-		<Parameter Name=\"WishBoneUpperOffset\" Value=\"1.250000\" MinValue=\"-0.250000\" MaxValue=\"2.250000\" DefaultValue=\"1.250000\" />\n\
-		<Parameter Name=\"SpringLength\" Value=\"5.000000\" MinValue=\"2.000000\" MaxValue=\"10.000000\" DefaultValue=\"5.000000\" />\n\
-		<Parameter Name=\"SpringAngle\" Value=\"0.436332\" MinValue=\"-0.436332\" MaxValue=\"1.047198\" DefaultValue=\"0.436332\" />\n\
-	</ParameterSet>\n\
-	<ParameterSet Name=\"Front Wheels\" ParameterCount=\"30\">\n\
-		<Parameter Name=\"WheelMass\" Value=\"1.000000\" MinValue=\"0.100000\" MaxValue=\"50.000000\" DefaultValue=\"1.000000\" />\n\
-		<Parameter Name=\"WheelFriction\" Value=\"1.200000\" MinValue=\"0.500000\" MaxValue=\"16.000000\" DefaultValue=\"1.200000\" />\n\
-		<Parameter Name=\"WheelLinearDamping\" Value=\"0.600000\" MinValue=\"0.000000\" MaxValue=\"5.000000\" DefaultValue=\"0.600000\" />\n\
-		<Parameter Name=\"WheelAngularDamping\" Value=\"0.500000\" MinValue=\"0.000000\" MaxValue=\"1.000000\" DefaultValue=\"0.500000\" />\n\
-		<Parameter Name=\"WheelRestitution\" Value=\"0.000000\" MinValue=\"0.000000\" MaxValue=\"1.000000\" DefaultValue=\"0.000000\" />\n\
-		<Parameter Name=\"AxleMass\" Value=\"4.000000\" MinValue=\"1.000000\" MaxValue=\"50.000000\" DefaultValue=\"4.000000\" />\n\
-		<Parameter Name=\"AxleLinearDamping\" Value=\"0.100000\" MinValue=\"0.000000\" MaxValue=\"1.000000\" DefaultValue=\"0.100000\" />\n\
-		<Parameter Name=\"AxleAngularDamping\" Value=\"0.500000\" MinValue=\"0.000000\" MaxValue=\"2.000000\" DefaultValue=\"0.500000\" />\n\
-		<Parameter Name=\"WishBoneMass\" Value=\"4.000000\" MinValue=\"1.000000\" MaxValue=\"50.000000\" DefaultValue=\"4.000000\" />\n\
-		<Parameter Name=\"SteeringArmMass\" Value=\"8.000000\" MinValue=\"1.000000\" MaxValue=\"16.000000\" DefaultValue=\"8.000000\" />\n\
-		<Parameter Name=\"WishBoneLinearDamping\" Value=\"0.250000\" MinValue=\"0.000000\" MaxValue=\"1.000000\" DefaultValue=\"0.250000\" />\n\
-		<Parameter Name=\"WishBoneAngularDamping\" Value=\"0.50000\" MinValue=\"0.000000\" MaxValue=\"1.000000\" DefaultValue=\"0.50000\" />\n\
-		<Parameter Name=\"SpringStiffness\" Value=\"1200.000000\" MinValue=\"10.000000\" MaxValue=\"2000.000000\" DefaultValue=\"1200.000000\" />\n\
-		<Parameter Name=\"SpringDamping\" Value=\"0.5000\" MinValue=\"0.0001\" MaxValue=\"1.000000\" DefaultValue=\"0.5000\" />\n\
-		<Parameter Name=\"SpringLoad\" Value=\"0.750000\" MinValue=\"0.150000\" MaxValue=\"4.500000\" DefaultValue=\"0.750000\" />\n\
-		<Parameter Name=\"WheelOffsetX\" Value=\"2.000000\" MinValue=\"-4.000000\" MaxValue=\"4.000000\" DefaultValue=\"2.000000\" />\n\
-		<Parameter Name=\"WheelOffsetY\" Value=\"5.500000\" MinValue=\"2.500000\" MaxValue=\"10.000000\" DefaultValue=\"5.500000\" />\n\
-		<Parameter Name=\"WheelRadius\" Value=\"2.500000\" MinValue=\"2.000000\" MaxValue=\"5.000000\" DefaultValue=\"2.500000\" />\n\
-		<Parameter Name=\"WheelWidth\" Value=\"1.000000\" MinValue=\"0.150000\" MaxValue=\"4.000000\" DefaultValue=\"1.000000\" />\n\
-		<Parameter Name=\"AxleHeight\" Value=\"0.250000\" MinValue=\"0.100000\" MaxValue=\"2.000000\" DefaultValue=\"0.250000\" />\n\
-		<Parameter Name=\"AxleWidth\" Value=\"0.250000\" MinValue=\"0.100000\" MaxValue=\"2.000000\" DefaultValue=\"0.250000\" />\n\
-		<Parameter Name=\"WishBoneWidth\" Value=\"0.600000\" MinValue=\"0.100000\" MaxValue=\"1.500000\" DefaultValue=\"0.600000\" />\n\
-		<Parameter Name=\"WishBoneHeight\" Value=\"0.020000\" MinValue=\"0.010000\" MaxValue=\"0.200000\" DefaultValue=\"0.020000\" />\n\
-		<Parameter Name=\"SteeringArmWidth\" Value=\"1.000000\" MinValue=\"0.100000\" MaxValue=\"2.000000\" DefaultValue=\"1.000000\" />\n\
-		<Parameter Name=\"SteeringArmHeight\" Value=\"1.000000\" MinValue=\"0.100000\" MaxValue=\"2.000000\" DefaultValue=\"1.000000\" />\n\
-		<Parameter Name=\"SteeringArmLength\" Value=\"1.000000\" MinValue=\"0.100000\" MaxValue=\"2.000000\" DefaultValue=\"1.000000\" />\n\
-		<Parameter Name=\"WishBoneLowerOffset\" Value=\"0.250000\" MinValue=\"-1.000000\" MaxValue=\"2.000000\" DefaultValue=\"0.250000\" />\n\
-		<Parameter Name=\"WishBoneUpperOffset\" Value=\"1.250000\" MinValue=\"-0.250000\" MaxValue=\"2.250000\" DefaultValue=\"1.250000\" />\n\
-		<Parameter Name=\"SpringLength\" Value=\"5.000000\" MinValue=\"2.000000\" MaxValue=\"10.000000\" DefaultValue=\"5.000000\" />\n\
-		<Parameter Name=\"SpringAngle\" Value=\"0.436332\" MinValue=\"-0.436332\" MaxValue=\"1.047198\" DefaultValue=\"0.436332\" />\n\
-	</ParameterSet>\n\
-</xml>\n";
 void ParameterSet::SetFromXML(XmlDocument *xmlDocument, char const *pname)
 {
 	XmlNode *root = xmlDocument->first_node("xml");
@@ -125,7 +52,6 @@ void ParameterSet::SetFromXML(XmlDocument *xmlDocument, char const *pname)
 										break;
 									}
 								}
-								TRACE("%s = %f\n", name->value(), (float)atof(value->value()));
 								++found;
 								if(found > paramCount)
 								{
