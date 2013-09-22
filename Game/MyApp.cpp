@@ -197,6 +197,18 @@ void MyApp::OnInit()
 
 	mOldMouseDelta = Vec2(0,0);
 
+	int gx = editMargin;
+	int gy = 0;
+	int gw = (Graphics::Width() - gx) / 2;
+	int gh = (Graphics::Height() - gy) / 2;
+	int mx = gx + gw; int my = gy + gh;
+	int fx = mx + gw; int fy = my + gh;
+	float aspect = (float)gw/gh;
+	mViewWindow[0] = new ViewWindow(gx, gy, mx, my, 0, 0, false);
+	mViewWindow[1] = new ViewWindow(mx, gy, fx, my, 0, 2, true);
+	mViewWindow[2] = new ViewWindow(gx, my, mx, fy, 1, 2, true);
+	mViewWindow[3] = new ViewWindow(mx, my, fx, fy, 2, 1, true);
+
 	mCameraYaw = M_PI/2;
 	mCameraPitch = M_PI + M_PI/4;
 
@@ -328,14 +340,77 @@ void MyApp::DrawNode(aiScene const *scene, aiNode const *node)
 
 //////////////////////////////////////////////////////////////////////
 
-void MyApp::OrthoDraw(int axis, int upAxis, int l, int t, int r, int b)
+void MyApp::DrawViewWindow(ViewWindow *w)
 {
-	btTransform const &carTransform = mCar->mBody->getWorldTransform();
-	Vec3 carPosition = carTransform.getOrigin();
-	Vec3 cameraPos = carPosition + carTransform.getBasis().getColumn(axis) * 10;
-	mCamera.CalculateViewMatrix(carPosition, cameraPos, carTransform.getBasis().getColumn((upAxis) % 3));
-	mCamera.CalculateViewProjectionMatrix();
-	Graphics::SetViewport(l, t, r, b);
+	int l = w->mLeft;
+	int r = w->mRight;
+	int t = w->mTop;
+	int b = w->mBottom;
+	int gw = r - l;
+	int gh = b - t;
+	float aspect = (float)gw/gh;
+	if(w->mOrtho)
+	{
+		btTransform const &carTransform = mCar->mBody->getWorldTransform();
+		Vec3 carPosition = carTransform.getOrigin();
+		switch(w->mControlMode)
+		{
+		case Idle:
+			if(MousePosition.x > l && MousePosition.x < r && MousePosition.y > t && MousePosition.y < b)
+			{
+				if(MousePressed == MouseButton::Left)
+				{
+					w->mControlMode = Pan;
+					SetMouseMode(MouseMode::Captured);
+				}
+				else 
+				{
+					w->mZoom = max(w->mZoom - MouseWheelDelta * 5.0f, 1.0f);
+				}
+			}
+			break;
+		case Pan:
+			if(MouseHeld != MouseButton::Left)
+			{
+				SetMouseMode(MouseMode::Free);
+				w->mControlMode = Idle;
+			}
+			else
+			{
+				w->mPan += MouseDelta;
+			}
+			break;
+		default:
+			break;
+		}
+
+		mCamera.CalculateOrthoProjectionMatrix(w->mZoom, w->mZoom / aspect);
+		Vec3 cameraPos = carPosition + carTransform.getBasis().getColumn(w->mAxis) * 10;
+		int y1 = w->mUpAxis;
+		int x1 = (y1 + 1) % 3;
+		if(x1 == w->mAxis)
+		{
+			x1 = (x1 + 1) % 3;
+		}
+		Vec3 xaxis = carTransform.getBasis().getColumn(x1) * w->mPan.x / w->mZoom;
+		Vec3 yaxis = carTransform.getBasis().getColumn(y1) * w->mPan.y / w->mZoom;
+		cameraPos += xaxis + yaxis;
+		carPosition += xaxis + yaxis;
+		mCamera.CalculateViewMatrix(carPosition, cameraPos, carTransform.getBasis().getColumn(w->mUpAxis));
+		mCamera.CalculateViewProjectionMatrix();
+		Graphics::SetViewport(w->mLeft, w->mTop, w->mRight, w->mBottom);
+	}
+	else
+	{
+		mCamera.CalculateViewMatrix(Vec3(0, 0, 5), Vec3(25,20,40), Vec3(0,0,1));
+		mCamera.CalculatePerspectiveProjectionMatrix(0.5f, aspect);
+		mCamera.CalculateViewProjectionMatrix();
+		Graphics::SetViewport(w->mLeft, w->mTop, w->mRight, w->mBottom);
+		mAxes->Begin();
+		mAxes->DrawGrid(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 0), 100, 0x80ffffff);
+		mAxes->Draw(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
+		mAxes->End();
+	}
 	DrawPhysics();
 }
 
@@ -381,26 +456,12 @@ bool MyApp::OnUpdate()
 	{
 	case CAR_EDITMASK:
 		{
-			int gx = editMargin;
-			int gy = 0;
-			int gw = (Graphics::Width() - gx) / 2;
-			int gh = (Graphics::Height() - gy) / 2;
-			float aspect = (float)gw/gh;
-			mCamera.CalculateViewMatrix(Vec3(0, 0, 5), Vec3(25,20,40), Vec3(0,0,1));
-			mCamera.CalculatePerspectiveProjectionMatrix(0.5f, aspect);
-			mCamera.CalculateViewProjectionMatrix();
-			Graphics::SetViewport(gx, gy, gx + gw, gy + gh);
-			mAxes->Begin();
-			mAxes->DrawGrid(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 0), 100, 0x80ffffff);
-			mAxes->Draw(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
-			mAxes->End();
-			DrawPhysics();
-			mCamera.CalculateOrthoProjectionMatrix(30, 30 / aspect);
-			OrthoDraw(0, 2, gx		, gy + gh	, gx + gw		, gy + gh * 2	);
-			OrthoDraw(1, 2, gx + gw	, gy		, gx + gw * 2	, gy + gh		);
-			OrthoDraw(2, 1, gx + gw	, gy + gh	, gx + gw * 2	, gy + gh * 2	);
+			for(int i=0; i<4; ++i)
+			{
+				DrawViewWindow(mViewWindow[i]);
+			}
 			m2DUntexturedIC->Begin();
-			Draw2DAxes(gx, gy, Graphics::Width() - gx, Graphics::Height() - gy);
+			Draw2DAxes(editMargin, 0, Graphics::Width() - editMargin, Graphics::Height());
 			DrawParameters();
 			m2DUntexturedIC->End();
 		}

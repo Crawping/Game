@@ -20,7 +20,6 @@ class MyApp : App
 	void		CleanUpPhysics();
 	void		UpdateCamera();
 	void		Draw2DAxes(int x, int y, int w, int h);
-	void		OrthoDraw(int axis, int upAxis, int l, int t, int r, int b);
 	void		CountParameters();
 	void		DrawParameters();
 	void		Draw();
@@ -34,6 +33,52 @@ class MyApp : App
 	double									mElapsedTime;
 	float									mDeltaTime;
 	Camera									mCamera;
+
+	enum ControlMode
+	{
+		Idle = 0,
+		Pan = 1,
+		Rotate = 2
+	};
+
+	struct ViewWindow
+	{
+		int				mLeft;
+		int				mTop;
+		int				mRight;
+		int				mBottom;
+		int				mAxis;
+		int				mUpAxis;
+		bool			mOrtho;		// else 3D (and draw the grid as well)
+		Vec2			mPan;
+		float			mZoom;
+		ControlMode		mControlMode;
+
+		ViewWindow(int left, int top, int right, int bottom, int axis, int upAxis, bool ortho)
+			: mLeft(left)
+			, mTop(top)
+			, mRight(right)
+			, mBottom(bottom)
+			, mAxis(axis)
+			, mUpAxis(upAxis)
+			, mOrtho(ortho)
+			, mPan(0,0)
+			, mZoom(30)
+			, mControlMode(Idle)
+		{
+		}
+
+		bool IsActive() const
+		{
+			return mControlMode != Idle;
+		}
+	};
+
+	void DrawViewWindow(ViewWindow *w);
+
+	int										mEditMargin;
+	ViewWindow *							mViewWindow[4];
+	ViewWindow *							mActiveViewWindow;
 
 	Vec3									mPosition;
 	Vec3									mTarget;
