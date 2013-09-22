@@ -124,7 +124,7 @@ byte *LoadFile(TCHAR const *filename, size_t *size)
 		uint32 len = ftell(f);
 		fseek(f, 0, SEEK_SET);
 
-		buf = new byte[len + 2];
+		buf = new byte[len + sizeof(WCHAR)];
 
 		if(buf != null)
 		{
@@ -151,6 +151,19 @@ byte *LoadFile(TCHAR const *filename, size_t *size)
 		MessageBox(null, Format(TEXT("File not found: %s"), filename).c_str(), TEXT("LoadFile"), MB_ICONERROR);
 	}
 	return buf;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void SaveFile(TCHAR const *filename, void *data, size_t size)
+{
+	FILE *f = null;
+	if(_wfopen_s(&f, filename, TEXT("wb")) == 0)
+	{
+		size_t s = fwrite(data, sizeof(byte), size, f);
+		TRACE(L"Wrote %d bytes to %s\n", s, filename);
+		fclose(f);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////

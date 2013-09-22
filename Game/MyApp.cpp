@@ -494,6 +494,11 @@ void MyApp::DrawParameters()
 
 	if(MouseReleased & MouseButton::Left)
 	{
+		if(mode == Modify)
+		{
+			string s(mCar->ToXMLString());
+			SaveFile(TEXT("car.xml"), (void *)s.c_str(), s.size());
+		}
 		SetMouseMode(MouseMode::Free);
 		currentParameterIndex = 0;
 		mode = Pick;
@@ -540,9 +545,21 @@ void MyApp::DrawParameters()
 	for(auto s: ParameterSet::mSets)
 	{
 		Vec2 tl(0.0f, y);
+		bool hover = MousePosition.x < margin - sbw && MousePosition.y >= tl.y && MousePosition.y < tl.y + fh;
+
 		if(tl.y > -fh && tl.y < Graphics::FHeight())
 		{
-			mFixedSysFont->DrawStringMultiple(Format("#FF00FFFF#%s", s->mName.c_str()).c_str(), tl);
+			Vec2 tc(tl);
+			mFixedSysFont->DrawStringMultiple(Format("%s%s", hover ? "#FFFFFFFF#" : "#FF00FFFF#", s->mName.c_str()).c_str(), tc);
+		}
+
+		if(hover)
+		{
+			Draw2DUntexturedRectangle(m2DUntexturedIC, tl, tl + Vec2(margin - sbw, (float)fh), 0xff808080);
+			if(mode == Pick && (MousePressed & MouseButton::Left))
+			{
+				s->mExpanded = !s->mExpanded;
+			}
 		}
 		y += fh;
 
@@ -551,13 +568,12 @@ void MyApp::DrawParameters()
 			for(auto p: s->mParameters)
 			{
 				Vec2 tl(0.0f, y);
+				bool hover = MousePosition.x < margin - sbw && MousePosition.y >= tl.y && MousePosition.y < tl.y + fh;
 				if(tl.y > -fh && tl.y < Graphics::FHeight())
 				{
 					bool drawRect = false;
 					Color textColor(0);
 					Color rectColor(0);
-
-					bool hover = MousePosition.x < margin - sbw && MousePosition.y >= tl.y && MousePosition.y < tl.y + fh;
 
 					if(hover && mode == Pick && (MousePressed & MouseButton::Left))
 					{
@@ -783,6 +799,14 @@ void MyApp::InitPhysics()
 	groundRigidBody->setFriction(1);
 
 	mCar = new Car(dynamicsWorld);
+
+	size_t s = 0;
+	void *f = LoadFile(TEXT("car.xml"), &s);
+	if(f != null)
+	{
+		mCar->SetParametersFromXML((char *)f);
+	}
+
 	mCar->Create();
 	CreateRamp();
 }

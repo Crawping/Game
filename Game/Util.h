@@ -16,6 +16,7 @@ void TRACE(wstring const &format, ...);
 void TRACE(char const *format, ...);
 void TRACE(string const &format, ...);
 byte *LoadFile(TCHAR const *filename, size_t *size);
+void SaveFile(TCHAR const *filename, void *data, size_t size);
 
 //////////////////////////////////////////////////////////////////////
 
