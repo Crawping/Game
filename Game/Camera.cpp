@@ -20,9 +20,9 @@ Matrix Camera::ViewMatrix(Vec3 const &target, Vec3 const &position, Vec3 const &
 	Vec3 trans(-Dot(xaxis, position), -Dot(yaxis, position), -Dot(zaxis, position));
 
 	return Matrix(	xaxis.x,	yaxis.x,	zaxis.x,	0,
-		xaxis.y,	yaxis.y,	zaxis.y,	0,
-		xaxis.z,	yaxis.z,	zaxis.z,	0,
-		trans.x,	trans.y,	trans.z,	1);
+					xaxis.y,	yaxis.y,	zaxis.y,	0,
+					xaxis.z,	yaxis.z,	zaxis.z,	0,
+					trans.x,	trans.y,	trans.z,	1);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -116,6 +116,13 @@ void Camera::CalculateOrthoProjectionMatrix2D(int width, int height)
 
 void Camera::CalculateViewProjectionMatrix()
 {
-	mViewProjectionMatrix = mViewMatrix * mProjectionMatrix;
+	mTransformMatrix = mViewMatrix * mProjectionMatrix;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void Camera::CalculateViewProjectionMatrix(Matrix const &modelMatrix)
+{
+	mTransformMatrix = modelMatrix * mViewMatrix * mProjectionMatrix;
 }
 

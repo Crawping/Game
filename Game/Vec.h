@@ -10,6 +10,8 @@
 
 struct Vec3;
 
+typedef __m128 Vec4;
+
 __declspec(align(16)) struct Vector
 {
 	enum
@@ -20,19 +22,19 @@ __declspec(align(16)) struct Vector
 		W = 3
 	};
 
-	template <uint32 a, uint32 b, uint32 c, uint32 d> static __m128 Permute(__m128 const v)
+	template <uint32 a, uint32 b, uint32 c, uint32 d> static Vec4 Permute(Vec4 const v)
 	{
 		return _mm_shuffle_ps(v, v, (d << 6) | (c << 4) | (b << 2) | a);
 	}
 
-	template <uint32 a, uint32 b, uint32 c, uint32 d> static __m128 Permute(__m128 const c1, __m128 const c2)
+	template <uint32 a, uint32 b, uint32 c, uint32 d> static Vec4 Permute(Vec4 const c1, Vec4 const c2)
 	{
 		return _mm_shuffle_ps(c1, c2, (d << 6) | (c << 4) | (b << 2) | a);
 	}
 
 	union
 	{
-		__m128 m;
+		Vec4 m;
 		float f[4];
 		struct
 		{
@@ -48,14 +50,15 @@ __declspec(align(16)) struct Vector
 	{
 	}
 
-	Vector(__m128 v)
+	Vector(Vec4 v)
 		: m(v)
 	{
 	}
 
 	Vector(Vec3 v);
+	operator Vec3();
 
-	operator __m128()
+	operator Vec4()
 	{
 		return m;
 	}
@@ -70,10 +73,10 @@ __declspec(align(16)) struct Vector
 		m = _mm_set_ps(w, z, y, x);
 	}
 
-	Vector Dot(__m128 b) const
+	Vector Dot(Vec4 b) const
 	{
-		__m128 dot = _mm_mul_ps(m, b);
-		__m128 temp = Permute<2,1,2,1>(dot);
+		Vec4 dot = _mm_mul_ps(m, b);
+		Vec4 temp = Permute<2,1,2,1>(dot);
 		dot = _mm_add_ss(dot, temp);
 		temp = Permute<1,1,1,1>(temp);
 		dot = _mm_add_ss(dot, temp);
@@ -90,50 +93,51 @@ __declspec(align(16)) struct Vector
 		return sqrtf(Dot(m).x);
 	}
 
-	template <int x, int y, int z, int w> static Vector Shuffle(__m128 v)
+	Vector &Normalize()
 	{
-		return _mm_shuffle_ps(v, v, (w << 6) | (z << 4) | (y << 2) | x);
+		m = DirectX::XMVector3Normalize(m);
+		return *this;
 	}
 };
 
 //////////////////////////////////////////////////////////////////////
 
-inline __m128 operator + (__m128 a, __m128 b)
+inline Vec4 operator + (Vec4 a, Vec4 b)
 {
 	return _mm_add_ps(a, b);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-inline __m128 operator - (__m128 a, __m128 b)
+inline Vec4 operator - (Vec4 a, Vec4 b)
 {
 	return _mm_sub_ps(a, b);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-inline __m128 operator * (__m128 a, __m128 b)
+inline Vec4 operator * (Vec4 a, Vec4 b)
 {
 	return _mm_mul_ps(a, b);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-inline __m128 operator / (__m128 a, __m128 b)
+inline Vec4 operator / (Vec4 a, Vec4 b)
 {
 	return _mm_div_ps(a, b);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-inline __m128 operator * (__m128 a, float b)
+inline Vec4 operator * (Vec4 a, float b)
 {
 	return _mm_mul_ps(a, _mm_set_ps(b, b, b, b));
 }
 
 //////////////////////////////////////////////////////////////////////
 
-inline __m128 operator / (__m128 a, float b)
+inline Vec4 operator / (Vec4 a, float b)
 {
 	return _mm_div_ps(a, _mm_set_ps(b, b, b, b));
 }
@@ -164,7 +168,7 @@ struct Vec3
 
 	//////////////////////////////////////////////////////////////////////
 
-	Vec3(__m128 m)
+	Vec3(Vec4 m)
 	{
 		Vector v(m);
 		x = v.x;
@@ -276,4 +280,11 @@ inline Vec3 Cross(Vec3 const &a, Vec3 const &b)
 inline Vector::Vector(Vec3 v)
 {
 	m = _mm_set_ps(0.0f, v.z, v.y, v.x);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vector::operator Vec3()
+{
+	return Vec3(x, y, z);
 }

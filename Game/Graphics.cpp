@@ -211,8 +211,8 @@ bool Graphics::Update()
 		WaitMessage();
 	}
 	App::LastKeyPressed = 0;
-	App::MousePressed &= ~(App::MouseButton::Left | App::MouseButton::Right);
-	App::MouseReleased &= ~(App::MouseButton::Left | App::MouseButton::Right);
+	App::MousePressed = 0;
+	App::MouseReleased = 0;
 	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);

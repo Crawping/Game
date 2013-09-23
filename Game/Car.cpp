@@ -309,18 +309,18 @@ void WheelAssembly::Create(WheelPairParams *p)
 		btVector3 lowerArmDelta = armJoinPos - lowerBodyJoinPosition;
 		btVector3 upperArmDelta = armJoinPos - upperBodyJoinPosition;
 
-		float lowerWishBoneLength = fabsf(lowerArmDelta.length()) / 2;
-		float upperWishBoneLength = fabsf(upperArmDelta.length()) / 2;
+		float lowerWishBoneLength = lowerArmDelta.length();
+		float upperWishBoneLength = upperArmDelta.length();
 
-		float lowerWishBoneAngle = asinf(lowerArmDelta.z() / lowerWishBoneLength) * 0.5f * yReflect;
-		float upperWishBoneAngle = asinf(upperArmDelta.z() / upperWishBoneLength) * 0.5f * yReflect;
+		float lowerWishBoneAngle = asinf(lowerArmDelta.z() / lowerWishBoneLength) * yReflect;
+		float upperWishBoneAngle = asinf(upperArmDelta.z() / upperWishBoneLength) * yReflect;
 
 		btVector3 lowerArmOrigin = (armJoinPos + lowerBodyJoinPosition) / 2;
 		btVector3 upperArmOrigin = (armJoinPos + upperBodyJoinPosition) / 2;
 
 		// Create the lower wishbones
-		mLowerWishBoneShape = new btBoxShape(btVector3(wishBoneWidth, lowerWishBoneLength, wishBoneHeight));
-		mUpperWishBoneShape = new btBoxShape(btVector3(wishBoneWidth, upperWishBoneLength, wishBoneHeight));
+		mLowerWishBoneShape = new btBoxShape(btVector3(wishBoneWidth, lowerWishBoneLength / 2, wishBoneHeight));
+		mUpperWishBoneShape = new btBoxShape(btVector3(wishBoneWidth, upperWishBoneLength / 2, wishBoneHeight));
 
 		btTransform lowerArmTransform(btQuaternion(btVector3(1,0,0), -lowerWishBoneAngle), btVector3(lowerArmOrigin + btVector3(0,0,lowerWishBoneZWheelOffset)));
 		btTransform upperArmTransform(btQuaternion(btVector3(1,0,0), -upperWishBoneAngle), btVector3(upperArmOrigin + btVector3(0,0,upperWishBoneZWheelOffset)));
@@ -352,15 +352,18 @@ void WheelAssembly::Create(WheelPairParams *p)
 		btVector3 lowerArmRearJoinPos(-wishBoneWidth, 0, lowerWishBoneZWheelOffset);
 		btVector3 upperArmRearJoinPos(-wishBoneWidth, 0, upperWishBoneZWheelOffset);
 
-		mLowerWishBoneWheelFrontHinge = new btHingeConstraint(*mHub, *mLowerWishBone, lowerArmFrontJoinPos, btVector3(wishBoneWidth, lowerWishBoneLength * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
-		mLowerWishBoneBodyFrontHinge = new btHingeConstraint(*mCar->mBody, *mLowerWishBone, lowerBodyFrontJointPos, btVector3(wishBoneWidth, lowerWishBoneLength * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
-		mLowerWishBoneWheelRearHinge = new btHingeConstraint(*mHub, *mLowerWishBone, lowerArmRearJoinPos, btVector3(-wishBoneWidth, lowerWishBoneLength * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
-		mLowerWishBoneBodyRearHinge = new btHingeConstraint(*mCar->mBody, *mLowerWishBone, lowerBodyRearJointPos, btVector3(-wishBoneWidth, lowerWishBoneLength * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+		float lwbl = lowerWishBoneLength * 0.5f;
+		float uwbl = upperWishBoneLength * 0.5f;
 
-		mUpperWishBoneWheelFrontHinge = new btHingeConstraint(*mHub, *mUpperWishBone, upperArmFrontJoinPos, btVector3(wishBoneWidth, upperWishBoneLength * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
-		mUpperWishBoneBodyFrontHinge = new btHingeConstraint(*mCar->mBody, *mUpperWishBone, upperBodyFrontJointPos, btVector3(wishBoneWidth, upperWishBoneLength * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
-		mUpperWishBoneWheelRearHinge = new btHingeConstraint(*mHub, *mUpperWishBone, upperArmRearJoinPos, btVector3(-wishBoneWidth, upperWishBoneLength * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
-		mUpperWishBoneBodyRearHinge = new btHingeConstraint(*mCar->mBody, *mUpperWishBone, upperBodyRearJointPos, btVector3(-wishBoneWidth, upperWishBoneLength * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+		mLowerWishBoneWheelFrontHinge = new btHingeConstraint(*mHub, *mLowerWishBone, lowerArmFrontJoinPos, btVector3(wishBoneWidth, lwbl * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+		mLowerWishBoneBodyFrontHinge = new btHingeConstraint(*mCar->mBody, *mLowerWishBone, lowerBodyFrontJointPos, btVector3(wishBoneWidth, lwbl * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+		mLowerWishBoneWheelRearHinge = new btHingeConstraint(*mHub, *mLowerWishBone, lowerArmRearJoinPos, btVector3(-wishBoneWidth, lwbl * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+		mLowerWishBoneBodyRearHinge = new btHingeConstraint(*mCar->mBody, *mLowerWishBone, lowerBodyRearJointPos, btVector3(-wishBoneWidth, lwbl * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+
+		mUpperWishBoneWheelFrontHinge = new btHingeConstraint(*mHub, *mUpperWishBone, upperArmFrontJoinPos, btVector3(wishBoneWidth, uwbl * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+		mUpperWishBoneBodyFrontHinge = new btHingeConstraint(*mCar->mBody, *mUpperWishBone, upperBodyFrontJointPos, btVector3(wishBoneWidth, uwbl * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+		mUpperWishBoneWheelRearHinge = new btHingeConstraint(*mHub, *mUpperWishBone, upperArmRearJoinPos, btVector3(-wishBoneWidth, uwbl * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+		mUpperWishBoneBodyRearHinge = new btHingeConstraint(*mCar->mBody, *mUpperWishBone, upperBodyRearJointPos, btVector3(-wishBoneWidth, uwbl * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
 
 		mDW->addConstraint(mLowerWishBoneWheelFrontHinge, true);
 		mDW->addConstraint(mUpperWishBoneWheelFrontHinge, true);

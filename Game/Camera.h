@@ -16,14 +16,14 @@ public:
 
 	Matrix const &GetTransformMatrix() const
 	{
-		return mViewProjectionMatrix;
+		return mTransformMatrix;
 	}
 
 	//////////////////////////////////////////////////////////////////////
 
 	Matrix GetTransformMatrix(Matrix const &modelMatrix) const
 	{
-		return modelMatrix * mViewProjectionMatrix;
+		return modelMatrix * mTransformMatrix;
 	}
 
 	//////////////////////////////////////////////////////////////////////
@@ -48,6 +48,7 @@ public:
 	void CalculateOrthoProjectionMatrix(float width = 40, float height = 30, float nearZ = 1.0f, float farZ = 1000.0f);
 	void CalculateOrthoProjectionMatrix2D(int width, int height);
 	void CalculateViewProjectionMatrix();
+	void CalculateViewProjectionMatrix(Matrix const &modelMatrix);
 
 	static Matrix ViewMatrix(Vec3 const &target, Vec3 const &position, Vec3 const &up);
 	static Matrix ViewMatrix(Vec3 const &position, float yaw, float pitch, float roll);
@@ -62,7 +63,7 @@ private:
 
 	Matrix			mViewMatrix;
 	Matrix			mProjectionMatrix;
-	Matrix			mViewProjectionMatrix;
+	Matrix			mTransformMatrix;
 };
 
 //////////////////////////////////////////////////////////////////////

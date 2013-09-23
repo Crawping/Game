@@ -102,6 +102,8 @@ class MyApp : App
 	ViewWindow *							mViewWindow[4];
 	ViewWindow *							mActiveViewWindow;
 
+	Matrix									mCarOrientation;
+
 	Vec3									mPosition;
 	Vec3									mTarget;
 	float									mYaw;

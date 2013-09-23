@@ -197,6 +197,8 @@ void MyApp::OnInit()
 
 	mOldMouseDelta = Vec2(0,0);
 
+	mCarOrientation = IdentityMatrix;
+
 	int gx = editMargin;
 	int gy = 0;
 	int gw = (Graphics::Width() - gx) / 2;
@@ -208,6 +210,8 @@ void MyApp::OnInit()
 	mViewWindow[1] = new ViewWindow(mx, gy, fx, my, Axis::X, Axis::Z, Axis::Y, Axis::Z, true);
 	mViewWindow[2] = new ViewWindow(gx, my, mx, fy, Axis::Y, Axis::Z, Axis::X, Axis::Z, true, -1.0f);
 	mViewWindow[3] = new ViewWindow(mx, my, fx, fy, Axis::Z, Axis::Y, Axis::X, Axis::Y, true);
+
+	mViewWindow[0]->mTargetZoom = 10;
 
 	mCameraYaw = M_PI/2;
 	mCameraPitch = M_PI + M_PI/4;
@@ -255,43 +259,75 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	float aspect = (float)gw/gh;
 	Vec2 panScale(w->mZoom / gw, w->mZoom / aspect / gh);
 
+	btTransform const &carTransform = mCar->mBody->getWorldTransform();
+	Vec3 carPosition = carTransform.getOrigin();
+
+	bool in = MousePosition.x > l && MousePosition.x < r && MousePosition.y > t && MousePosition.y < b;
+
+	switch(w->mControlMode)
+	{
+	case Idle:
+		if(in && MousePressed == MouseButton::Left)
+		{
+			w->mControlMode = Pan;
+			SetMouseMode(MouseMode::Captured);
+		}
+		else if(in && MousePressed == MouseButton::Right)
+		{
+			w->mControlMode = Rotate;
+			SetMouseMode(MouseMode::Captured);
+		}
+		break;
+
+	case Pan:
+		if(!(MouseHeld & MouseButton::Left))
+		{
+			SetMouseMode(MouseMode::Free);
+			w->mControlMode = Idle;
+		}
+		break;
+
+	case Rotate:
+		if(!(MouseHeld & MouseButton::Right))
+		{
+			SetMouseMode(MouseMode::Free);
+			w->mControlMode = Idle;
+		}
+		break;
+	}
+
+	switch(w->mControlMode)
+	{
+	case Idle:
+		if(in)
+		{
+			w->mTargetZoom = max((w->mTargetZoom * (1.0f - MouseWheelDelta * 0.05f)), 1.0f);
+		}
+		break;
+
+	case Pan:
+		w->mPan += MouseDelta * panScale;
+		break;
+
+	case Rotate:
+		if(MouseDelta.x != 0 || MouseDelta.y != 0)
+		{
+			Vector v(2.5f, 2.0f, 4.0f);
+			Vector x = Cross(v, Vector(0,0,1));
+			v.Normalize();
+			x.Normalize();
+			mCarOrientation *= TranslationMatrix(Vector(Vec3(carPosition) * -1));
+			mCarOrientation *= RotationMatrix(v, MouseDelta.x * 0.01f);
+			mCarOrientation *= RotationMatrix(x, MouseDelta.y * -0.01f);
+			mCarOrientation *= TranslationMatrix(Vector(Vec3(carPosition)));
+		}
+		break;
+	}
+
+	w->mZoom += (w->mTargetZoom - w->mZoom) * 0.25f;
+
 	if(w->mOrtho)
 	{
-		switch(w->mControlMode)
-		{
-		case Idle:
-			if(MousePosition.x > l && MousePosition.x < r && MousePosition.y > t && MousePosition.y < b)
-			{
-				if(MousePressed == MouseButton::Left)
-				{
-					w->mControlMode = Pan;
-					SetMouseMode(MouseMode::Captured);
-				}
-				else 
-				{
-					w->mTargetZoom = max((w->mTargetZoom * (1.0f - MouseWheelDelta * 0.05f)), 1.0f);
-				}
-			}
-			break;
-
-		case Pan:
-			if(MouseHeld != MouseButton::Left)
-			{
-				SetMouseMode(MouseMode::Free);
-				w->mControlMode = Idle;
-			}
-			else
-			{
-				w->mPan += MouseDelta * panScale;
-			}
-			break;
-
-		default:
-			break;
-		}
-
-		w->mZoom += (w->mTargetZoom - w->mZoom) * 0.25f;
-
 		btTransform const &carTransform = mCar->mBody->getWorldTransform();
 		Vec3 carPosition = carTransform.getOrigin();
 		mCamera.CalculateOrthoProjectionMatrix(w->mZoom, w->mZoom / aspect);
@@ -307,9 +343,9 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	}
 	else
 	{
-		mCamera.CalculateViewMatrix(Vec3(0, 0, 5), Vec3(25,20,40), Vec3(0,0,1));
+		mCamera.CalculateViewMatrix(Vec3(0, 0, 5), Vec3(2.5f,2,4) * w->mZoom, Vec3(0,0,1));
 		mCamera.CalculatePerspectiveProjectionMatrix(0.5f, aspect);
-		mCamera.CalculateViewProjectionMatrix();
+		mCamera.CalculateViewProjectionMatrix(mCarOrientation);
 		Graphics::SetViewport(l, t, r, b);
 		mAxes->Begin();
 		mAxes->DrawGrid(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 0), 100, 0x80ffffff);
@@ -378,7 +414,7 @@ bool MyApp::OnUpdate()
 
 	case EditMode::Drive:
 		{
-			if(KeyPressed('R'))
+			if(KeyHeld('D'))
 			{
 				mCar->Create();
 			}

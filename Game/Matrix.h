@@ -24,3 +24,17 @@ inline Matrix RotationMatrix(float yaw, float pitch, float roll)
 
 //////////////////////////////////////////////////////////////////////
 
+inline Matrix RotationMatrix(Vec4 axis, float angle)
+{
+	return DirectX::XMMatrixRotationNormal(axis, angle);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Matrix TranslationMatrix(Vec4 translation)
+{
+	return DirectX::XMMatrixTranslationFromVector(translation);
+}
+
+//////////////////////////////////////////////////////////////////////
+
