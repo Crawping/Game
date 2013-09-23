@@ -76,7 +76,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <Optimization>MinSpace</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -284,6 +284,7 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Font.h" />
@@ -299,6 +300,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelNode.h" />
     <ClInclude Include="MyApp.h" />
+    <ClInclude Include="ParameterSet.h" />
     <ClInclude Include="PhysicsDebug.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Point.h" />
@@ -346,6 +348,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelNode.cpp" />
     <ClCompile Include="MyApp.cpp" />
+    <ClCompile Include="ParameterSet.cpp" />
     <ClCompile Include="PhysicsDebug.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="RapidXML\xml_util.cpp" />

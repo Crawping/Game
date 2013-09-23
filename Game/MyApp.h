@@ -9,6 +9,13 @@ struct aiNode;
 
 #include "Car.h"
 
+struct AppParameters : ParameterSet
+{
+	PARAM(CameraDistance, 30, 5, 100);
+	PARAM(CameraHeight, 50, -100, 100);
+	PARAM(CameraTargetHeight, 5, -100, 100);
+};
+
 class MyApp : App
 {
 	void		OnInit() override;

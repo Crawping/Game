@@ -50,10 +50,12 @@
 
 #include "Aligned.h"
 #include "Types.h"
+#include "Constants.h"
 #include "Util.h"
 #include "LinkedList.h"
 #include "Refcount.h"
 #include "UTF8.h"
+#include "ParameterSet.h"
 #include "Vec.h"
 #include "Point.h"
 #include "Size.h"

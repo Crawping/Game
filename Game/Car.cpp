@@ -5,68 +5,32 @@
 
 //////////////////////////////////////////////////////////////////////
 
-vector<ParameterSet *> ParameterSet::mSets;			// all the parameter sets
-vector<Parameter *> ParameterSet::mParameterList;		// TEMP! real ones are stored in the set, this is a placeholder filled in during construction
-int Parameter::numParameters = 0;
+Car::Car(btDynamicsWorld *dynamicsWorld)
+	: PhysicalObject(dynamicsWorld)
+	, mBody(null)
+	, mBodyShape(null)
+	, mCarParams("Chassis")
+	, mEngineParams("Engine")
+	, mFrontWheelParams("Front Wheels")
+	, mRearWheelParams("Rear Wheels")
+{
+	mWheelAssembly[BackRight] = new WheelAssembly(mDW, true, true, *this);
+	mWheelAssembly[BackLeft] = new WheelAssembly(mDW, false, true, *this);
+	mWheelAssembly[FrontRight] = new WheelAssembly(mDW, true, false, *this);
+	mWheelAssembly[FrontLeft] = new WheelAssembly(mDW, false, false, *this);
+}
 
 //////////////////////////////////////////////////////////////////////
 
-void ParameterSet::SetFromXML(XmlDocument *xmlDocument, char const *pname)
+string Car::ToXMLString() const
 {
-	XmlNode *root = xmlDocument->first_node("xml");
-	if(root != null)
-	{
-		XmlNode *node = root->first_node("ParameterSet");
-		while(node != null)
-		{
-			XmlAttribute *name = node->first_attribute("Name");
-			XmlAttribute *count = node->first_attribute("ParameterCount");
-			if(name != null && count != null)
-			{
-				if(strcmp(pname, name->value()) == 0)
-				{
-					mName = string(name->value());
-					int paramCount = atoi(count->value());
-					if(paramCount > 0)
-					{
-						int found = 0;
-						XmlNode *param = node->first_node("Parameter");
-						while(param != null)
-						{
-							XmlAttribute *name = param->first_attribute("Name");
-							XmlAttribute *value = param->first_attribute("Value");
-							XmlAttribute *minValue = param->first_attribute("MinValue");
-							XmlAttribute *maxValue = param->first_attribute("MaxValue");
-							XmlAttribute *defaultValue = param->first_attribute("DefaultValue");
-
-							if(name != null && value != null && minValue != null && maxValue != null && defaultValue != null)
-							{
-								for(auto p: mParameters)
-								{
-									if(p->strName.compare(name->value()) == 0)
-									{
-										p->mValue = (float)atof(value->value());
-										p->minValue = (float)atof(minValue->value());
-										p->maxValue = (float)atof(maxValue->value());
-										p->defaultValue = (float)atof(defaultValue->value());
-										break;
-									}
-								}
-								++found;
-								if(found > paramCount)
-								{
-									// error
-								}
-							}
-							param = param->next_sibling();
-						}
-					}
-					break;
-				}
-			}
-			node = node->next_sibling();
-		}
-	}
+	string s("<xml>\n");
+	s += mEngineParams.ToXMLString();
+	s += mCarParams.ToXMLString();
+	s += mRearWheelParams.ToXMLString();
+	s += mFrontWheelParams.ToXMLString();
+	s += "</xml>\n";
+	return s;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -77,7 +41,8 @@ void Car::SetParametersFromXML(char *fileContents)
 	try
 	{
 		xml.parse<rapidxml::parse_default>(fileContents);
-		mCarParams.SetFromXML(&xml, "Car");
+		mEngineParams.SetFromXML(&xml, "Engine");
+		mCarParams.SetFromXML(&xml, "Chassis");
 		mRearWheelParams.SetFromXML(&xml, "Rear Wheels");
 		mFrontWheelParams.SetFromXML(&xml, "Front Wheels");
 	}
@@ -85,43 +50,6 @@ void Car::SetParametersFromXML(char *fileContents)
 	{
 		TRACE("Error parsing XML: %s\n", e.what());
 	}
-}
-
-//////////////////////////////////////////////////////////////////////
-
-Car::Car(btDynamicsWorld *dynamicsWorld)
-	: PhysicalObject(dynamicsWorld)
-	, mBody(null)
-	, mBodyShape(null)
-	, mCarParams("Car")
-	, mFrontWheelParams("Front Wheels")
-	, mRearWheelParams("Rear Wheels")
-{
-	mWheelAssembly[BackRight] = new WheelAssembly(mDW, true, true, *this);
-	mWheelAssembly[BackLeft] = new WheelAssembly(mDW, false, true, *this);
-	mWheelAssembly[FrontRight] = new WheelAssembly(mDW, true, false, *this);
-	mWheelAssembly[FrontLeft] = new WheelAssembly(mDW, false, false, *this);
-
-	////TRACE("%s", ToXMLString().c_str());
-	//size_t s = strlen(test);
-	//char *p = new char[s + 1];
-	//memcpy(p, test, s);
-	//p[s] = 0;
-	//SetParametersFromXML(p);
-	//delete[] p;
-	//TRACE("%s\n", ToXMLString().c_str());
-}
-
-//////////////////////////////////////////////////////////////////////
-
-string Car::ToXMLString() const
-{
-	string s("<xml>\n");
-	s += mCarParams.ToXMLString();
-	s += mRearWheelParams.ToXMLString();
-	s += mFrontWheelParams.ToXMLString();
-	s += "</xml>\n";
-	return s;
 }
 
 //////////////////////////////////////////////////////////////////////

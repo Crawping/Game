@@ -12,7 +12,7 @@ struct Vec3;
 
 typedef __m128 Vec4;
 
-__declspec(align(16)) struct Vector
+ALIGN(16) struct Vector
 {
 	enum
 	{

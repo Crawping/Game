@@ -16,7 +16,7 @@ typedef unsigned __int64	uint64;
 typedef wchar_t				wchar;
 typedef uint8				byte;
 
-//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////`
 
 using std::wstring;
 using std::string;
@@ -27,13 +27,11 @@ using std::function;
 
 #define ALIGN(X)	__declspec(align(X))
 
-#define null		nullptr
+#define null nullptr
 
 //////////////////////////////////////////////////////////////////////
 
 typedef rapidxml::xml_document<char>	XmlDocument;
 typedef rapidxml::xml_node<char>		XmlNode;
 typedef rapidxml::xml_attribute<char>	XmlAttribute;
-
-//////////////////////////////////////////////////////////////////////
 

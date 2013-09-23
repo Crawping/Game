@@ -213,8 +213,8 @@ void MyApp::OnInit()
 
 	mViewWindow[0]->mTargetZoom = 10;
 
-	mCameraYaw = M_PI/2;
-	mCameraPitch = M_PI + M_PI/4;
+	mCameraYaw = HALF_PI;
+	mCameraPitch = PI + QUARTER_PI;
 
 	mCameraDistance = 40;
 	mCameraHeight = 16;
@@ -326,6 +326,7 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 
 	w->mZoom += (w->mTargetZoom - w->mZoom) * 0.25f;
 
+	Graphics::SetViewport(l, t, r, b);
 	if(w->mOrtho)
 	{
 		btTransform const &carTransform = mCar->mBody->getWorldTransform();
@@ -339,14 +340,12 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 		Vec3 cameraPos = carPosition + carTransform.getBasis().getColumn(w->mAxis) * w->mFlip * 100;
 		mCamera.CalculateViewMatrix(carPosition, cameraPos, carTransform.getBasis().getColumn(w->mUpAxis));
 		mCamera.CalculateViewProjectionMatrix();
-		Graphics::SetViewport(l, t, r, b);
 	}
 	else
 	{
 		mCamera.CalculateViewMatrix(Vec3(0, 0, 5), Vec3(2.5f,2,4) * w->mZoom, Vec3(0,0,1));
 		mCamera.CalculatePerspectiveProjectionMatrix(0.5f, aspect);
 		mCamera.CalculateViewProjectionMatrix(mCarOrientation);
-		Graphics::SetViewport(l, t, r, b);
 		mAxes->Begin();
 		mAxes->DrawGrid(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 0), 100, 0x80ffffff);
 		mAxes->Draw(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
@@ -390,6 +389,7 @@ bool MyApp::OnUpdate()
 
 	if(KeyPressed('E'))
 	{
+		DeleteRamp();
 		mEditMode = Edit;
 	}
 	else if(KeyPressed('D'))
@@ -417,6 +417,7 @@ bool MyApp::OnUpdate()
 			if(KeyHeld('D'))
 			{
 				mCar->Create();
+				CreateRamp();
 			}
 			Graphics::SetViewport(0, 0, Graphics::Width(), Graphics::Height());
 
@@ -434,7 +435,9 @@ bool MyApp::OnUpdate()
 
 	mSpriteList->End();
 
-	DebugText(Vec2(Graphics::Width() - 120, 0), "Framerate:%5.2f", 1.0f / mTimer.Delta());
+	int framerate = (int)(0.6275f + (1.0f / mTimer.Delta()));
+
+	DebugText(Vec2(Graphics::Width() - 120, 0), "Framerate:%d", framerate);
 	DebugText(Vec2(Graphics::Width() - 120, 15), "DrawCalls:%4d", Graphics::gDrawCalls);
 
 	DebugEndFrame();
@@ -589,11 +592,11 @@ void MyApp::DrawParameters()
 					{
 						// yes, set it as the selected one and start tracking the mouse delta
 						SetMouseMode(MouseMode::Captured);
-						currentParameterIndex = p->index;
+						currentParameterIndex = p->mIndex;
 						mode = Modify;
 					}
 
-					if(mode == Modify && currentParameterIndex == p->index)
+					if(mode == Modify && currentParameterIndex == p->mIndex)
 					{
 						textColor = 0xffffffff;
 						rectColor = 0xff000000;
@@ -611,14 +614,14 @@ void MyApp::DrawParameters()
 						drawRect = false;
 					}
 
-					if(mode == Modify && p->index == currentParameterIndex)
+					if(mode == Modify && p->mIndex == currentParameterIndex)
 					{
 						const int ts = 9;
 						const int tw = 13;
 						const int w = 500;
 						Draw2DUntexturedRectangle(m2DUntexturedIC, tl + Vec2(margin, 0.0f), tl + Vec2((int)margin + w + tw, fh), 0xff000000);
-						float low = p->minValue;
-						float high = p->maxValue;
+						float low = p->mMinValue;
+						float high = p->mMaxValue;
 						float range = high - low;
 						float tick = range / w;
 						p->mValue += MouseDelta.x * tick;
@@ -638,7 +641,7 @@ void MyApp::DrawParameters()
 					{
 						Draw2DUntexturedRectangle(m2DUntexturedIC, tl, tl + Vec2(margin - sbw, (float)fh), rectColor);
 					}
-					string s = Format("#%08x#%-24.24s %10.3f", textColor, p->strName.c_str(), p->mValue);
+					string s = Format("#%08x#%-24.24s %10.3f", textColor, p->mName.c_str(), p->mValue);
 					mFixedSysFont->DrawStringMultiple( s.c_str(), tl);
 				}
 				y += fh;
@@ -661,35 +664,59 @@ void MyApp::Draw2DAxes(int x, int y, int w, int h)
 	m2DUntexturedIC->SetConstants(&m, sizeof(Matrix));
 	m2DUntexturedIC->SetZBufferMode(ZB_Disable);
 	m2DUntexturedIC->BeginLines();
+
+	Color border(0xffffffff);
+	Color cross(0x80ffffff);
+
+	int off = h / 2;
+
 	for(int a = 0; a < w; a += w/2)
 	{
 		m2DUntexturedIC->BeginVertex();
-		m2DUntexturedIC->SetPosition2(Vec2(a + x, y));
-		m2DUntexturedIC->SetColor(0xffa0a0a0);
+		m2DUntexturedIC->SetPosition2(Vec2(a + x + w / 4, y + off));
+		m2DUntexturedIC->SetColor(cross);
 		m2DUntexturedIC->EndVertex();
 		m2DUntexturedIC->BeginVertex();
-		m2DUntexturedIC->SetPosition2(Vec2(a + x, y + h));
-		m2DUntexturedIC->SetColor(0xffa0a0a0);
+		m2DUntexturedIC->SetPosition2(Vec2(a + x + w / 4, y + h));
+		m2DUntexturedIC->SetColor(cross);
+		m2DUntexturedIC->EndVertex();
+
+		off = 0;
+
+		m2DUntexturedIC->BeginVertex();
+		m2DUntexturedIC->SetPosition2(Vec2(a + x, y));
+		m2DUntexturedIC->SetColor(border);
 		m2DUntexturedIC->EndVertex();
 
 		m2DUntexturedIC->BeginVertex();
-		m2DUntexturedIC->SetPosition2(Vec2(a + x + w / 2, y));
-		m2DUntexturedIC->SetColor(0xffffffff);
+		m2DUntexturedIC->SetPosition2(Vec2(a + x, y + h));
+		m2DUntexturedIC->SetColor(border);
 		m2DUntexturedIC->EndVertex();
-		m2DUntexturedIC->BeginVertex();
-		m2DUntexturedIC->SetPosition2(Vec2(a + x + w / 2, y + h / 2));
-		m2DUntexturedIC->SetColor(0xffffffff);
-		m2DUntexturedIC->EndVertex();
+
 	}
+
+	off = w / 2;
+
 	for(int a = y; a < h; a += h/2)
 	{
 		m2DUntexturedIC->BeginVertex();
+		m2DUntexturedIC->SetPosition2(Vec2(x + off, a + h / 4));
+		m2DUntexturedIC->SetColor(cross);
+		m2DUntexturedIC->EndVertex();
+		m2DUntexturedIC->BeginVertex();
+		m2DUntexturedIC->SetPosition2(Vec2(x + w, a + h / 4));
+		m2DUntexturedIC->SetColor(cross);
+		m2DUntexturedIC->EndVertex();
+
+		off = 0;
+
+		m2DUntexturedIC->BeginVertex();
 		m2DUntexturedIC->SetPosition2(Vec2(x, a));
-		m2DUntexturedIC->SetColor(0xffb0b0b0);
+		m2DUntexturedIC->SetColor(border);
 		m2DUntexturedIC->EndVertex();
 		m2DUntexturedIC->BeginVertex();
 		m2DUntexturedIC->SetPosition2(Vec2(x + w, a));
-		m2DUntexturedIC->SetColor(0xffb0b0b0);
+		m2DUntexturedIC->SetColor(border);
 		m2DUntexturedIC->EndVertex();
 	}
 	m2DUntexturedIC->EndLines();
@@ -770,6 +797,7 @@ void MyApp::OnClose()
 
 void MyApp::CreateRamp()
 {
+	DeleteRamp();
 	mRampShape = new btBoxShape(btVector3(40, 40, 40));
 
 	btTransform t(btQuaternion(btVector3(0,1,0), SIMD_PI / 5), btVector3(-180, 0, -36));
@@ -825,9 +853,7 @@ void MyApp::InitPhysics()
 	{
 		mCar->SetParametersFromXML((char *)f);
 	}
-
 	mCar->Create();
-	CreateRamp();
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -869,6 +895,16 @@ void MyApp::UpdatePhysics()
 		{
 			//DebugText("%f,%f\n", power, power * Joypad::Trigger(0, 1));
 			mCar->ApplyPower(2000, power * Joypad::Trigger(0, 1));
+		}
+
+		if(KeyHeld(VK_UP))
+		{
+			mCar->ApplyPower(200, power * 1);
+		}
+
+		if(KeyHeld(VK_DOWN))
+		{
+			mCar->ApplyPower(-20, power * 1.25f);
 		}
 
 		float steeringf = 0.3f;

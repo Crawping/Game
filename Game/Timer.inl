@@ -9,7 +9,7 @@ inline void Timer::Reset() throw()
 	LARGE_INTEGER resolution;
 	QueryPerformanceFrequency(&resolution);
 	mResolution = (double)resolution.QuadPart;
-	uint64 one60th = (uint64)((1/60.0) * mResolution);
+	uint64 one60th = (uint64)(mResolution / 60.0);
 	QueryPerformanceCounter((LARGE_INTEGER *)&mCurrent);
 	mBeginning = mCurrent - one60th;
 	mPrevious = mCurrent - one60th;

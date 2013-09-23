@@ -13,7 +13,7 @@ class PhysicalObject
 {
 public:
 
-	btDynamicsWorld *				mDW;
+	btDynamicsWorld *mDW;
 
 	PhysicalObject(btDynamicsWorld *world)
 	{
@@ -29,8 +29,7 @@ public:
 		if(c != null)
 		{
 			mDW->removeConstraint(c);
-			delete c;
-			c = null;
+			Delete(c);
 		}
 	}
 
@@ -39,119 +38,15 @@ public:
 		if(b != null)
 		{
 			mDW->removeRigidBody(b);
-			delete b;
-			b = null;
+			Delete(b);
 		}
 	}
 };
 
 //////////////////////////////////////////////////////////////////////
 
-struct Parameter
-{
-	static int numParameters;
+BEGIN_PARAMSET(WheelPairParams)
 
-	string strName;
-	float mValue;
-	float minValue;
-	float maxValue;
-	float defaultValue;
-	uint32 index;
-
-	Parameter()
-		: index(++numParameters)
-	{
-	}
-
-	Parameter(char const *name, float val, float minVal, float maxVal, float defaultVal)
-		: strName(name)
-		, mValue(val)
-		, minValue(minVal)
-		, maxValue(maxVal)
-		, defaultValue(defaultVal)
-		, index(++numParameters)
-	{
-	}
-
-	string ToXMLString() const
-	{
-		return Format("\t\t<Parameter Name=\"%s\" Value=\"%f\" MinValue=\"%f\" MaxValue=\"%f\" DefaultValue=\"%f\" />\n", strName.c_str(), mValue, minValue, maxValue, defaultValue);
-	}
-
-	operator float()
-	{
-		return mValue;
-	}
-	void operator *= (float f)
-	{
-		mValue *= f;
-	}
-
-	void operator = (float const &f)
-	{
-	mValue = f;
-	}
-};
-
-//////////////////////////////////////////////////////////////////////
-
-struct ParameterSet
-{
-	static vector<ParameterSet *> mSets;
-	static vector<Parameter *> mParameterList;
-
-	vector<Parameter *> mParameters;
-	string mName;
-	bool mExpanded;
-
-	void CopyParameterSet(char const *name)
-	{
-		mExpanded = true;
-		mName = name;
-		mSets.push_back(this);
-		mParameters = mParameterList;	// Yoink!
-		mParameterList.clear();
-	}
-
-	string ToXMLString() const
-	{
-		string s = Format("\t<ParameterSet Name=\"%s\" ParameterCount=\"%d\">\n", mName.c_str(), mParameters.size());
-		for(auto p:mParameters)
-		{
-			s += p->ToXMLString();
-		}
-		s += "\t</ParameterSet>\n";
-		return s;
-	}
-
-	void SetFromXML(XmlDocument *xmlDocument, char const *name);
-};
-
-//////////////////////////////////////////////////////////////////////
-
-#define PNAME(a) s_ ## a
-
-#define PARAM(name, _def, _min, _max)	\
-										\
-struct PNAME(name) : Parameter			\
-{										\
-	PNAME(name)()						\
-		: Parameter()					\
-	{									\
-		mValue = _def;					\
-		defaultValue = _def;			\
-		minValue = _min;				\
-		maxValue = _max;				\
-		strName = string(#name);		\
-		mParameterList.push_back(this);	\
-	}									\
-};										\
-PNAME(name) name
-
-//////////////////////////////////////////////////////////////////////
-
-struct WheelPairParams : ParameterSet
-{
 	PARAM(WheelMass,				 1.00f,  0.10f, 50.00f);
 	PARAM(WheelFriction,			 1.20f,  0.50f, 16.00f);
 	PARAM(WheelLinearDamping,		 0.60f,  0.00f,  5.00f);
@@ -184,28 +79,33 @@ struct WheelPairParams : ParameterSet
 	PARAM(WishBoneUpperOffset,		 1.25f, -0.25f,  2.25f);
 	PARAM(SpringLength,				 5.00f,  2.00f, 10.00f);
 
-	PARAM(SpringAngle,				 (SIMD_PI / 180) * 25, (SIMD_PI / 180) * -25, (SIMD_PI / 180) * 60);
+	PARAM(SpringAngle,				 DEG(25), DEG(-25), DEG(60));
 
-	WheelPairParams(char const *name)
-	{
-		CopyParameterSet(name);
-	}
-};
+END_PARAMSET()
 
 //////////////////////////////////////////////////////////////////////
 
-struct CarParams : ParameterSet
-{
+BEGIN_PARAMSET(EngineParams)
+
+	PARAM(Mass, 70, 1, 500);
+	PARAM(VerticalOffset, 0, -5, 5);
+	PARAM(HorizontalOffset, 4, -10, 10);
+	PARAM(Width, 2, 0.5, 5);
+	PARAM(Height, 2, 0.5, 5);
+	PARAM(Length, 2, 0.5, 5);
+
+END_PARAMSET()
+
+//////////////////////////////////////////////////////////////////////
+
+BEGIN_PARAMSET(CarParams)
+
 	PARAM(bodyMass, 70, 1, 500);
 	PARAM(bodyLength, 20, 10, 30);
 	PARAM(bodyWidth, 4, 0.5f, 10);
 	PARAM(bodyHeight, 3, 0.5f, 5.0f);
 
-	CarParams(char const *name)
-	{
-		CopyParameterSet(name);
-	}
-};
+END_PARAMSET()
 
 //////////////////////////////////////////////////////////////////////
 
@@ -278,6 +178,7 @@ public:
 		NumWheels
 	};
 
+	EngineParams				mEngineParams;
 	CarParams					mCarParams;
 	WheelPairParams				mFrontWheelParams;
 	WheelPairParams				mRearWheelParams;
