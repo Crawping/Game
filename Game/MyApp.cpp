@@ -204,10 +204,10 @@ void MyApp::OnInit()
 	int mx = gx + gw; int my = gy + gh;
 	int fx = mx + gw; int fy = my + gh;
 	float aspect = (float)gw/gh;
-	mViewWindow[0] = new ViewWindow(gx, gy, mx, my, 0, 0, false);
-	mViewWindow[1] = new ViewWindow(mx, gy, fx, my, 0, 2, true);
-	mViewWindow[2] = new ViewWindow(gx, my, mx, fy, 1, 2, true);
-	mViewWindow[3] = new ViewWindow(mx, my, fx, fy, 2, 1, true);
+	mViewWindow[0] = new ViewWindow(gx, gy, mx, my, Axis::X, Axis::X, Axis::X, Axis::X, false);
+	mViewWindow[1] = new ViewWindow(mx, gy, fx, my, Axis::X, Axis::Z, Axis::Y, Axis::Z, true);
+	mViewWindow[2] = new ViewWindow(gx, my, mx, fy, Axis::Y, Axis::Z, Axis::X, Axis::Z, true, -1.0f);
+	mViewWindow[3] = new ViewWindow(mx, my, fx, fy, Axis::Z, Axis::Y, Axis::X, Axis::Y, true);
 
 	mCameraYaw = M_PI/2;
 	mCameraPitch = M_PI + M_PI/4;
@@ -244,102 +244,6 @@ void MyApp::OnInit()
 
 //////////////////////////////////////////////////////////////////////
 
-void MyApp::DumpNode(aiScene const *scene, aiNode const *node, int indent /* = 0 */)
-{
-	TRACE("%-*sNode %s\n", indent, "", node->mName.C_Str());
-	for(uint i=0; i<node->mNumMeshes; ++i)
-	{
-		aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-		TRACE("%-*sMesh %s\n", indent, "", mesh->mName.C_Str());
-		if(mesh->HasPositions())
-		{
-			TRACE("%-*s%d faces\n", indent, "", mesh->mNumFaces);
-			for (uint f=0; f<mesh->mNumFaces; ++f)
-			{
-				aiFace *face = &mesh->mFaces[f];
-
-				if(face->mNumIndices == 3)
-				{
-					for(i = 0; i < face->mNumIndices; i++)		// go through all vertices in face
-					{
-						int x = face->mIndices[i];	// get group index for current index
-						TRACE("%-*sPOS: %f,%f,%f\n", indent, "", mesh->mVertices[x].x, mesh->mVertices[x].y, mesh->mVertices[x].z);
-						if(mesh->HasTextureCoords(0))
-						{
-							aiVector3D *v = &mesh->mTextureCoords[0][x];
-
-							TRACE("%-*sUV: %f,%f\n", indent, "", v->x, v->y);
-						}
-						if(mesh->HasVertexColors(0))
-						{
-							aiColor4D *v = &mesh->mColors[0][x];
-							TRACE("%-*sCOL: %f,%f,%f,%f\n", indent, "", v->r, v->g, v->b, v->a);
-						}
-					}
-				}
-			}
-		}
-	}
-	for(uint i=0; i<node->mNumChildren; ++i)
-	{
-		DumpNode(scene, node->mChildren[i], indent + 2);
-	}
-}
-
-//////////////////////////////////////////////////////////////////////
-
-void MyApp::DrawNode(aiScene const *scene, aiNode const *node)
-{
-	for(uint i=0; i<node->mNumMeshes; ++i)
-	{
-		mImmediateContext->BeginTriangles();
-		aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-		if(mesh->HasPositions())
-		{
-			for (uint f=0; f<mesh->mNumFaces; ++f)
-			{
-				aiFace *face = &mesh->mFaces[f];
-
-				if(face->mNumIndices == 3)
-				{
-					for(i = 0; i < face->mNumIndices; i++)		// go through all vertices in face
-					{
-						int x = face->mIndices[i];	// get group index for current index
-						mImmediateContext->BeginVertex();
-						mImmediateContext->SetPosition3(Vec3(mesh->mVertices[x].x, mesh->mVertices[x].y, mesh->mVertices[x].z));
-						if(mesh->HasTextureCoords(0))
-						{
-							aiVector3D *v = &mesh->mTextureCoords[0][x];
-							mImmediateContext->SetTexCoord(Vec2(v->x, v->y));
-						}
-						else
-						{
-							mImmediateContext->SetTexCoord(Vec2(0.5f, 0.5f));
-						}
-						if(mesh->HasVertexColors(0))
-						{
-							aiColor4D *v = &mesh->mColors[0][x];
-							mImmediateContext->SetColor(GetColorFromRGBAFloats(reinterpret_cast<float *>(&v)));
-						}
-						else
-						{
-							mImmediateContext->SetColor(0xffffffff);
-						}
-						mImmediateContext->EndVertex();
-					}
-				}
-			}
-		}
-		mImmediateContext->EndTriangles();
-	}
-	for(uint i=0; i<node->mNumChildren; ++i)
-	{
-		DrawNode(scene, node->mChildren[i]);
-	}
-}
-
-//////////////////////////////////////////////////////////////////////
-
 void MyApp::DrawViewWindow(ViewWindow *w)
 {
 	int l = w->mLeft;
@@ -349,10 +253,9 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	int gw = r - l;
 	int gh = b - t;
 	float aspect = (float)gw/gh;
+	float scale = w->mZoom / gw * 2;
 	if(w->mOrtho)
 	{
-		btTransform const &carTransform = mCar->mBody->getWorldTransform();
-		Vec3 carPosition = carTransform.getOrigin();
 		switch(w->mControlMode)
 		{
 		case Idle:
@@ -365,10 +268,11 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 				}
 				else 
 				{
-					w->mZoom = max(w->mZoom - MouseWheelDelta * 5.0f, 1.0f);
+					w->mTargetZoom = max((w->mTargetZoom * (1.0f - MouseWheelDelta * 0.05f)), 1.0f);
 				}
 			}
 			break;
+
 		case Pan:
 			if(MouseHeld != MouseButton::Left)
 			{
@@ -377,35 +281,35 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 			}
 			else
 			{
-				w->mPan += MouseDelta;
+				w->mPan += MouseDelta * scale;
 			}
 			break;
+
 		default:
 			break;
 		}
 
+		w->mZoom += (w->mTargetZoom - w->mZoom) * 0.25f;
+
+		btTransform const &carTransform = mCar->mBody->getWorldTransform();
+		Vec3 carPosition = carTransform.getOrigin();
 		mCamera.CalculateOrthoProjectionMatrix(w->mZoom, w->mZoom / aspect);
-		Vec3 cameraPos = carPosition + carTransform.getBasis().getColumn(w->mAxis) * 10;
-		int y1 = w->mUpAxis;
-		int x1 = (y1 + 1) % 3;
-		if(x1 == w->mAxis)
-		{
-			x1 = (x1 + 1) % 3;
-		}
-		Vec3 xaxis = carTransform.getBasis().getColumn(x1) * w->mPan.x / w->mZoom;
-		Vec3 yaxis = carTransform.getBasis().getColumn(y1) * w->mPan.y / w->mZoom;
-		cameraPos += xaxis + yaxis;
+		int y1 = w->mYAxis;
+		int x1 = w->mXAxis;
+		Vec3 xaxis = carTransform.getBasis().getColumn(x1) * w->mPan.x * scale;
+		Vec3 yaxis = carTransform.getBasis().getColumn(y1) * w->mPan.y * scale;
 		carPosition += xaxis + yaxis;
+		Vec3 cameraPos = carPosition + carTransform.getBasis().getColumn(w->mAxis) * w->mFlip;
 		mCamera.CalculateViewMatrix(carPosition, cameraPos, carTransform.getBasis().getColumn(w->mUpAxis));
 		mCamera.CalculateViewProjectionMatrix();
-		Graphics::SetViewport(w->mLeft, w->mTop, w->mRight, w->mBottom);
+		Graphics::SetViewport(l, t, r, b);
 	}
 	else
 	{
 		mCamera.CalculateViewMatrix(Vec3(0, 0, 5), Vec3(25,20,40), Vec3(0,0,1));
 		mCamera.CalculatePerspectiveProjectionMatrix(0.5f, aspect);
 		mCamera.CalculateViewProjectionMatrix();
-		Graphics::SetViewport(w->mLeft, w->mTop, w->mRight, w->mBottom);
+		Graphics::SetViewport(l, t, r, b);
 		mAxes->Begin();
 		mAxes->DrawGrid(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 0), 100, 0x80ffffff);
 		mAxes->Draw(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
@@ -1150,6 +1054,102 @@ void MyApp::CleanUpPhysics()
 	//next line is optional: it will be cleared by the destructor when the array goes out of scope
 	collisionShapes.clear();
 
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void MyApp::DumpNode(aiScene const *scene, aiNode const *node, int indent /* = 0 */)
+{
+	TRACE("%-*sNode %s\n", indent, "", node->mName.C_Str());
+	for(uint i=0; i<node->mNumMeshes; ++i)
+	{
+		aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
+		TRACE("%-*sMesh %s\n", indent, "", mesh->mName.C_Str());
+		if(mesh->HasPositions())
+		{
+			TRACE("%-*s%d faces\n", indent, "", mesh->mNumFaces);
+			for (uint f=0; f<mesh->mNumFaces; ++f)
+			{
+				aiFace *face = &mesh->mFaces[f];
+
+				if(face->mNumIndices == 3)
+				{
+					for(i = 0; i < face->mNumIndices; i++)		// go through all vertices in face
+					{
+						int x = face->mIndices[i];	// get group index for current index
+						TRACE("%-*sPOS: %f,%f,%f\n", indent, "", mesh->mVertices[x].x, mesh->mVertices[x].y, mesh->mVertices[x].z);
+						if(mesh->HasTextureCoords(0))
+						{
+							aiVector3D *v = &mesh->mTextureCoords[0][x];
+
+							TRACE("%-*sUV: %f,%f\n", indent, "", v->x, v->y);
+						}
+						if(mesh->HasVertexColors(0))
+						{
+							aiColor4D *v = &mesh->mColors[0][x];
+							TRACE("%-*sCOL: %f,%f,%f,%f\n", indent, "", v->r, v->g, v->b, v->a);
+						}
+					}
+				}
+			}
+		}
+	}
+	for(uint i=0; i<node->mNumChildren; ++i)
+	{
+		DumpNode(scene, node->mChildren[i], indent + 2);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void MyApp::DrawNode(aiScene const *scene, aiNode const *node)
+{
+	for(uint i=0; i<node->mNumMeshes; ++i)
+	{
+		mImmediateContext->BeginTriangles();
+		aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
+		if(mesh->HasPositions())
+		{
+			for (uint f=0; f<mesh->mNumFaces; ++f)
+			{
+				aiFace *face = &mesh->mFaces[f];
+
+				if(face->mNumIndices == 3)
+				{
+					for(i = 0; i < face->mNumIndices; i++)		// go through all vertices in face
+					{
+						int x = face->mIndices[i];	// get group index for current index
+						mImmediateContext->BeginVertex();
+						mImmediateContext->SetPosition3(Vec3(mesh->mVertices[x].x, mesh->mVertices[x].y, mesh->mVertices[x].z));
+						if(mesh->HasTextureCoords(0))
+						{
+							aiVector3D *v = &mesh->mTextureCoords[0][x];
+							mImmediateContext->SetTexCoord(Vec2(v->x, v->y));
+						}
+						else
+						{
+							mImmediateContext->SetTexCoord(Vec2(0.5f, 0.5f));
+						}
+						if(mesh->HasVertexColors(0))
+						{
+							aiColor4D *v = &mesh->mColors[0][x];
+							mImmediateContext->SetColor(GetColorFromRGBAFloats(reinterpret_cast<float *>(&v)));
+						}
+						else
+						{
+							mImmediateContext->SetColor(0xffffffff);
+						}
+						mImmediateContext->EndVertex();
+					}
+				}
+			}
+		}
+		mImmediateContext->EndTriangles();
+	}
+	for(uint i=0; i<node->mNumChildren; ++i)
+	{
+		DrawNode(scene, node->mChildren[i]);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////

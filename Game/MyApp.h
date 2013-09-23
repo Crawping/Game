@@ -41,30 +41,45 @@ class MyApp : App
 		Rotate = 2
 	};
 
+	enum Axis
+	{
+		X = 0,
+		Y = 1,
+		Z = 2
+	};
+
 	struct ViewWindow
 	{
 		int				mLeft;
 		int				mTop;
 		int				mRight;
 		int				mBottom;
-		int				mAxis;
-		int				mUpAxis;
+		Axis			mAxis;
+		Axis			mXAxis;
+		Axis			mYAxis;
+		Axis			mUpAxis;
 		bool			mOrtho;		// else 3D (and draw the grid as well)
 		Vec2			mPan;
+		float			mTargetZoom;
 		float			mZoom;
+		float			mFlip;
 		ControlMode		mControlMode;
 
-		ViewWindow(int left, int top, int right, int bottom, int axis, int upAxis, bool ortho)
+		ViewWindow(int left, int top, int right, int bottom, Axis axis, Axis upAxis, Axis xAxis, Axis yAxis, bool ortho, float flip = 1.0f)
 			: mLeft(left)
 			, mTop(top)
 			, mRight(right)
 			, mBottom(bottom)
 			, mAxis(axis)
 			, mUpAxis(upAxis)
+			, mXAxis(xAxis)
+			, mYAxis(yAxis)
 			, mOrtho(ortho)
 			, mPan(0,0)
+			, mTargetZoom(30)
 			, mZoom(30)
 			, mControlMode(Idle)
+			, mFlip(flip)
 		{
 		}
 
