@@ -1,6 +1,8 @@
 //////////////////////////////////////////////////////////////////////
 // Editor:
-// Zoom, Pan & Rotate	 (wheel, LB, RB)
+// Engine shape, body
+// Proper engine behaviour
+// 
 //
 // 
 // Assimp -> Model
@@ -11,7 +13,7 @@
 // Reflection mapping
 // Skinning
 //
-// Fix immediate context
+// Fix immediate context (& make SpriteList derive from it)
 //
 // Command Line parameters (log console etc)
 // Tidy up source into folders/multiplatform
@@ -885,11 +887,11 @@ void MyApp::UpdatePhysics()
 			slip = 0;
 		}
 
-		float power = 5 * slipReducer;
+		float power = mCar->mEngineParams.Power * slipReducer;
 
 		if(Joypad::Trigger(0, 0) > 0)
 		{
-			mCar->ApplyPower(0, 100);
+			mCar->ApplyPower(-100, power * Joypad::Trigger(0, 0));
 		}
 		else
 		{
@@ -899,12 +901,12 @@ void MyApp::UpdatePhysics()
 
 		if(KeyHeld(VK_UP))
 		{
-			mCar->ApplyPower(200, power * 1);
+			mCar->ApplyPower(2000, power);
 		}
 
 		if(KeyHeld(VK_DOWN))
 		{
-			mCar->ApplyPower(-20, power * 1.25f);
+			mCar->ApplyPower(-20, power);
 		}
 
 		float steeringf = 0.3f;

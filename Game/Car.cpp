@@ -9,10 +9,10 @@ Car::Car(btDynamicsWorld *dynamicsWorld)
 	: PhysicalObject(dynamicsWorld)
 	, mBody(null)
 	, mBodyShape(null)
-	, mCarParams("Chassis")
 	, mEngineParams("Engine")
-	, mFrontWheelParams("Front Wheels")
+	, mCarParams("Chassis")
 	, mRearWheelParams("Rear Wheels")
+	, mFrontWheelParams("Front Wheels")
 {
 	mWheelAssembly[BackRight] = new WheelAssembly(mDW, true, true, *this);
 	mWheelAssembly[BackLeft] = new WheelAssembly(mDW, false, true, *this);

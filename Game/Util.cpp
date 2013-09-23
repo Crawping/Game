@@ -158,11 +158,16 @@ byte *LoadFile(TCHAR const *filename, size_t *size)
 void SaveFile(TCHAR const *filename, void *data, size_t size)
 {
 	FILE *f = null;
-	if(_wfopen_s(&f, filename, TEXT("wb")) == 0)
+	int error = _wfopen_s(&f, filename, TEXT("wb"));
+	if(error == 0)
 	{
 		size_t s = fwrite(data, sizeof(byte), size, f);
 		TRACE(L"Wrote %d bytes to %s\n", s, filename);
 		fclose(f);
+	}
+	else
+	{
+		TRACE(TEXT("Error %d opening %s\n"), filename);
 	}
 }
 

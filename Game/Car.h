@@ -87,6 +87,7 @@ END_PARAMSET()
 
 BEGIN_PARAMSET(EngineParams)
 
+	PARAM(Power, 1, 0.5, 20);
 	PARAM(Mass, 70, 1, 500);
 	PARAM(VerticalOffset, 0, -5, 5);
 	PARAM(HorizontalOffset, 4, -10, 10);
@@ -180,8 +181,9 @@ public:
 
 	EngineParams				mEngineParams;
 	CarParams					mCarParams;
-	WheelPairParams				mFrontWheelParams;
 	WheelPairParams				mRearWheelParams;
+	WheelPairParams				mFrontWheelParams;
+
 	btCollisionShape *			mBodyShape;
 	btRigidBody *				mBody;
 	WheelAssembly *				mWheelAssembly[NumWheels];
