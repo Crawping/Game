@@ -52,34 +52,35 @@ BEGIN_PARAMSET(WheelPairParams)
 	PARAM(WheelLinearDamping,		 0.60f,  0.00f,  5.00f);
 	PARAM(WheelAngularDamping,		 0.50f,  0.00f,  1.00f);
 	PARAM(WheelRestitution,			 0.00f,  0.00f,  1.00f);
-	PARAM(AxleMass,					 4.00f,  1.00f, 50.00f);
-	PARAM(AxleLinearDamping,		 0.10f,  0.00f,  1.00f);
-	PARAM(AxleAngularDamping,		 1.00f,  0.00f,  2.00f);
-	PARAM(WishBoneMass,				 4.00f,  1.00f, 50.00f);
-	PARAM(HubMass,					 8.00f,  1.00f, 16.00f);
-	PARAM(WishBoneLinearDamping,	 0.25f,  0.00f,  1.00f);
-	PARAM(WishBoneAngularDamping,	 2.95f,  0.00f,  5.00f);
-	PARAM(SpringStiffness,			  1200,     10,   2000);
-	PARAM(SpringDamping,			0.005f, 0.0001f, 0.10f);
-	PARAM(SpringLoad,				 0.75f,  0.15f,  4.50f);
-
 	PARAM(WheelOffsetX,				 2.00f, -4.00f,  4.00f);
 	PARAM(WheelOffsetY,				 5.50f,  2.50f, 10.00f);
 	PARAM(WheelRadius,				 2.50f,  2.00f,  5.00f);
 	PARAM(WheelWidth,				 1.00f,  0.15f,  4.00f);
+
+	PARAM(AxleMass,					 4.00f,  1.00f, 50.00f);
 	PARAM(AxleHeight,				 0.25f,  1.00f,  2.00f);
 	PARAM(AxleWidth,				 0.25f,  1.00f,  2.00f);
-	PARAM(WishBoneWidth,			 0.60f,  0.10f,  1.50f);
+	PARAM(AxleLinearDamping,		 0.10f,  0.00f,  1.00f);
+	PARAM(AxleAngularDamping,		 1.00f,  0.00f,  2.00f);
 
-	PARAM(WishBoneHeight,			 0.02f,  0.01f,  0.20f);
+	PARAM(HubMass,					 8.00f,  1.00f, 16.00f);
 	PARAM(HubWidth,					 1.00f,  0.10f,  2.00f);
 	PARAM(HubHeight,				 1.00f,  0.10f,  2.00f);
 	PARAM(HubLength,				 1.00f,  0.10f,  2.00f);
+
+	PARAM(SpringLength,				 5.00f,  2.00f, 10.00f);
+	PARAM(SpringStiffness,			  1200,     10,   2000);
+	PARAM(SpringDamping,			0.005f, 0.0001f, 0.10f);
+	PARAM(SpringLoad,				 0.75f,  0.15f,  4.50f);
+	PARAM(SpringAngle,				 DEG(25), DEG(-25), DEG(60));
+
+	PARAM(WishBoneMass,				 4.00f,  1.00f, 50.00f);
+	PARAM(WishBoneWidth,			 0.60f,  0.10f,  1.50f);
+	PARAM(WishBoneHeight,			 0.02f,  0.01f,  0.20f);
+	PARAM(WishBoneLinearDamping,	 0.25f,  0.00f,  1.00f);
+	PARAM(WishBoneAngularDamping,	 2.95f,  0.00f,  5.00f);
 	PARAM(WishBoneLowerOffset,		 0.25f, -1.00f,  2.00f);
 	PARAM(WishBoneUpperOffset,		 1.25f, -0.25f,  2.25f);
-	PARAM(SpringLength,				 5.00f,  2.00f, 10.00f);
-
-	PARAM(SpringAngle,				 DEG(25), DEG(-25), DEG(60));
 
 END_PARAMSET()
 

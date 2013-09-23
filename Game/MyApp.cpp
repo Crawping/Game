@@ -879,14 +879,8 @@ void MyApp::UpdatePhysics()
 
 		float slipLeft = mCar->mWheelAssembly[Car::BackLeft]->LateralSlip();	// 1 is full slide (90 degrees), 0 is full grip
 		float slipRight = mCar->mWheelAssembly[Car::BackRight]->LateralSlip();	// 1 is full slide (90 degrees), 0 is full grip
-		float slip = (slipLeft + slipRight) / 2.0f;
+		float slip = (slipLeft + slipRight);
 		float slipReducer = 1 - (slip * 0.5f);
-
-		if(slip < 0)
-		{
-			slip = 0;
-		}
-
 		float power = mCar->mEngineParams.Power * slipReducer;
 
 		if(Joypad::Trigger(0, 0) > 0)
@@ -895,13 +889,12 @@ void MyApp::UpdatePhysics()
 		}
 		else
 		{
-			//DebugText("%f,%f\n", power, power * Joypad::Trigger(0, 1));
-			mCar->ApplyPower(2000, power * Joypad::Trigger(0, 1));
+			mCar->ApplyPower(20000, power * Joypad::Trigger(0, 1));
 		}
 
 		if(KeyHeld(VK_UP))
 		{
-			mCar->ApplyPower(2000, power);
+			mCar->ApplyPower(20000, power);
 		}
 
 		if(KeyHeld(VK_DOWN))
