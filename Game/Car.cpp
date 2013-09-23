@@ -130,7 +130,7 @@ WheelAssembly::WheelAssembly(btDynamicsWorld *dynamicsWorld, bool isRightWheel, 
 	: PhysicalObject(dynamicsWorld)
 	, mAxleHingeInner(null)
 	, mAxleHingeOuter(null)
-	, mSteeringArm(null)
+	, mHub(null)
 	, mLowerWishBoneWheelFrontHinge(null)
 	, mUpperWishBoneWheelFrontHinge(null)
 	, mLowerWishBoneBodyFrontHinge(null)
@@ -152,7 +152,7 @@ WheelAssembly::WheelAssembly(btDynamicsWorld *dynamicsWorld, bool isRightWheel, 
 	, mShockAbsorberWheelMount(null)
 	, mWheelShape(null)
 	, mWheelAxleShape(null)
-	, mSteeringArmShape(null)
+	, mHubShape(null)
 	, mLowerWishBoneShape(null)
 	, mUpperWishBoneShape(null)
 	, mSpringMountShape(null)
@@ -235,8 +235,8 @@ void WheelAssembly::Create(WheelPairParams *p)
 	float wishBoneMass = p->WishBoneMass;
 	float wishBoneWidth = p->WishBoneWidth;
 	float wishBoneHeight = p->WishBoneHeight;
-	float steeringArmMass = p->SteeringArmMass;
-	float steeringArmHeight = p->SteeringArmHeight;
+	float steeringArmMass = p->HubMass;
+	float steeringArmHeight = p->HubHeight;
 	float wishBoneLinearDamping = p->WishBoneLinearDamping;
 	float wishBoneAngularDamping = p->WishBoneAngularDamping;
 	float lowerBodyWishBoneZOffset = p->WishBoneLowerOffset;
@@ -247,8 +247,8 @@ void WheelAssembly::Create(WheelPairParams *p)
 	float springLoad = p->SpringLoad;
 	float angle = p->SpringAngle;	
 	float axleLength = wheelWidth;
-	float steeringArmWidth = wishBoneWidth;
-	float steeringArmLength = wishBoneWidth;
+	float steeringArmWidth = p->HubWidth;
+	float steeringArmLength = p->HubLength;
 	float upperWishBoneZWheelOffset = steeringArmHeight;
 	float lowerWishBoneZWheelOffset = -steeringArmHeight;
 	float upperWishBoneZBodyOffset = upperWishBoneZWheelOffset + upperBodyWishBoneZOffset;
@@ -281,15 +281,15 @@ void WheelAssembly::Create(WheelPairParams *p)
 	mDW->addConstraint(mAxleHingeOuter, true);
 
 	// create the steering arm
-	mSteeringArmShape = new btBoxShape(btVector3(steeringArmWidth, steeringArmLength, steeringArmHeight));
+	mHubShape = new btBoxShape(btVector3(steeringArmLength, steeringArmWidth, steeringArmHeight));
 	btTransform steeringArmTransform(btQuaternion::getIdentity(), wheelPos);
 	btDefaultMotionState *steeringArmMotionState = new btDefaultMotionState(steeringArmTransform);
-	mSteeringArm = new btRigidBody(steeringArmMass, steeringArmMotionState, mSteeringArmShape, inertia(steeringArmMass, mSteeringArmShape));
-	mDW->addRigidBody(mSteeringArm, 0, 0);
+	mHub = new btRigidBody(steeringArmMass, steeringArmMotionState, mHubShape, inertia(steeringArmMass, mHubShape));
+	mDW->addRigidBody(mHub, 0, 0);
 
 	// join the steering arm to the axle
-	mSteeringHingeUpper = new btHingeConstraint(*mWheelAxle, *mSteeringArm, btVector3(0,0,steeringArmHeight), btVector3(0, 0, steeringArmHeight), btVector3(0,0,1), btVector3(0,0,1), true);
-	mSteeringHingeLower = new btHingeConstraint(*mWheelAxle, *mSteeringArm, btVector3(0,0,-steeringArmHeight), btVector3(0, 0, -steeringArmHeight), btVector3(0,0,1), btVector3(0,0,1), true);
+	mSteeringHingeUpper = new btHingeConstraint(*mWheelAxle, *mHub, btVector3(0,0,steeringArmHeight), btVector3(0, 0, steeringArmHeight), btVector3(0,0,1), btVector3(0,0,1), true);
+	mSteeringHingeLower = new btHingeConstraint(*mWheelAxle, *mHub, btVector3(0,0,-steeringArmHeight), btVector3(0, 0, -steeringArmHeight), btVector3(0,0,1), btVector3(0,0,1), true);
 
 	mDW->addConstraint(mSteeringHingeUpper, true);
 	mDW->addConstraint(mSteeringHingeLower, true);
@@ -352,14 +352,14 @@ void WheelAssembly::Create(WheelPairParams *p)
 		btVector3 lowerArmRearJoinPos(-wishBoneWidth, 0, lowerWishBoneZWheelOffset);
 		btVector3 upperArmRearJoinPos(-wishBoneWidth, 0, upperWishBoneZWheelOffset);
 
-		mLowerWishBoneWheelFrontHinge = new btHingeConstraint(*mSteeringArm, *mLowerWishBone, lowerArmFrontJoinPos, btVector3(wishBoneWidth, lowerWishBoneLength * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+		mLowerWishBoneWheelFrontHinge = new btHingeConstraint(*mHub, *mLowerWishBone, lowerArmFrontJoinPos, btVector3(wishBoneWidth, lowerWishBoneLength * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
 		mLowerWishBoneBodyFrontHinge = new btHingeConstraint(*mCar->mBody, *mLowerWishBone, lowerBodyFrontJointPos, btVector3(wishBoneWidth, lowerWishBoneLength * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
-		mLowerWishBoneWheelRearHinge = new btHingeConstraint(*mSteeringArm, *mLowerWishBone, lowerArmRearJoinPos, btVector3(-wishBoneWidth, lowerWishBoneLength * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+		mLowerWishBoneWheelRearHinge = new btHingeConstraint(*mHub, *mLowerWishBone, lowerArmRearJoinPos, btVector3(-wishBoneWidth, lowerWishBoneLength * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
 		mLowerWishBoneBodyRearHinge = new btHingeConstraint(*mCar->mBody, *mLowerWishBone, lowerBodyRearJointPos, btVector3(-wishBoneWidth, lowerWishBoneLength * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
 
-		mUpperWishBoneWheelFrontHinge = new btHingeConstraint(*mSteeringArm, *mUpperWishBone, upperArmFrontJoinPos, btVector3(wishBoneWidth, upperWishBoneLength * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+		mUpperWishBoneWheelFrontHinge = new btHingeConstraint(*mHub, *mUpperWishBone, upperArmFrontJoinPos, btVector3(wishBoneWidth, upperWishBoneLength * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
 		mUpperWishBoneBodyFrontHinge = new btHingeConstraint(*mCar->mBody, *mUpperWishBone, upperBodyFrontJointPos, btVector3(wishBoneWidth, upperWishBoneLength * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
-		mUpperWishBoneWheelRearHinge = new btHingeConstraint(*mSteeringArm, *mUpperWishBone, upperArmRearJoinPos, btVector3(-wishBoneWidth, upperWishBoneLength * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
+		mUpperWishBoneWheelRearHinge = new btHingeConstraint(*mHub, *mUpperWishBone, upperArmRearJoinPos, btVector3(-wishBoneWidth, upperWishBoneLength * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
 		mUpperWishBoneBodyRearHinge = new btHingeConstraint(*mCar->mBody, *mUpperWishBone, upperBodyRearJointPos, btVector3(-wishBoneWidth, upperWishBoneLength * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
 
 		mDW->addConstraint(mLowerWishBoneWheelFrontHinge, true);
@@ -424,7 +424,7 @@ void WheelAssembly::Create(WheelPairParams *p)
 	mDW->addConstraint(mShockAbsorberBodyMountHinge, true);
 
 	// Attach Spring Mount to the steering arm with a free hinge
-	mShockAbsorberWheelMountHinge = new btPoint2PointConstraint(*mSteeringArm, *mShockAbsorberWheelMount, springOffset, btVector3(0,0,0));
+	mShockAbsorberWheelMountHinge = new btPoint2PointConstraint(*mHub, *mShockAbsorberWheelMount, springOffset, btVector3(0,0,0));
 	mDW->addConstraint(mShockAbsorberWheelMountHinge, true);
 
 	// Attach the 2 Spring Mounts to each other with a spring
@@ -471,8 +471,8 @@ void WheelAssembly::ApplyParameters(WheelPairParams *p)
 	float wishBoneMass = p->WishBoneMass;
 	float wishBoneWidth = p->WishBoneWidth;
 	float wishBoneHeight = p->WishBoneHeight;
-	float steeringArmMass = p->SteeringArmMass;
-	float steeringArmHeight = p->SteeringArmHeight;
+	float steeringArmMass = p->HubMass;
+	float steeringArmHeight = p->HubHeight;
 	float wishBoneLinearDamping = p->WishBoneLinearDamping;
 	float wishBoneAngularDamping = p->WishBoneAngularDamping;
 	float lowerBodyWishBoneZOffset = p->WishBoneLowerOffset;
@@ -575,13 +575,13 @@ void WheelAssembly::Destroy()
 
 	DeleteRigidBody(mWheel);
 	DeleteRigidBody(mWheelAxle);
-	DeleteRigidBody(mSteeringArm);
+	DeleteRigidBody(mHub);
 	DeleteRigidBody(mLowerWishBone);
 	DeleteRigidBody(mUpperWishBone);
 	DeleteRigidBody(mShockAbsorberBodyMount);
 	DeleteRigidBody(mShockAbsorberWheelMount);
 
-	Delete(mSteeringArmShape);
+	Delete(mHubShape);
 	Delete(mWheelShape);
 	Delete(mWheelAxleShape);
 	Delete(mLowerWishBoneShape);

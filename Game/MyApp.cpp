@@ -225,7 +225,7 @@ void MyApp::OnInit()
 
 	InitPhysics();
 
-	mEditMode = CAR_EDITMASK;
+	mEditMode = EditMode::Edit;
 	mParameterIndex = 0;
 	mScrollBarPos = 0;
 	mScrollBarVelocity = 0;
@@ -253,7 +253,8 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	int gw = r - l;
 	int gh = b - t;
 	float aspect = (float)gw/gh;
-	float scale = w->mZoom / gw * 2;
+	Vec2 panScale(w->mZoom / gw, w->mZoom / aspect / gh);
+
 	if(w->mOrtho)
 	{
 		switch(w->mControlMode)
@@ -281,7 +282,7 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 			}
 			else
 			{
-				w->mPan += MouseDelta * scale;
+				w->mPan += MouseDelta * panScale;
 			}
 			break;
 
@@ -296,10 +297,10 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 		mCamera.CalculateOrthoProjectionMatrix(w->mZoom, w->mZoom / aspect);
 		int y1 = w->mYAxis;
 		int x1 = w->mXAxis;
-		Vec3 xaxis = carTransform.getBasis().getColumn(x1) * w->mPan.x * scale;
-		Vec3 yaxis = carTransform.getBasis().getColumn(y1) * w->mPan.y * scale;
+		Vec3 xaxis = carTransform.getBasis().getColumn(x1) * w->mPan.x;
+		Vec3 yaxis = carTransform.getBasis().getColumn(y1) * w->mPan.y;
 		carPosition += xaxis + yaxis;
-		Vec3 cameraPos = carPosition + carTransform.getBasis().getColumn(w->mAxis) * w->mFlip;
+		Vec3 cameraPos = carPosition + carTransform.getBasis().getColumn(w->mAxis) * w->mFlip * 100;
 		mCamera.CalculateViewMatrix(carPosition, cameraPos, carTransform.getBasis().getColumn(w->mUpAxis));
 		mCamera.CalculateViewProjectionMatrix();
 		Graphics::SetViewport(l, t, r, b);
@@ -331,11 +332,6 @@ bool MyApp::OnUpdate()
 
 	mConsole->Update();
 
-	if(KeyPressed('C'))
-	{
-		mEditMode ^= CAR_EDITMASK | CAR_DRIVEMASK;
-	}
-
 	Graphics::BeginFrame(0xff204000);
 
 	mSpriteList->Begin();
@@ -356,9 +352,18 @@ bool MyApp::OnUpdate()
 		speed = 2;
 	}
 
+	if(KeyPressed('E'))
+	{
+		mEditMode = Edit;
+	}
+	else if(KeyPressed('D'))
+	{
+		mEditMode = Drive;
+	}
+
 	switch(mEditMode)
 	{
-	case CAR_EDITMASK:
+	case EditMode::Edit:
 		{
 			for(int i=0; i<4; ++i)
 			{
@@ -371,7 +376,7 @@ bool MyApp::OnUpdate()
 		}
 		break;
 
-	case CAR_DRIVEMASK:
+	case EditMode::Drive:
 		{
 			if(KeyPressed('R'))
 			{
@@ -574,13 +579,12 @@ void MyApp::DrawParameters()
 					{
 						const int ts = 9;
 						const int tw = 13;
-						Draw2DUntexturedRectangle(m2DUntexturedIC, tl + Vec2(margin, 0.0f), tl + Vec2((int)margin + 500 + tw, fh), 0xff000000);
-
-						// one percent for each pixel
+						const int w = 500;
+						Draw2DUntexturedRectangle(m2DUntexturedIC, tl + Vec2(margin, 0.0f), tl + Vec2((int)margin + w + tw, fh), 0xff000000);
 						float low = p->minValue;
 						float high = p->maxValue;
 						float range = high - low;
-						float tick = range / 500.0f;
+						float tick = range / w;
 						p->mValue += MouseDelta.x * tick;
 						if(p->mValue < low)
 						{
@@ -590,7 +594,7 @@ void MyApp::DrawParameters()
 						{
 							p->mValue = high;
 						}
-						float xpos = (p->mValue - low) / range * 500;
+						float xpos = (p->mValue - low) / range * w;
 						DrawTriangle(m2DUntexturedIC, tl + Vec2(margin + xpos, 0.0f), tl + Vec2(margin + xpos + tw, (float)fh), 0xffffffff);
 						mCar->ApplyParameters();
 					}
@@ -605,8 +609,9 @@ void MyApp::DrawParameters()
 			}
 		}
 	}
-	// Draw the scroll bar
 	mFixedSysFont->EndMultipleStrings();
+
+	// scroll indicator
 	Draw2DUntexturedRectangle(m2DUntexturedIC, Vec2(margin-sbw, mScrollBarPos), Vec2(margin-1, mScrollBarPos + scrollBarHeight), 0xffc0c0c0);
 }
 
@@ -629,6 +634,15 @@ void MyApp::Draw2DAxes(int x, int y, int w, int h)
 		m2DUntexturedIC->BeginVertex();
 		m2DUntexturedIC->SetPosition2(Vec2(a + x, y + h));
 		m2DUntexturedIC->SetColor(0xffa0a0a0);
+		m2DUntexturedIC->EndVertex();
+
+		m2DUntexturedIC->BeginVertex();
+		m2DUntexturedIC->SetPosition2(Vec2(a + x + w / 2, y));
+		m2DUntexturedIC->SetColor(0xffffffff);
+		m2DUntexturedIC->EndVertex();
+		m2DUntexturedIC->BeginVertex();
+		m2DUntexturedIC->SetPosition2(Vec2(a + x + w / 2, y + h / 2));
+		m2DUntexturedIC->SetColor(0xffffffff);
 		m2DUntexturedIC->EndVertex();
 	}
 	for(int a = y; a < h; a += h/2)
@@ -791,7 +805,7 @@ void MyApp::UpdatePhysics()
 		dynamicsWorld->stepSimulation(dt, 10, dt/scale);
 	}
 
-	if(mEditMode == CAR_EDITMASK)
+	if(mEditMode == Edit)
 	{
 		mCar->Create();
 	}
@@ -997,7 +1011,7 @@ Matrix GetTransform(btRigidBody *body)
 void MyApp::DrawPhysics()
 {
 	//static uint options = btIDebugDraw::DBG_DrawWireframe | btIDebugDraw::DBG_DrawConstraints | btIDebugDraw::DBG_DrawConstraintLimits | btIDebugDraw::DBG_DrawText | btIDebugDraw::DBG_DrawFeaturesText;
-	static uint options = btIDebugDraw::DBG_DrawWireframe| btIDebugDraw::DBG_DrawConstraints ;
+	static uint options = btIDebugDraw::DBG_DrawWireframe| btIDebugDraw::DBG_DrawConstraints;
 	if(KeyPressed('1'))
 	{
 		options ^= btIDebugDraw::DBG_DrawWireframe;

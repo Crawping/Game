@@ -56,9 +56,7 @@ struct Parameter
 	float minValue;
 	float maxValue;
 	float defaultValue;
-
 	uint32 index;
-	uint32 mask;		// what mode can this parameter be edited in?
 
 	Parameter()
 		: index(++numParameters)
@@ -133,7 +131,7 @@ struct ParameterSet
 
 #define PNAME(a) s_ ## a
 
-#define PARAM(name, _mask, _def, _min, _max)	\
+#define PARAM(name, _def, _min, _max)	\
 										\
 struct PNAME(name) : Parameter			\
 {										\
@@ -141,7 +139,6 @@ struct PNAME(name) : Parameter			\
 		: Parameter()					\
 	{									\
 		mValue = _def;					\
-		mask = _mask;					\
 		defaultValue = _def;			\
 		minValue = _min;				\
 		maxValue = _max;				\
@@ -153,45 +150,41 @@ PNAME(name) name
 
 //////////////////////////////////////////////////////////////////////
 
-#define CAR_EDITMASK	1
-#define	CAR_DRIVEMASK	2
-#define	CAR_ALLMASK		(CAR_EDITMASK | CAR_DRIVEMASK)
-
 struct WheelPairParams : ParameterSet
 {
-	PARAM(WheelMass,				CAR_ALLMASK,  1.00f,  0.10f, 50.00f);
-	PARAM(WheelFriction,			CAR_ALLMASK,  1.20f,  0.50f, 16.00f);
-	PARAM(WheelLinearDamping,		CAR_ALLMASK,  0.60f,  0.00f,  5.00f);
-	PARAM(WheelAngularDamping,		CAR_ALLMASK,  0.50f,  0.00f,  1.00f);
-	PARAM(WheelRestitution,			CAR_ALLMASK,  0.00f,  0.00f,  1.00f);
-	PARAM(AxleMass,					CAR_ALLMASK,  4.00f,  1.00f, 50.00f);
-	PARAM(AxleLinearDamping,		CAR_ALLMASK,  0.10f,  0.00f,  1.00f);
-	PARAM(AxleAngularDamping,		CAR_ALLMASK,  1.00f,  0.00f,  2.00f);
-	PARAM(WishBoneMass,				CAR_ALLMASK,  4.00f,  1.00f, 50.00f);
-	PARAM(SteeringArmMass,			CAR_ALLMASK,  8.00f,  1.00f, 16.00f);
-	PARAM(WishBoneLinearDamping,	CAR_ALLMASK,  0.25f,  0.00f,  1.00f);
-	PARAM(WishBoneAngularDamping,	CAR_ALLMASK,  2.95f,  0.00f,  5.00f);
-	PARAM(SpringStiffness,			CAR_ALLMASK,   1200,     10,   2000);
-	PARAM(SpringDamping,			CAR_ALLMASK, 0.005f, 0.0001f, 0.10f);
-	PARAM(SpringLoad,				CAR_ALLMASK,  0.75f,  0.15f,  4.50f);
+	PARAM(WheelMass,				 1.00f,  0.10f, 50.00f);
+	PARAM(WheelFriction,			 1.20f,  0.50f, 16.00f);
+	PARAM(WheelLinearDamping,		 0.60f,  0.00f,  5.00f);
+	PARAM(WheelAngularDamping,		 0.50f,  0.00f,  1.00f);
+	PARAM(WheelRestitution,			 0.00f,  0.00f,  1.00f);
+	PARAM(AxleMass,					 4.00f,  1.00f, 50.00f);
+	PARAM(AxleLinearDamping,		 0.10f,  0.00f,  1.00f);
+	PARAM(AxleAngularDamping,		 1.00f,  0.00f,  2.00f);
+	PARAM(WishBoneMass,				 4.00f,  1.00f, 50.00f);
+	PARAM(HubMass,					 8.00f,  1.00f, 16.00f);
+	PARAM(WishBoneLinearDamping,	 0.25f,  0.00f,  1.00f);
+	PARAM(WishBoneAngularDamping,	 2.95f,  0.00f,  5.00f);
+	PARAM(SpringStiffness,			  1200,     10,   2000);
+	PARAM(SpringDamping,			0.005f, 0.0001f, 0.10f);
+	PARAM(SpringLoad,				 0.75f,  0.15f,  4.50f);
 
-	PARAM(WheelOffsetX,				CAR_EDITMASK, 2.00f, -4.00f,  4.00f);
-	PARAM(WheelOffsetY,				CAR_EDITMASK, 5.50f,  2.50f, 10.00f);
-	PARAM(WheelRadius,				CAR_EDITMASK, 2.50f,  2.00f,  5.00f);
-	PARAM(WheelWidth,				CAR_EDITMASK, 1.00f,  0.15f,  4.00f);
-	PARAM(AxleHeight,				CAR_EDITMASK, 0.25f,  1.00f,  2.00f);
-	PARAM(AxleWidth,				CAR_EDITMASK, 0.25f,  1.00f,  2.00f);
-	PARAM(WishBoneWidth,			CAR_EDITMASK, 0.60f,  0.10f,  1.50f);
+	PARAM(WheelOffsetX,				 2.00f, -4.00f,  4.00f);
+	PARAM(WheelOffsetY,				 5.50f,  2.50f, 10.00f);
+	PARAM(WheelRadius,				 2.50f,  2.00f,  5.00f);
+	PARAM(WheelWidth,				 1.00f,  0.15f,  4.00f);
+	PARAM(AxleHeight,				 0.25f,  1.00f,  2.00f);
+	PARAM(AxleWidth,				 0.25f,  1.00f,  2.00f);
+	PARAM(WishBoneWidth,			 0.60f,  0.10f,  1.50f);
 
-	PARAM(WishBoneHeight,			CAR_EDITMASK, 0.02f,  0.01f,  0.20f);
-	PARAM(SteeringArmWidth,			CAR_EDITMASK, 1.00f,  0.10f,  2.00f);
-	PARAM(SteeringArmHeight,		CAR_EDITMASK, 1.00f,  0.10f,  2.00f);
-	PARAM(SteeringArmLength,		CAR_EDITMASK, 1.00f,  0.10f,  2.00f);
-	PARAM(WishBoneLowerOffset,		CAR_EDITMASK, 0.25f, -1.00f,  2.00f);
-	PARAM(WishBoneUpperOffset,		CAR_EDITMASK, 1.25f, -0.25f,  2.25f);
-	PARAM(SpringLength,				CAR_EDITMASK, 5.00f,  2.00f, 10.00f);
+	PARAM(WishBoneHeight,			 0.02f,  0.01f,  0.20f);
+	PARAM(HubWidth,					 1.00f,  0.10f,  2.00f);
+	PARAM(HubHeight,				 1.00f,  0.10f,  2.00f);
+	PARAM(HubLength,				 1.00f,  0.10f,  2.00f);
+	PARAM(WishBoneLowerOffset,		 0.25f, -1.00f,  2.00f);
+	PARAM(WishBoneUpperOffset,		 1.25f, -0.25f,  2.25f);
+	PARAM(SpringLength,				 5.00f,  2.00f, 10.00f);
 
-	PARAM(SpringAngle,				CAR_EDITMASK, (SIMD_PI / 180) * 25, (SIMD_PI / 180) * -25, (SIMD_PI / 180) * 60);
+	PARAM(SpringAngle,				 (SIMD_PI / 180) * 25, (SIMD_PI / 180) * -25, (SIMD_PI / 180) * 60);
 
 	WheelPairParams(char const *name)
 	{
@@ -203,10 +196,10 @@ struct WheelPairParams : ParameterSet
 
 struct CarParams : ParameterSet
 {
-	PARAM(bodyMass, CAR_ALLMASK, 70, 1, 500);
-	PARAM(bodyLength, CAR_EDITMASK, 20, 10, 30);
-	PARAM(bodyWidth, CAR_EDITMASK, 4, 0.5f, 10);
-	PARAM(bodyHeight, CAR_EDITMASK, 3, 0.5f, 5.0f);
+	PARAM(bodyMass, 70, 1, 500);
+	PARAM(bodyLength, 20, 10, 30);
+	PARAM(bodyWidth, 4, 0.5f, 10);
+	PARAM(bodyHeight, 3, 0.5f, 5.0f);
 
 	CarParams(char const *name)
 	{
@@ -222,14 +215,14 @@ public:
 
 	btCollisionShape *				mWheelShape;
 	btCollisionShape *				mWheelAxleShape;
-	btCollisionShape *				mSteeringArmShape;
+	btCollisionShape *				mHubShape;
 	btCollisionShape *				mLowerWishBoneShape;
 	btCollisionShape *				mUpperWishBoneShape;
 	btCollisionShape *				mSpringMountShape;
 
 	btRigidBody *					mWheel;
 	btRigidBody *					mWheelAxle;
-	btRigidBody *					mSteeringArm;
+	btRigidBody *					mHub;
 	btRigidBody *					mLowerWishBone;
 	btRigidBody *					mUpperWishBone;
 	btRigidBody *					mShockAbsorberBodyMount;

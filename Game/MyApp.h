@@ -34,11 +34,18 @@ class MyApp : App
 	float									mDeltaTime;
 	Camera									mCamera;
 
+	enum EditMode : int
+	{
+		Edit = 0,
+		Drive,
+		NumModes
+	};
+
 	enum ControlMode
 	{
 		Idle = 0,
-		Pan = 1,
-		Rotate = 2
+		Pan,
+		Rotate
 	};
 
 	enum Axis
@@ -146,7 +153,7 @@ class MyApp : App
 	float									mCameraPitch;
 
 	Car *									mCar;
-	uint32									mEditMode;
+	EditMode								mEditMode;
 
 	int										mParameterIndex;
 	float									mScrollBarPos;
