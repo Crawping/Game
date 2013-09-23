@@ -708,11 +708,11 @@
     <ClInclude Include="Aligned.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ParameterSet.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Constants.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParameterSet.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
