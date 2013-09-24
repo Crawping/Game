@@ -4,13 +4,25 @@
 
 //////////////////////////////////////////////////////////////////////
 
-vector<ParameterSet *> ParameterSet::mSets;			// all the parameter sets
-vector<Parameter *> ParameterSet::sTemporaryParameterList;		// TEMP! real ones are stored in the set, this is a placeholder filled in during construction
+vector<ParameterSet *> ParameterSet::mSets;					// all the parameter sets
+vector<Parameter *> ParameterSet::sTemporaryParameterList;	// TEMP! real ones are stored in the set, this is a placeholder filled in during construction
+
 int Parameter::sNextParameterIndex = 0;
 
 //////////////////////////////////////////////////////////////////////
 
-string Parameter::ToXMLString() const
+void ParameterSet::CopyParameterSet(char const *name)
+{
+	mName = name;
+	mExpanded = true;
+	mSets.push_back(this);
+	mParameters = sTemporaryParameterList;	// Yoink!
+	sTemporaryParameterList.clear();
+}
+
+//////////////////////////////////////////////////////////////////////
+
+string Parameter::ToXML() const
 {
 	return Format("\t\t<Parameter Name=\"%s\" Value=\"%f\" MinValue=\"%f\" MaxValue=\"%f\" DefaultValue=\"%f\"/>\n",
 		mName.c_str(), mValue, mMinValue, mMaxValue, mDefaultValue);
@@ -18,7 +30,20 @@ string Parameter::ToXMLString() const
 
 //////////////////////////////////////////////////////////////////////
 
-void ParameterSet::SetFromXML(XmlDocument *xmlDocument, char const *pname)
+string ParameterSet::ToXML() const
+{
+	string s = Format("\t<ParameterSet Name=\"%s\" ParameterCount=\"%d\" Expanded=\"%d\">\n", mName.c_str(), mParameters.size(), mExpanded ? 1 : 0);
+	for(auto p:mParameters)
+	{
+		s += p->ToXML();
+	}
+	s += "\t</ParameterSet>\n";
+	return s;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void ParameterSet::FromXML(XmlDocument *xmlDocument)
 {
 	XmlNode *root = xmlDocument->first_node("xml");
 	if(root != null)
@@ -28,11 +53,15 @@ void ParameterSet::SetFromXML(XmlDocument *xmlDocument, char const *pname)
 		{
 			XmlAttribute *name = node->first_attribute("Name");
 			XmlAttribute *count = node->first_attribute("ParameterCount");
+			XmlAttribute *expanded = node->first_attribute("Expanded");
 			if(name != null && count != null)
 			{
-				if(strcmp(pname, name->value()) == 0)
+				if(strcmp(mName.c_str(), name->value()) == 0)
 				{
-					mName = string(name->value());
+					if(expanded != null)
+					{
+						mExpanded = atoi(expanded->value()) != 0;
+					}
 					int paramCount = atoi(count->value());
 					if(paramCount > 0)
 					{
@@ -76,3 +105,39 @@ void ParameterSet::SetFromXML(XmlDocument *xmlDocument, char const *pname)
 	}
 }
 
+//////////////////////////////////////////////////////////////////////
+
+void ParameterSetCollection::Load()
+{
+	size_t size;
+	void *file = LoadFile(mFilename.c_str(), &size);
+	if(file != null)
+	{
+		XmlDocument xml;
+		try
+		{
+			xml.parse<0>((char *)file);
+			for(auto set: mSets)
+			{
+				set->FromXML(&xml);
+			}
+		}
+		catch(rapidxml::parse_error e)
+		{
+			TRACE("Error parsing XML: %s\n", e.what());
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void ParameterSetCollection::Save()
+{
+	string s("<xml>\n");
+	for(auto set: mSets)
+	{
+		s += set->ToXML();
+	}
+	s += "</xml>";
+	SaveFile(mFilename.c_str(), s.c_str(), s.size());
+}

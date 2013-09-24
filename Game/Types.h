@@ -22,6 +22,9 @@ using std::wstring;
 using std::string;
 using std::vector;
 using std::function;
+using std::unique_ptr;
+
+typedef std::basic_string<TCHAR> tstring;
 
 //////////////////////////////////////////////////////////////////////
 

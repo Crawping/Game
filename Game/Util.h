@@ -16,7 +16,7 @@ void TRACE(wstring const &format, ...);
 void TRACE(char const *format, ...);
 void TRACE(string const &format, ...);
 byte *LoadFile(TCHAR const *filename, size_t *size);
-void SaveFile(TCHAR const *filename, void *data, size_t size);
+void SaveFile(TCHAR const *filename, void const *data, size_t size);
 
 //////////////////////////////////////////////////////////////////////
 
@@ -61,6 +61,35 @@ inline void DX(HRESULT x)
 		DebugBreak();
 	}
 }
+
+//////////////////////////////////////////////////////////////////////
+
+template <typename T> struct scoped_ptr
+{
+	scoped_ptr(function<void (T *)> OnDelete)
+		: ptr(null)
+		, mOnDelete(OnDelete)
+	{
+	}
+
+	T ** addressof()
+	{
+		return &ptr;
+	}
+
+	operator T *()
+	{
+		return ptr;
+	}
+
+	~scoped_ptr()
+	{
+		mOnDelete(ptr);
+	}
+
+	T *ptr;
+	std::function<void (T *)>	mOnDelete;
+};
 
 //////////////////////////////////////////////////////////////////////
 // !! BY VALUE

@@ -31,6 +31,7 @@
 #include <functional>
 #include <algorithm>
 #include <set>
+#include <memory>
 
 #pragma warning(disable:4201 4100 4189 4127)
 
@@ -54,6 +55,7 @@
 #include "Util.h"
 #include "LinkedList.h"
 #include "Refcount.h"
+#include "File.h"
 #include "UTF8.h"
 #include "ParameterSet.h"
 #include "Vec.h"

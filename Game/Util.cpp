@@ -116,35 +116,27 @@ void TRACE(string const &format, ...)
 byte *LoadFile(TCHAR const *filename, size_t *size)
 {
 	byte *buf = null;
-	FILE *f = null;
-
-	if(_wfopen_s(&f, filename, TEXT("rb")) == 0)
+	File f(filename, File::AccessRead);
+	if(f.IsValid())
 	{
-		fseek(f, 0, SEEK_END);
-		uint32 len = ftell(f);
-		fseek(f, 0, SEEK_SET);
-
-		buf = new byte[len + sizeof(WCHAR)];
-
+		long fsize = f.Size();
+		buf = new byte[fsize + sizeof(WCHAR)];
 		if(buf != null)
 		{
-			size_t s = fread_s(buf, len, 1, len, f);
-
-			if(s != len)
+			long s = f.Read(buf, fsize);
+			if(s != fsize)
 			{
 				DeleteArray(buf);
 			}
 			else
 			{
-				*((WCHAR *)(((char *)buf) + len)) = L'\0';
+				*((WCHAR *)(((char *)buf) + fsize)) = L'\0';
 				if(size != null)
 				{
-					*size = len;
+					*size = fsize;
 				}
 			}
 		}
-
-		fclose(f);
 	}
 	else
 	{
@@ -155,20 +147,9 @@ byte *LoadFile(TCHAR const *filename, size_t *size)
 
 //////////////////////////////////////////////////////////////////////
 
-void SaveFile(TCHAR const *filename, void *data, size_t size)
+void SaveFile(TCHAR const *filename, void const *data, size_t size)
 {
-	FILE *f = null;
-	int error = _wfopen_s(&f, filename, TEXT("wb"));
-	if(error == 0)
-	{
-		size_t s = fwrite(data, sizeof(byte), size, f);
-		TRACE(L"Wrote %d bytes to %s\n", s, filename);
-		fclose(f);
-	}
-	else
-	{
-		TRACE(TEXT("Error %d opening %s\n"), filename);
-	}
+	File(filename, File::AccessWrite).Write(data, size);
 }
 
 //////////////////////////////////////////////////////////////////////

@@ -9,12 +9,13 @@ struct aiNode;
 
 #include "Car.h"
 
-struct AppParameters : ParameterSet
-{
+BEGIN_PARAMSET(CameraParameters, "Camera")
+
 	PARAM(CameraDistance, 30, 5, 100);
 	PARAM(CameraHeight, 50, -100, 100);
 	PARAM(CameraTargetHeight, 5, -100, 100);
-};
+
+END_PARAMSET()
 
 class MyApp : App
 {

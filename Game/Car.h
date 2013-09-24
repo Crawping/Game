@@ -45,7 +45,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////
 
-BEGIN_PARAMSET(WheelPairParams)
+BEGIN_PARAMSET(WheelPairParams, "BOGUS")
 
 	PARAM(WheelMass,				 1.00f,  0.10f, 50.00f);
 	PARAM(WheelFriction,			 1.20f,  0.50f, 16.00f);
@@ -86,7 +86,7 @@ END_PARAMSET()
 
 //////////////////////////////////////////////////////////////////////
 
-BEGIN_PARAMSET(EngineParams)
+BEGIN_PARAMSET(EngineParams, "Engine")
 
 	PARAM(Power, 1, 0.5, 20);
 	PARAM(Mass, 70, 1, 500);
@@ -100,7 +100,7 @@ END_PARAMSET()
 
 //////////////////////////////////////////////////////////////////////
 
-BEGIN_PARAMSET(CarParams)
+BEGIN_PARAMSET(CarParams, "Chassis")
 
 	PARAM(bodyMass, 70, 1, 500);
 	PARAM(bodyLength, 20, 10, 30);
@@ -184,6 +184,7 @@ public:
 	CarParams					mCarParams;
 	WheelPairParams				mRearWheelParams;
 	WheelPairParams				mFrontWheelParams;
+	ParameterSetCollection		mParameterSets;
 
 	btCollisionShape *			mBodyShape;
 	btRigidBody *				mBody;
@@ -199,8 +200,6 @@ public:
 	void ApplyAntiRoll(WheelAssembly *left, WheelAssembly *right);
 
 	void ApplyParameters();
-	string ToXMLString() const;
-	void SetParametersFromXML(char *fileContents);
 
 	bool IsValid() const
 	{

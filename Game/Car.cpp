@@ -9,47 +9,21 @@ Car::Car(btDynamicsWorld *dynamicsWorld)
 	: PhysicalObject(dynamicsWorld)
 	, mBody(null)
 	, mBodyShape(null)
-	, mEngineParams("Engine")
-	, mCarParams("Chassis")
 	, mRearWheelParams("Rear Wheels")
 	, mFrontWheelParams("Front Wheels")
+	, mParameterSets(_T("car.xml"))
 {
+	mParameterSets.AddParameterSet(&mEngineParams);
+	mParameterSets.AddParameterSet(&mCarParams);
+	mParameterSets.AddParameterSet(&mRearWheelParams);
+	mParameterSets.AddParameterSet(&mFrontWheelParams);
+
+	mParameterSets.Load();
+
 	mWheelAssembly[BackRight] = new WheelAssembly(mDW, true, true, *this);
 	mWheelAssembly[BackLeft] = new WheelAssembly(mDW, false, true, *this);
 	mWheelAssembly[FrontRight] = new WheelAssembly(mDW, true, false, *this);
 	mWheelAssembly[FrontLeft] = new WheelAssembly(mDW, false, false, *this);
-}
-
-//////////////////////////////////////////////////////////////////////
-
-string Car::ToXMLString() const
-{
-	string s("<xml>\n");
-	s += mEngineParams.ToXMLString();
-	s += mCarParams.ToXMLString();
-	s += mRearWheelParams.ToXMLString();
-	s += mFrontWheelParams.ToXMLString();
-	s += "</xml>\n";
-	return s;
-}
-
-//////////////////////////////////////////////////////////////////////
-
-void Car::SetParametersFromXML(char *fileContents)
-{
-	XmlDocument xml;
-	try
-	{
-		xml.parse<rapidxml::parse_default>(fileContents);
-		mEngineParams.SetFromXML(&xml, "Engine");
-		mCarParams.SetFromXML(&xml, "Chassis");
-		mRearWheelParams.SetFromXML(&xml, "Rear Wheels");
-		mFrontWheelParams.SetFromXML(&xml, "Front Wheels");
-	}
-	catch(rapidxml::parse_error e)
-	{
-		TRACE("Error parsing XML: %s\n", e.what());
-	}
 }
 
 //////////////////////////////////////////////////////////////////////

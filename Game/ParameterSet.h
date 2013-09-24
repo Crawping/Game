@@ -30,7 +30,7 @@ struct Parameter
 	{
 	}
 
-	string ToXMLString() const;
+	string ToXML() const;
 
 	operator float()
 	{
@@ -59,45 +59,45 @@ struct ParameterSet
 	string mName;
 	bool mExpanded;
 
-	ParameterSet()
-	{
-	}
-
-	void CopyParameterSet(char const *name)
-	{
-		mSets.push_back(this);
-		mExpanded = true;
-		mName = name;
-		mParameters = sTemporaryParameterList;	// Yoink!
-		sTemporaryParameterList.clear();
-	}
-
-	string ToXMLString() const
-	{
-		string s = Format("\t<ParameterSet Name=\"%s\" ParameterCount=\"%d\">\n", mName.c_str(), mParameters.size());
-		for(auto p:mParameters)
-		{
-			s += p->ToXMLString();
-		}
-		s += "\t</ParameterSet>\n";
-		return s;
-	}
-
-	void SetFromXML(XmlDocument *xmlDocument, char const *name);
-
-	void Load(char const *filename);
-	void Save(char const *filename);
+	void CopyParameterSet(char const *name);
+	string ToXML() const;
+	void FromXML(XmlDocument *xmlDocument);
 };
 
 //////////////////////////////////////////////////////////////////////
 
-#define BEGIN_PARAMSET(pname)										\
+struct ParameterSetCollection
+{
+	vector<ParameterSet *>	mSets;
+	tstring					mFilename;
+
+	void Load();
+	void Save();
+
+	ParameterSetCollection(TCHAR const *filename)
+		: mFilename(filename)
+	{
+	}
+
+	void AddParameterSet(ParameterSet *p)
+	{
+		mSets.push_back(p);
+	}
+};
+
+//////////////////////////////////////////////////////////////////////
+
+#define BEGIN_PARAMSET(pname, displayName)							\
 																	\
 struct pname : ParameterSet											\
 {																	\
-	pname(char const *n) : ParameterSet()							\
+	pname(char const *name)											\
 	{																\
-		CopyParameterSet(n);										\
+		CopyParameterSet(name);										\
+	}																\
+	pname()															\
+	{																\
+		CopyParameterSet(displayName);								\
 	}
 
 //////////////////////////////////////////////////////////////////////

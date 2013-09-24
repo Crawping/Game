@@ -4,6 +4,7 @@
 // Proper engine behaviour
 // 
 //
+// Physics Objects which clean themselves up!
 // 
 // Assimp -> Model
 // Car physics
@@ -239,6 +240,8 @@ void MyApp::OnInit()
 	CountParameters();
 
 	mConsole = Console::Create();
+
+	mConsole->Trace("Built %s %s\n", __DATE__, __TIME__);
 
 	mModel = Model::Create(mVertexBuffer, mIndexBuffer);
 	ModelNode *node = mModel->GetRootNode();
@@ -511,8 +514,7 @@ void MyApp::DrawParameters()
 	{
 		if(mode == Modify)
 		{
-			string s(mCar->ToXMLString());
-			SaveFile(TEXT("car.xml"), (void *)s.c_str(), s.size());
+			mCar->mParameterSets.Save();
 		}
 		SetMouseMode(MouseMode::Free);
 		currentParameterIndex = 0;
@@ -848,13 +850,6 @@ void MyApp::InitPhysics()
 	groundRigidBody->setFriction(1);
 
 	mCar = new Car(dynamicsWorld);
-
-	size_t s = 0;
-	void *f = LoadFile(TEXT("car.xml"), &s);
-	if(f != null)
-	{
-		mCar->SetParametersFromXML((char *)f);
-	}
 	mCar->Create();
 }
 
