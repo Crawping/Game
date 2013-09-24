@@ -10,9 +10,9 @@
 	</ParameterSet>
 	<ParameterSet Name="Chassis" ParameterCount="4" Expanded="1">
 		<Parameter Name="bodyMass" Value="370.260010" MinValue="1.000000" MaxValue="500.000000" DefaultValue="70.000000"/>
-		<Parameter Name="bodyLength" Value="18.319981" MinValue="10.000000" MaxValue="30.000000" DefaultValue="20.000000"/>
-		<Parameter Name="bodyWidth" Value="4.603995" MinValue="0.500000" MaxValue="10.000000" DefaultValue="4.000000"/>
-		<Parameter Name="bodyHeight" Value="0.500000" MinValue="0.500000" MaxValue="5.000000" DefaultValue="3.000000"/>
+		<Parameter Name="bodyLength" Value="30.000000" MinValue="10.000000" MaxValue="30.000000" DefaultValue="20.000000"/>
+		<Parameter Name="bodyWidth" Value="10.000000" MinValue="0.500000" MaxValue="10.000000" DefaultValue="4.000000"/>
+		<Parameter Name="bodyHeight" Value="5.000000" MinValue="0.500000" MaxValue="5.000000" DefaultValue="3.000000"/>
 	</ParameterSet>
 	<ParameterSet Name="Rear Wheels" ParameterCount="30" Expanded="1">
 		<Parameter Name="WheelMass" Value="2.195799" MinValue="0.100000" MaxValue="50.000000" DefaultValue="1.000000"/>
