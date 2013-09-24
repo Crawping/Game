@@ -82,8 +82,7 @@ build/
 *.scc
 
 # Assimp Bin
-assimp/lib/
-*
+assimp/lib/*
 
 # Visual C++ cache files
 ipch/
