@@ -60,9 +60,9 @@ public:
 		long len = 0;
 		if(IsValid())
 		{
-			fseek(mHandle, 0, SEEK_END);
-			len = ftell(mHandle);
-			fseek(mHandle, 0, SEEK_SET);
+			Seek(0, SEEK_END);
+			len = Position();
+			Seek(0);
 		}
 		return len;
 	}
@@ -83,11 +83,11 @@ public:
 
 	//////////////////////////////////////////////////////////////////////
 
-	void Seek(long offset)
+	void Seek(long offset, int mode = SEEK_SET)
 	{
 		if(IsValid())
 		{
-			fseek(mHandle, (long)offset, SEEK_SET);
+			fseek(mHandle, (long)offset, mode);
 		}
 	}
 

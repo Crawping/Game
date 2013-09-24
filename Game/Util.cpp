@@ -138,10 +138,6 @@ byte *LoadFile(TCHAR const *filename, size_t *size)
 			}
 		}
 	}
-	else
-	{
-		MessageBox(null, Format(TEXT("File not found: %s"), filename).c_str(), TEXT("LoadFile"), MB_ICONERROR);
-	}
 	return buf;
 }
 
