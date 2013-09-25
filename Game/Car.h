@@ -9,42 +9,6 @@ class WheelAssembly;
 
 //////////////////////////////////////////////////////////////////////
 
-class PhysicalObject
-{
-public:
-
-	btDynamicsWorld *mDW;
-
-	PhysicalObject(btDynamicsWorld *world)
-	{
-		mDW = world;
-	}
-
-	~PhysicalObject()
-	{
-	}
-
-	template <typename T> void DeleteConstraint(T * &c)
-	{
-		if(c != null)
-		{
-			mDW->removeConstraint(c);
-			Delete(c);
-		}
-	}
-
-	void DeleteRigidBody(btRigidBody * &b)
-	{
-		if(b != null)
-		{
-			mDW->removeRigidBody(b);
-			Delete(b);
-		}
-	}
-};
-
-//////////////////////////////////////////////////////////////////////
-
 BEGIN_PARAMSET(WheelPairParams, "BOGUS")
 
 	PARAM(WheelMass,				 1.00f,  0.10f, 50.00f);
@@ -111,7 +75,7 @@ END_PARAMSET()
 
 //////////////////////////////////////////////////////////////////////
 
-class WheelAssembly : PhysicalObject
+class WheelAssembly
 {
 public:
 
@@ -154,10 +118,10 @@ public:
 	bool							mIsRightWheel;
 	bool							mIsRearWheel;
 
-	WheelAssembly(btDynamicsWorld *dynamicsWorld, bool isRightWheel, bool isRearWheel, Car &car);
+	WheelAssembly(bool isRightWheel, bool isRearWheel, Car &car);
 	~WheelAssembly();
 
-	void Create(WheelPairParams *p);
+	void Create(WheelPairParams *p, btVector3 const &carWorldPos, btVector3 const &carSize);
 	void Destroy();
 	float LateralSlip();	// how much is this wheel sliding sideways
 	float Skid();			// -ive = skidding, +ive = wheels spinning
@@ -167,7 +131,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////
 
-class Car : PhysicalObject
+class Car
 {
 public:
 
@@ -186,11 +150,13 @@ public:
 	WheelPairParams				mFrontWheelParams;
 	ParameterSetCollection		mParameterSets;
 
+	btCollisionShape *			mEngineShape;
 	btCollisionShape *			mBodyShape;
+	btCompoundShape *			mBodyAndEngineShape;
 	btRigidBody *				mBody;
 	WheelAssembly *				mWheelAssembly[NumWheels];
 
-	Car(btDynamicsWorld *dynamicsWorld);
+	Car();
 	~Car();
 
 	void Create();

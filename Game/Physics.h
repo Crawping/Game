@@ -1,0 +1,40 @@
+//////////////////////////////////////////////////////////////////////
+
+#pragma once
+
+//////////////////////////////////////////////////////////////////////
+
+namespace Physics
+{
+	//////////////////////////////////////////////////////////////////////
+
+	extern btDefaultCollisionConfiguration *		CollisionConfiguration;
+	extern btCollisionDispatcher *					Dispatcher;
+	extern btBroadphaseInterface *					OverlappingPairCache;
+	extern btSequentialImpulseConstraintSolver *	Solver;
+	extern btDiscreteDynamicsWorld *				DynamicsWorld;
+
+	//////////////////////////////////////////////////////////////////////
+
+	void Open();
+	void Close();
+
+	//////////////////////////////////////////////////////////////////////
+
+	void DeleteRigidBody(btRigidBody * &b);
+	btVector3 inertia(float mass, btCollisionShape *shape);
+	btCompoundShape *InitCompoundShape(btCompoundShape *shape, btScalar *masses, btTransform &shift);
+
+	//////////////////////////////////////////////////////////////////////
+
+	template <typename T> void DeleteConstraint(T * &c)
+	{
+		if(c != null)
+		{
+			DynamicsWorld->removeConstraint(c);
+			Delete(c);
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////
+}

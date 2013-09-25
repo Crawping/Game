@@ -213,6 +213,13 @@ struct Vec3
 
 //////////////////////////////////////////////////////////////////////
 
+inline Vec3 operator - (Vec3 const &a)
+{
+	return Vec3(-a.x, -a.y, -a.z);
+}
+
+//////////////////////////////////////////////////////////////////////
+
 inline Vec3 operator - (Vec3 const &a, Vec3 const &b)
 {
 	return Vec3(a.x - b.x, a.y - b.y, a.z - b.z);

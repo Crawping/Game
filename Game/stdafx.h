@@ -4,6 +4,14 @@
 
 //////////////////////////////////////////////////////////////////////
 
+#pragma comment(lib, "assimp.lib")
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "d3dcompiler.lib")
+#pragma comment(lib, "XINPUT9_1_0.LIB")
+#pragma comment(lib, "dxguid.lib")
+
+//////////////////////////////////////////////////////////////////////
+
 #define WIN32_LEAN_AND_MEAN
 #define _USE_MATH_DEFINES
 #define INITGUID
@@ -83,6 +91,7 @@
 #include "SpriteList.h"
 #include "Font.h"
 #include "Console.h"
+#include "Physics.h"
 
 //////////////////////////////////////////////////////////////////////
 

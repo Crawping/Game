@@ -302,6 +302,7 @@
     <ClInclude Include="ModelNode.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="ParameterSet.h" />
+    <ClInclude Include="Physics.h" />
     <ClInclude Include="PhysicsDebug.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Point.h" />
@@ -350,6 +351,7 @@
     <ClCompile Include="ModelNode.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="ParameterSet.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PhysicsDebug.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="RapidXML\xml_util.cpp" />

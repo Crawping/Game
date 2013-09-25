@@ -32,19 +32,15 @@ struct Parameter
 
 	string ToXML() const;
 
-	operator float()
+	operator float() const
 	{
 		return mValue;
 	}
 
-	float operator *= (float f)
+	float set(float value)
 	{
-		return mValue *= f;
-	}
-
-	float operator = (float const &f)
-	{
-		return mValue = f;
+		mValue = value;
+		return value;
 	}
 };
 
@@ -74,7 +70,7 @@ struct ParameterSetCollection
 	void Load();
 	void Save();
 
-	ParameterSetCollection(TCHAR const *filename)
+	ParameterSetCollection(TCHAR const *filename = TEXT(""))
 		: mFilename(filename)
 	{
 	}

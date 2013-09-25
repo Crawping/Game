@@ -1,21 +1,14 @@
 //////////////////////////////////////////////////////////////////////
-// Editor:
 // Engine shape, body
 // Proper engine behaviour
-// 
-//
+// Fix the spring joints to the car and hub directly
 // Physics Objects which clean themselves up!
-// 
 // Assimp -> Model
-// Car physics
 // Particles
-//
 // Multi texturing
 // Reflection mapping
 // Skinning
-//
 // Fix immediate context (& make SpriteList derive from it)
-//
 // Command Line parameters (log console etc)
 // Tidy up source into folders/multiplatform
 
@@ -23,8 +16,6 @@
 #include "assimp\scene.h"
 #include "assimp\Importer.hpp"
 #include "MyApp.h"
-
-#pragma comment(lib,"assimp.lib")
 
 //////////////////////////////////////////////////////////////////////
 
@@ -94,6 +85,14 @@ void MyApp::OnInit()
 	//DumpNode(scene, scene->mRootNode, 0);
 
 	mCar = null;
+
+	mAppParameterSets.mFilename = TEXT("config.xml");
+	mAppParameterSets.AddParameterSet(&mCameraParameters);
+	mAppParameterSets.Load();
+
+	mCameraHeight = mCameraParameters.Height;
+	mCameraTargetHeight = mCameraParameters.TargetHeight;
+	mCameraDistance = mCameraParameters.Distance;
 
 	mPhysicsDebug = new PhysicsDebug();
 	mAxes = new Axes();
@@ -218,10 +217,6 @@ void MyApp::OnInit()
 
 	mCameraYaw = HALF_PI;
 	mCameraPitch = PI + QUARTER_PI;
-
-	mCameraDistance = 40;
-	mCameraHeight = 16;
-	mCameraTargetHeight = 5;
 	mCameraPos = Vec3(25, 0, 25);
 	mTarget = Vec3(35, 0, 5);
 	mYaw = mPitch = mRoll = 0;
@@ -768,6 +763,12 @@ void MyApp::Draw()
 
 void MyApp::OnClose()
 {
+	mCameraParameters.Height.set(mCameraHeight);
+	mCameraParameters.TargetHeight.set(mCameraTargetHeight);
+	mCameraParameters.Distance.set(mCameraDistance);
+
+	mAppParameterSets.Save();
+
 	DebugClose();
 
 	CleanUpPhysics();
@@ -797,6 +798,8 @@ void MyApp::OnClose()
 	Release(mVertexShader);
 }
 
+// masses must sum to 1
+
 //////////////////////////////////////////////////////////////////////
 
 void MyApp::CreateRamp()
@@ -808,22 +811,58 @@ void MyApp::CreateRamp()
 	btDefaultMotionState *ms = new btDefaultMotionState(t);
 	btRigidBody::btRigidBodyConstructionInfo inf(0, ms, mRampShape);
 	mRamp = new btRigidBody(inf);
-	dynamicsWorld->addRigidBody(mRamp, -1, -1);
+	Physics::DynamicsWorld->addRigidBody(mRamp, -1, -1);
 	mRamp->setActivationState(DISABLE_DEACTIVATION);
 	mRamp->setFriction(1.0f);
 	mRamp->setRestitution(0.0f);
+
+	mTestShape[0] = new btBoxShape(btVector3(2,2,2));
+	mTestShape[1] = new btBoxShape(btVector3(8,1,1));
+	mTestCompoundShape = new btCompoundShape();
+	btTransform a;
+	btTransform b;
+	a.setIdentity();
+	b.setIdentity();
+	a.setOrigin(btVector3(0,0,0));
+	b.setOrigin(btVector3(10,0,0));
+	mTestCompoundShape->addChildShape(a, mTestShape[0]);
+	mTestCompoundShape->addChildShape(b, mTestShape[1]);
+
+	float testMass(1.0f);
+	btVector3 localInertia(0,0,0);
+
+	btTransform shift;
+	btTransform startTransform;
+	shift.setIdentity();
+	startTransform.setIdentity();
+	startTransform.setOrigin(btVector3(10,10,45));
+
+	float masses[2] = { 0.99f, 0.01f };
+
+	btCompoundShape *newShape = Physics::InitCompoundShape(mTestCompoundShape, masses, shift);
+	Delete(mTestCompoundShape);
+	mTestCompoundShape = newShape;
+
+	mTestCompoundShape->calculateLocalInertia(testMass, localInertia);
+
+	mTestBody = new btRigidBody(testMass, new btDefaultMotionState(startTransform * shift), mTestCompoundShape, localInertia);
+
+	Physics::DynamicsWorld->addRigidBody(mTestBody);
+	mTestBody->setActivationState(DISABLE_DEACTIVATION);
+	mTestBody->setFriction(0.5f);
+	mTestBody->setRestitution(0.5f);
 }
 
 //////////////////////////////////////////////////////////////////////
 
 void MyApp::DeleteRamp()
 {
-	if(mRamp != null)
-	{
-		dynamicsWorld->removeRigidBody(mRamp);
-		Delete(mRamp);
-	}
+	Physics::DeleteRigidBody(mRamp);
+	Physics::DeleteRigidBody(mTestBody);
 	Delete(mRampShape);
+	Delete(mTestShape[0]);
+	Delete(mTestShape[1]);
+	Delete(mTestCompoundShape);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -832,24 +871,18 @@ void MyApp::DeleteRamp()
 
 void MyApp::InitPhysics()
 {
-	collisionConfiguration = new btDefaultCollisionConfiguration();
-	dispatcher = new	btCollisionDispatcher(collisionConfiguration);
-	overlappingPairCache = new btDbvtBroadphase();
-	solver = new btSequentialImpulseConstraintSolver;
-	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,overlappingPairCache,solver,collisionConfiguration);
-	dynamicsWorld->setGravity(btVector3(0,0,-6));
+	Physics::Open();
 
-	groundShape = new btStaticPlaneShape(btVector3(0,0,1),0);
-	collisionShapes.push_back(groundShape);
+	mGroundShape = new btStaticPlaneShape(btVector3(0,0,1),0);
 
 	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,0)));
-	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0,groundMotionState,groundShape,btVector3(0,0,0));
-	groundRigidBody = new btRigidBody(groundRigidBodyCI);
-	dynamicsWorld->addRigidBody(groundRigidBody, 1, -1);
-	groundRigidBody->setRestitution(1);
-	groundRigidBody->setFriction(1);
+	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0,groundMotionState,mGroundShape,btVector3(0,0,0));
+	mGroundRigidBody = new btRigidBody(groundRigidBodyCI);
+	Physics::DynamicsWorld->addRigidBody(mGroundRigidBody, 1, -1);
+	mGroundRigidBody->setRestitution(1);
+	mGroundRigidBody->setFriction(1);
 
-	mCar = new Car(dynamicsWorld);
+	mCar = new Car();
 	mCar->Create();
 }
 
@@ -861,7 +894,7 @@ void MyApp::UpdatePhysics()
 	if(!KeyHeld('X') || KeyPressed('Z'))
 	{
 		float dt = 1.0f/10;
-		dynamicsWorld->stepSimulation(dt, 10, dt/scale);
+		Physics::DynamicsWorld->stepSimulation(dt, 10, dt/scale);
 	}
 
 	if(mEditMode == Edit)
@@ -990,10 +1023,15 @@ void MyApp::UpdateCamera()
 		{
 			mCameraPos = bcp + Vec3(0,0,mCameraHeight);
 		}
+		Vec3 target = car + Vec3(0,0,mCameraTargetHeight);
+		Vec3 pos = mCameraPos + Vec3(0,0,mCameraHeight);
 
-		mCamera.CalculateViewMatrix(car + Vec3(0,0,mCameraTargetHeight), mCameraPos + Vec3(0,0,mCameraHeight), Vec3(0,0,1));
+		float pitch = atan2f(mCameraTargetHeight - mCameraHeight, distance);
+
+		mCamera.CalculateViewMatrix(target, pos, Vec3(0,0,1));
 		mCamera.CalculatePerspectiveProjectionMatrix(0.5f, Graphics::FWidth() / Graphics::FHeight());
 		mCamera.CalculateViewProjectionMatrix();
+
 	}
 	else if((App::MouseHeld & App::MouseButton::Left) != 0)
 	{
@@ -1073,16 +1111,17 @@ Matrix GetTransform(btRigidBody *body)
 void MyApp::DrawPhysics()
 {
 	//static uint options = btIDebugDraw::DBG_DrawWireframe | btIDebugDraw::DBG_DrawConstraints | btIDebugDraw::DBG_DrawConstraintLimits | btIDebugDraw::DBG_DrawText | btIDebugDraw::DBG_DrawFeaturesText;
-	static uint options = btIDebugDraw::DBG_DrawWireframe| btIDebugDraw::DBG_DrawConstraints;
+	//static uint options = btIDebugDraw::DBG_DrawWireframe| btIDebugDraw::DBG_DrawConstraints;
+	static uint options = btIDebugDraw::DBG_DrawWireframe| btIDebugDraw::DBG_DrawConstraints | btIDebugDraw::DBG_DrawContactPoints;
 	if(KeyPressed('1'))
 	{
 		options ^= btIDebugDraw::DBG_DrawWireframe;
 	}
 
-	dynamicsWorld->setDebugDrawer(mPhysicsDebug);
+	Physics::DynamicsWorld->setDebugDrawer(mPhysicsDebug);
 	mPhysicsDebug->setDebugMode(options);
 	mPhysicsDebug->Begin(&mCamera, mSpriteList, mDebugFont);
-	dynamicsWorld->debugDrawWorld();
+	Physics::DynamicsWorld->debugDrawWorld();
 	mPhysicsDebug->End();
 }
 
@@ -1093,43 +1132,10 @@ void MyApp::CleanUpPhysics()
 	DeleteRamp();
 	Delete(mCar);
 
-	for (int i=dynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--)
-	{
-		btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[i];
-		btRigidBody* body = btRigidBody::upcast(obj);
-		if (body && body->getMotionState())
-		{
-			delete body->getMotionState();
-		}
-		dynamicsWorld->removeCollisionObject( obj );
-		delete obj;
-	}
+	Physics::DeleteRigidBody(mGroundRigidBody);
+	Delete(mGroundShape);
 
-	//delete collision shapes
-	for (int j=0;j<collisionShapes.size();j++)
-	{
-		btCollisionShape* shape = collisionShapes[j];
-		collisionShapes[j] = 0;
-		delete shape;
-	}
-
-	//delete dynamics world
-	delete dynamicsWorld;
-
-	//delete solver
-	delete solver;
-
-	//delete broadphase
-	delete overlappingPairCache;
-
-	//delete dispatcher
-	delete dispatcher;
-
-	delete collisionConfiguration;
-
-	//next line is optional: it will be cleared by the destructor when the array goes out of scope
-	collisionShapes.clear();
-
+	Physics::Close();
 }
 
 //////////////////////////////////////////////////////////////////////

@@ -5,10 +5,11 @@
 
 //////////////////////////////////////////////////////////////////////
 
-Car::Car(btDynamicsWorld *dynamicsWorld)
-	: PhysicalObject(dynamicsWorld)
-	, mBody(null)
+Car::Car()
+	: mBody(null)
 	, mBodyShape(null)
+	, mEngineShape(null)
+	, mBodyAndEngineShape(null)
 	, mRearWheelParams("Rear Wheels")
 	, mFrontWheelParams("Front Wheels")
 	, mParameterSets(_T("car.xml"))
@@ -20,17 +21,16 @@ Car::Car(btDynamicsWorld *dynamicsWorld)
 
 	mParameterSets.Load();
 
-	mWheelAssembly[BackRight] = new WheelAssembly(mDW, true, true, *this);
-	mWheelAssembly[BackLeft] = new WheelAssembly(mDW, false, true, *this);
-	mWheelAssembly[FrontRight] = new WheelAssembly(mDW, true, false, *this);
-	mWheelAssembly[FrontLeft] = new WheelAssembly(mDW, false, false, *this);
+	mWheelAssembly[BackRight] = new WheelAssembly(true, true, *this);
+	mWheelAssembly[BackLeft] = new WheelAssembly(false, true, *this);
+	mWheelAssembly[FrontRight] = new WheelAssembly(true, false, *this);
+	mWheelAssembly[FrontLeft] = new WheelAssembly(false, false, *this);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-WheelAssembly::WheelAssembly(btDynamicsWorld *dynamicsWorld, bool isRightWheel, bool isRearWheel, Car &car)
-	: PhysicalObject(dynamicsWorld)
-	, mAxleHingeInner(null)
+WheelAssembly::WheelAssembly(bool isRightWheel, bool isRearWheel, Car &car)
+	: mAxleHingeInner(null)
 	, mAxleHingeOuter(null)
 	, mHub(null)
 	, mLowerWishBoneWheelFrontHinge(null)
@@ -66,15 +66,6 @@ WheelAssembly::WheelAssembly(btDynamicsWorld *dynamicsWorld, bool isRightWheel, 
 
 //////////////////////////////////////////////////////////////////////
 
-btVector3 inertia(float mass, btCollisionShape *shape)
-{
-	btVector3 i(0,0,0);
-	shape->calculateLocalInertia(mass, i);
-	return i;
-}
-
-//////////////////////////////////////////////////////////////////////
-
 void Car::Create()
 {
 	Destroy();
@@ -84,16 +75,47 @@ void Car::Create()
 	float bodyMass = mCarParams.bodyMass;
 
 	mBodyShape = new btBoxShape(btVector3(carSize.x / 2, carSize.y / 2, carSize.z / 2));
-	btTransform bodyTransform(btQuaternion::getIdentity(), btVector3(carPos.x, carPos.y, carPos.z));
-	btDefaultMotionState *bodyMotionState = new btDefaultMotionState(bodyTransform);
-	btRigidBody::btRigidBodyConstructionInfo bodyInfo(bodyMass, bodyMotionState, mBodyShape, inertia(bodyMass, mBodyShape));
-	mBody = new btRigidBody(bodyInfo);
-	mDW->addRigidBody(mBody, 4, 1);
+	mEngineShape = new btBoxShape(btVector3(mEngineParams.Length, mEngineParams.Width, mEngineParams.Height));
 
-	mWheelAssembly[FrontLeft]->Create(&mFrontWheelParams);
-	mWheelAssembly[FrontRight]->Create(&mFrontWheelParams);
-	mWheelAssembly[BackLeft]->Create(&mRearWheelParams);
-	mWheelAssembly[BackRight]->Create(&mRearWheelParams);
+	mBodyAndEngineShape = new btCompoundShape();
+
+	Vec3 ep(carPos + Vec3(mEngineParams.HorizontalOffset, 0, mEngineParams.VerticalOffset));
+
+	btTransform bodyTransform(btQuaternion::getIdentity(), btVector3(carPos.x, carPos.y, carPos.z));
+	btTransform engineTransform(btQuaternion::getIdentity(), btVector3(ep.x, ep.y, ep.z));
+
+	mBodyAndEngineShape->addChildShape(bodyTransform, mBodyShape);
+	mBodyAndEngineShape->addChildShape(engineTransform, mEngineShape);
+
+	float engineMass = mEngineParams.Mass;
+
+	float totalMass = engineMass + bodyMass;
+
+	float md = 1.0f / totalMass;
+
+	float masses[2] = { bodyMass * md, engineMass * md };
+
+	btTransform shift;
+	shift.setIdentity();
+
+	btVector3 localInertia(0,0,0);
+
+	btCompoundShape *newShape = Physics::InitCompoundShape(mBodyAndEngineShape, masses, shift);
+	Delete(mBodyAndEngineShape);
+	mBodyAndEngineShape = newShape;
+
+	mBodyAndEngineShape->calculateLocalInertia(totalMass, localInertia);
+
+	mBody = new btRigidBody(totalMass, new btDefaultMotionState(bodyTransform * shift), mBodyAndEngineShape, localInertia);
+	Physics::DynamicsWorld->addRigidBody(mBody, 4, 1);
+
+	btVector3 cpos = btVector3(carPos.x, carPos.y, carPos.z);
+	btVector3 csize = btVector3(carSize.x, carSize.y, carSize.z);
+
+	mWheelAssembly[FrontLeft]->Create(&mFrontWheelParams, cpos, csize);
+	mWheelAssembly[FrontRight]->Create(&mFrontWheelParams, cpos, csize);
+	mWheelAssembly[BackLeft]->Create(&mRearWheelParams, cpos, csize);
+	mWheelAssembly[BackRight]->Create(&mRearWheelParams, cpos, csize);
 	ApplyParameters();
 }
 
@@ -101,7 +123,7 @@ void Car::Create()
 
 void Car::ApplyParameters()
 {
-	mBody->setMassProps(mCarParams.bodyMass, inertia(mCarParams.bodyMass, mBodyShape));
+	mBody->setMassProps(mCarParams.bodyMass, Physics::inertia(mCarParams.bodyMass, mBodyShape));
 
 	mWheelAssembly[FrontLeft]->ApplyParameters(&mFrontWheelParams);
 	mWheelAssembly[FrontRight]->ApplyParameters(&mFrontWheelParams);
@@ -111,15 +133,15 @@ void Car::ApplyParameters()
 
 //////////////////////////////////////////////////////////////////////
 
-void WheelAssembly::Create(WheelPairParams *p)
+void WheelAssembly::Create(WheelPairParams *p, btVector3 const &carWorldPos, btVector3 const &carSize)
 {
 	float xReflect = mIsRearWheel ? 1.0f : -1.0f;
 	float yReflect = mIsRightWheel ? 1.0f : -1.0f;
-	btVector3 const &carWorldPos = mCar->mBody->getWorldTransform().getOrigin();
-	btVector3 const &carSize = ((btBoxShape *)mCar->mBodyShape)->getHalfExtentsWithMargin();
+
 	float carLength = carSize.x();
 	float carWidth = carSize.y();
 	float carHeight = carSize.z();
+
 	Vec3 wheelOffset((carLength - p->WheelOffsetX) * xReflect, (carWidth + p->WheelOffsetY) * -yReflect, 0);
 	btVector3 wheelPos = btVector3(wheelOffset.x, wheelOffset.y, wheelOffset.z) + carWorldPos;
 	float wheelRadius = p->WheelRadius;
@@ -160,8 +182,8 @@ void WheelAssembly::Create(WheelPairParams *p)
 	mWheelShape = new btCylinderShape(btVector3(wheelRadius, wheelWidth, 0.0f));
 	btTransform wheelTransform(btQuaternion::getIdentity(), wheelPos);
 	btDefaultMotionState * wheelMotionState = new btDefaultMotionState(wheelTransform);
-	mWheel = new btRigidBody(wheelMass, wheelMotionState, mWheelShape, inertia(wheelMass, mWheelShape));
-	mDW->addRigidBody(mWheel, 2, 1);
+	mWheel = new btRigidBody(wheelMass, wheelMotionState, mWheelShape, Physics::inertia(wheelMass, mWheelShape));
+	Physics::DynamicsWorld->addRigidBody(mWheel, 2, 1);
 	mWheel->setDamping(wheelLinearDamping, wheelAngularDamping);
 	mWheel->setFriction(wheelFriction);
 	mWheel->setRestitution(wheelRestitution);
@@ -171,30 +193,30 @@ void WheelAssembly::Create(WheelPairParams *p)
 	mWheelAxleShape = new btBoxShape(btVector3(axleWidth, axleLength, axleHeight));
 	btTransform hubTransform(btQuaternion::getIdentity(), wheelPos);
 	btDefaultMotionState *hubMotionState = new btDefaultMotionState(hubTransform);
-	mWheelAxle = new btRigidBody(axleMass, hubMotionState, mWheelAxleShape, inertia(axleMass, mWheelAxleShape));
-	mDW->addRigidBody(mWheelAxle, 0, 0);
+	mWheelAxle = new btRigidBody(axleMass, hubMotionState, mWheelAxleShape, Physics::inertia(axleMass, mWheelAxleShape));
+	Physics::DynamicsWorld->addRigidBody(mWheelAxle, 0, 0);
 	mWheelAxle->setDamping(axleLinearDamping, axleAngularDamping);
 
 	// Create hinges joining wheel to hub
 	mAxleHingeInner = new btHingeConstraint(*mWheelAxle, *mWheel, btVector3(0, wheelWidth, 0), btVector3(0, wheelWidth, 0), btVector3(0,-1,0), btVector3(0,-1,0), true);
 	mAxleHingeOuter = new btHingeConstraint(*mWheelAxle, *mWheel, btVector3(0, -wheelWidth, 0), btVector3(0, -wheelWidth, 0), btVector3(0,-1,0), btVector3(0,-1,0), true);
 
-	mDW->addConstraint(mAxleHingeInner, true);
-	mDW->addConstraint(mAxleHingeOuter, true);
+	Physics::DynamicsWorld->addConstraint(mAxleHingeInner, true);
+	Physics::DynamicsWorld->addConstraint(mAxleHingeOuter, true);
 
 	// create the steering arm
 	mHubShape = new btBoxShape(btVector3(steeringArmLength, steeringArmWidth, steeringArmHeight));
 	btTransform steeringArmTransform(btQuaternion::getIdentity(), wheelPos);
 	btDefaultMotionState *steeringArmMotionState = new btDefaultMotionState(steeringArmTransform);
-	mHub = new btRigidBody(steeringArmMass, steeringArmMotionState, mHubShape, inertia(steeringArmMass, mHubShape));
-	mDW->addRigidBody(mHub, 0, 0);
+	mHub = new btRigidBody(steeringArmMass, steeringArmMotionState, mHubShape, Physics::inertia(steeringArmMass, mHubShape));
+	Physics::DynamicsWorld->addRigidBody(mHub, 0, 0);
 
 	// join the steering arm to the axle
 	mSteeringHingeUpper = new btHingeConstraint(*mWheelAxle, *mHub, btVector3(0,0,steeringArmHeight), btVector3(0, 0, steeringArmHeight), btVector3(0,0,1), btVector3(0,0,1), true);
 	mSteeringHingeLower = new btHingeConstraint(*mWheelAxle, *mHub, btVector3(0,0,-steeringArmHeight), btVector3(0, 0, -steeringArmHeight), btVector3(0,0,1), btVector3(0,0,1), true);
 
-	mDW->addConstraint(mSteeringHingeUpper, true);
-	mDW->addConstraint(mSteeringHingeLower, true);
+	Physics::DynamicsWorld->addConstraint(mSteeringHingeUpper, true);
+	Physics::DynamicsWorld->addConstraint(mSteeringHingeLower, true);
 
 	mSteeringHingeUpper->setLimit(0,0);
 	mSteeringHingeLower->setLimit(0,0);
@@ -230,11 +252,11 @@ void WheelAssembly::Create(WheelPairParams *p)
 		btDefaultMotionState *lowerArmMotionState = new btDefaultMotionState(lowerArmTransform);
 		btDefaultMotionState *upperArmMotionState = new btDefaultMotionState(upperArmTransform);
 
-		mLowerWishBone = new btRigidBody(wishBoneMass, lowerArmMotionState, mLowerWishBoneShape, inertia(wishBoneMass, mLowerWishBoneShape));
-		mUpperWishBone = new btRigidBody(wishBoneMass, upperArmMotionState, mUpperWishBoneShape, inertia(wishBoneMass, mUpperWishBoneShape));
+		mLowerWishBone = new btRigidBody(wishBoneMass, lowerArmMotionState, mLowerWishBoneShape, Physics::inertia(wishBoneMass, mLowerWishBoneShape));
+		mUpperWishBone = new btRigidBody(wishBoneMass, upperArmMotionState, mUpperWishBoneShape, Physics::inertia(wishBoneMass, mUpperWishBoneShape));
 
-		mDW->addRigidBody(mLowerWishBone, 0, 0);
-		mDW->addRigidBody(mUpperWishBone, 0, 0);
+		Physics::DynamicsWorld->addRigidBody(mLowerWishBone, 0, 0);
+		Physics::DynamicsWorld->addRigidBody(mUpperWishBone, 0, 0);
 
 		mUpperWishBone->setDamping(wishBoneLinearDamping, wishBoneAngularDamping);
 		mLowerWishBone->setDamping(wishBoneLinearDamping, wishBoneAngularDamping);
@@ -267,15 +289,15 @@ void WheelAssembly::Create(WheelPairParams *p)
 		mUpperWishBoneWheelRearHinge = new btHingeConstraint(*mHub, *mUpperWishBone, upperArmRearJoinPos, btVector3(-wishBoneWidth, uwbl * -yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
 		mUpperWishBoneBodyRearHinge = new btHingeConstraint(*mCar->mBody, *mUpperWishBone, upperBodyRearJointPos, btVector3(-wishBoneWidth, uwbl * yReflect, 0), btVector3(1, 0, 0), btVector3(1, 0, 0), true);
 
-		mDW->addConstraint(mLowerWishBoneWheelFrontHinge, true);
-		mDW->addConstraint(mUpperWishBoneWheelFrontHinge, true);
-		mDW->addConstraint(mLowerWishBoneBodyFrontHinge, true);
-		mDW->addConstraint(mUpperWishBoneBodyFrontHinge, true);
+		Physics::DynamicsWorld->addConstraint(mLowerWishBoneWheelFrontHinge, true);
+		Physics::DynamicsWorld->addConstraint(mUpperWishBoneWheelFrontHinge, true);
+		Physics::DynamicsWorld->addConstraint(mLowerWishBoneBodyFrontHinge, true);
+		Physics::DynamicsWorld->addConstraint(mUpperWishBoneBodyFrontHinge, true);
 
-		mDW->addConstraint(mLowerWishBoneWheelRearHinge, true);
-		mDW->addConstraint(mUpperWishBoneWheelRearHinge, true);
-		mDW->addConstraint(mLowerWishBoneBodyRearHinge, true);
-		mDW->addConstraint(mUpperWishBoneBodyRearHinge, true);
+		Physics::DynamicsWorld->addConstraint(mLowerWishBoneWheelRearHinge, true);
+		Physics::DynamicsWorld->addConstraint(mUpperWishBoneWheelRearHinge, true);
+		Physics::DynamicsWorld->addConstraint(mLowerWishBoneBodyRearHinge, true);
+		Physics::DynamicsWorld->addConstraint(mUpperWishBoneBodyRearHinge, true);
 
 		mLowerWishBoneWheelFrontHinge->setLimit(lo, hi);
 		mUpperWishBoneWheelFrontHinge->setLimit(lo, hi);
@@ -315,22 +337,22 @@ void WheelAssembly::Create(WheelPairParams *p)
 	// Create Spring Mount on the body of the car
 	btTransform springMountBodyTransform(btQuaternion::getIdentity(), springJoinPos + carWorldPos);
 	btDefaultMotionState *springMountBodyMotionState = new btDefaultMotionState(springMountBodyTransform);
-	mShockAbsorberBodyMount = new btRigidBody(springMountShapeMass, springMountBodyMotionState, mSpringMountShape, inertia(springMountShapeMass, mSpringMountShape));
-	mDW->addRigidBody(mShockAbsorberBodyMount, 0, 0);
+	mShockAbsorberBodyMount = new btRigidBody(springMountShapeMass, springMountBodyMotionState, mSpringMountShape, Physics::inertia(springMountShapeMass, mSpringMountShape));
+	Physics::DynamicsWorld->addRigidBody(mShockAbsorberBodyMount, 0, 0);
 
 	// Create Spring Mount on the axle
 	btTransform springMountWheelTransform(btQuaternion::getIdentity(), armJoinPos);
 	btDefaultMotionState *springMountWheelMotionState = new btDefaultMotionState(springMountWheelTransform);
-	mShockAbsorberWheelMount = new btRigidBody(springMountShapeMass, springMountWheelMotionState, mSpringMountShape, inertia(springMountShapeMass, mSpringMountShape));
-	mDW->addRigidBody(mShockAbsorberWheelMount, 0, 0);
+	mShockAbsorberWheelMount = new btRigidBody(springMountShapeMass, springMountWheelMotionState, mSpringMountShape, Physics::inertia(springMountShapeMass, mSpringMountShape));
+	Physics::DynamicsWorld->addRigidBody(mShockAbsorberWheelMount, 0, 0);
 
 	// Attach Spring Mount to the body of the car with a free hinge
 	mShockAbsorberBodyMountHinge = new btPoint2PointConstraint(*mCar->mBody, *mShockAbsorberBodyMount, springJoinPos, btVector3(0,0,0));
-	mDW->addConstraint(mShockAbsorberBodyMountHinge, true);
+	Physics::DynamicsWorld->addConstraint(mShockAbsorberBodyMountHinge, true);
 
 	// Attach Spring Mount to the steering arm with a free hinge
 	mShockAbsorberWheelMountHinge = new btPoint2PointConstraint(*mHub, *mShockAbsorberWheelMount, springOffset, btVector3(0,0,0));
-	mDW->addConstraint(mShockAbsorberWheelMountHinge, true);
+	Physics::DynamicsWorld->addConstraint(mShockAbsorberWheelMountHinge, true);
 
 	// Attach the 2 Spring Mounts to each other with a spring
 	btVector3 a = mShockAbsorberWheelMount->getWorldTransform().getOrigin();
@@ -342,7 +364,7 @@ void WheelAssembly::Create(WheelPairParams *p)
 	btTransform ta(btQuaternion::getIdentity(), btVector3(0,0,springLength));
 	btTransform tb(btQuaternion::getIdentity(), btVector3(0,0,0));
 	mShockAbsorber = new btGeneric6DofSpringConstraint(*mShockAbsorberBodyMount, *mShockAbsorberWheelMount, ta, tb, true);
-	mDW->addConstraint(mShockAbsorber, true);
+	Physics::DynamicsWorld->addConstraint(mShockAbsorber, true);
 
 	mShockAbsorber->setLimit(0,0,0);
 	mShockAbsorber->setLimit(1,0,0);
@@ -462,29 +484,29 @@ float WheelAssembly::Skid()
 
 void WheelAssembly::Destroy()
 {
-	DeleteConstraint(mAxleHingeInner);
-	DeleteConstraint(mAxleHingeOuter);
-	DeleteConstraint(mLowerWishBoneWheelFrontHinge);
-	DeleteConstraint(mUpperWishBoneWheelFrontHinge);
-	DeleteConstraint(mLowerWishBoneBodyFrontHinge);
-	DeleteConstraint(mUpperWishBoneBodyFrontHinge);
-	DeleteConstraint(mLowerWishBoneWheelRearHinge);
-	DeleteConstraint(mUpperWishBoneWheelRearHinge);
-	DeleteConstraint(mLowerWishBoneBodyRearHinge);
-	DeleteConstraint(mUpperWishBoneBodyRearHinge);
-	DeleteConstraint(mShockAbsorberBodyMountHinge);
-	DeleteConstraint(mShockAbsorberWheelMountHinge);
-	DeleteConstraint(mShockAbsorber);
-	DeleteConstraint(mSteeringHingeUpper);
-	DeleteConstraint(mSteeringHingeLower);
+	Physics::DeleteConstraint(mAxleHingeInner);
+	Physics::DeleteConstraint(mAxleHingeOuter);
+	Physics::DeleteConstraint(mLowerWishBoneWheelFrontHinge);
+	Physics::DeleteConstraint(mUpperWishBoneWheelFrontHinge);
+	Physics::DeleteConstraint(mLowerWishBoneBodyFrontHinge);
+	Physics::DeleteConstraint(mUpperWishBoneBodyFrontHinge);
+	Physics::DeleteConstraint(mLowerWishBoneWheelRearHinge);
+	Physics::DeleteConstraint(mUpperWishBoneWheelRearHinge);
+	Physics::DeleteConstraint(mLowerWishBoneBodyRearHinge);
+	Physics::DeleteConstraint(mUpperWishBoneBodyRearHinge);
+	Physics::DeleteConstraint(mShockAbsorberBodyMountHinge);
+	Physics::DeleteConstraint(mShockAbsorberWheelMountHinge);
+	Physics::DeleteConstraint(mShockAbsorber);
+	Physics::DeleteConstraint(mSteeringHingeUpper);
+	Physics::DeleteConstraint(mSteeringHingeLower);
 
-	DeleteRigidBody(mWheel);
-	DeleteRigidBody(mWheelAxle);
-	DeleteRigidBody(mHub);
-	DeleteRigidBody(mLowerWishBone);
-	DeleteRigidBody(mUpperWishBone);
-	DeleteRigidBody(mShockAbsorberBodyMount);
-	DeleteRigidBody(mShockAbsorberWheelMount);
+	Physics::DeleteRigidBody(mWheel);
+	Physics::DeleteRigidBody(mWheelAxle);
+	Physics::DeleteRigidBody(mHub);
+	Physics::DeleteRigidBody(mLowerWishBone);
+	Physics::DeleteRigidBody(mUpperWishBone);
+	Physics::DeleteRigidBody(mShockAbsorberBodyMount);
+	Physics::DeleteRigidBody(mShockAbsorberWheelMount);
 
 	Delete(mHubShape);
 	Delete(mWheelShape);
@@ -516,8 +538,9 @@ void Car::Destroy()
 	{
 		mWheelAssembly[i]->Destroy();
 	}
-	DeleteRigidBody(mBody);
-	Delete(mBody);
+	Physics::DeleteRigidBody(mBody);
+	Delete(mBodyAndEngineShape);
+	Delete(mEngineShape);
 	Delete(mBodyShape);
 }
 

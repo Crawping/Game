@@ -11,9 +11,9 @@ struct aiNode;
 
 BEGIN_PARAMSET(CameraParameters, "Camera")
 
-	PARAM(CameraDistance, 30, 5, 100);
-	PARAM(CameraHeight, 50, -100, 100);
-	PARAM(CameraTargetHeight, 5, -100, 100);
+	PARAM(Distance, 30, 5, 100);
+	PARAM(Height, 50, -100, 100);
+	PARAM(TargetHeight, 5, -100, 100);
 
 END_PARAMSET()
 
@@ -112,6 +112,14 @@ class MyApp : App
 
 	Matrix									mCarOrientation;
 
+	ParameterSetCollection					mAppParameterSets;
+
+	CameraParameters						mCameraParameters;
+	Vec3									mCameraPos;
+	float									mCameraDistance;
+	float									mCameraHeight;
+	float									mCameraTargetHeight;
+
 	Vec3									mPosition;
 	Vec3									mTarget;
 	float									mYaw;
@@ -153,10 +161,6 @@ class MyApp : App
 	PhysicsDebug *							mPhysicsDebug;
 
 	float									mSteering;
-	Vec3									mCameraPos;
-	float									mCameraDistance;
-	float									mCameraHeight;
-	float									mCameraTargetHeight;
 
 	Vec2									mOldMouseDelta;
 	float									mCameraYaw;
@@ -170,18 +174,15 @@ class MyApp : App
 	float									mScrollBarVelocity;
 	int										mNumParameterLines;
 
-	btDefaultCollisionConfiguration *		collisionConfiguration;
-	btCollisionDispatcher *					dispatcher;
-	btBroadphaseInterface *					overlappingPairCache;
-	btSequentialImpulseConstraintSolver *	solver;
-	btDiscreteDynamicsWorld *				dynamicsWorld;
-	btCollisionShape *						groundShape;
-	btRigidBody *							groundRigidBody;
+	btCollisionShape *						mGroundShape;
+	btRigidBody *							mGroundRigidBody;
 
 	btCollisionShape *						mRampShape;
 	btRigidBody *							mRamp;
 
-	btAlignedObjectArray<btCollisionShape*>	collisionShapes;
+	btCollisionShape *						mTestShape[2];
+	btCompoundShape *						mTestCompoundShape;
+	btRigidBody *							mTestBody;
 };
 
 //////////////////////////////////////////////////////////////////////
