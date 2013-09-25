@@ -38,10 +38,10 @@ public:
 		}
 		if(access != null)
 		{
-			int error = _wfopen_s(&mHandle, name, access);
-			if(error != 0)
+			mHandle = _wfopen(name, access);
+			if(!IsValid())
 			{
-				MessageBox(null, Format(TEXT("Error %d opening file %s (%s)"), error, name, access).c_str(), TEXT("File Error"), MB_ICONEXCLAMATION);
+				MessageBox(null, Format(TEXT("Error %d opening file %s (%s)"), errno, name, access).c_str(), TEXT("File Error"), MB_ICONEXCLAMATION);
 			}
 		}
 	}

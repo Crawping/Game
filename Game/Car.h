@@ -16,7 +16,7 @@ BEGIN_PARAMSET(WheelPairParams, "BOGUS")
 	PARAM(WheelLinearDamping,		 0.60f,  0.00f,  5.00f);
 	PARAM(WheelAngularDamping,		 0.50f,  0.00f,  1.00f);
 	PARAM(WheelRestitution,			 0.00f,  0.00f,  1.00f);
-	PARAM(WheelOffsetX,				 2.00f, -4.00f,  4.00f);
+	PARAM(WheelOffsetX,				 2.00f,-10.00f, 10.00f);
 	PARAM(WheelOffsetY,				 5.50f,  2.50f, 10.00f);
 	PARAM(WheelRadius,				 2.50f,  2.00f,  5.00f);
 	PARAM(WheelWidth,				 1.00f,  0.15f,  4.00f);

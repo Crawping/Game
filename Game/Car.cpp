@@ -74,39 +74,45 @@ void Car::Create()
 	Vec3 carSize(mCarParams.bodyLength, mCarParams.bodyWidth, mCarParams.bodyHeight);
 	float bodyMass = mCarParams.bodyMass;
 
-	mBodyShape = new btBoxShape(btVector3(carSize.x / 2, carSize.y / 2, carSize.z / 2));
-	mEngineShape = new btBoxShape(btVector3(mEngineParams.Length, mEngineParams.Width, mEngineParams.Height));
-
-	mBodyAndEngineShape = new btCompoundShape();
-
-	Vec3 ep(carPos + Vec3(mEngineParams.HorizontalOffset, 0, mEngineParams.VerticalOffset));
-
 	btTransform bodyTransform(btQuaternion::getIdentity(), btVector3(carPos.x, carPos.y, carPos.z));
-	btTransform engineTransform(btQuaternion::getIdentity(), btVector3(ep.x, ep.y, ep.z));
 
-	mBodyAndEngineShape->addChildShape(bodyTransform, mBodyShape);
-	mBodyAndEngineShape->addChildShape(engineTransform, mEngineShape);
+	mBodyShape = new btBoxShape(btVector3(carSize.x, carSize.y, carSize.z));
 
-	float engineMass = mEngineParams.Mass;
+#if ENGINE
+	//mEngineShape = new btBoxShape(btVector3(mEngineParams.Length, mEngineParams.Width, mEngineParams.Height));
 
-	float totalMass = engineMass + bodyMass;
+	//mBodyAndEngineShape = new btCompoundShape();
 
-	float md = 1.0f / totalMass;
+	//Vec3 ep(carPos + Vec3(mEngineParams.HorizontalOffset, 0, mEngineParams.VerticalOffset));
 
-	float masses[2] = { bodyMass * md, engineMass * md };
+	//btTransform engineTransform(btQuaternion::getIdentity(), btVector3(ep.x, ep.y, ep.z));
 
-	btTransform shift;
-	shift.setIdentity();
+	//mBodyAndEngineShape->addChildShape(bodyTransform, mBodyShape);
+	//mBodyAndEngineShape->addChildShape(engineTransform, mEngineShape);
 
-	btVector3 localInertia(0,0,0);
+	//float engineMass = mEngineParams.Mass;
 
-	btCompoundShape *newShape = Physics::InitCompoundShape(mBodyAndEngineShape, masses, shift);
-	Delete(mBodyAndEngineShape);
-	mBodyAndEngineShape = newShape;
+	//float totalMass = engineMass + bodyMass;
 
-	mBodyAndEngineShape->calculateLocalInertia(totalMass, localInertia);
+	//float md = 1.0f / totalMass;
 
-	mBody = new btRigidBody(totalMass, new btDefaultMotionState(bodyTransform * shift), mBodyAndEngineShape, localInertia);
+	//float masses[2] = { bodyMass * md, engineMass * md };
+
+	//btTransform shift;
+	//shift.setIdentity();
+
+	//btVector3 localInertia(0,0,0);
+
+	//btCompoundShape *newShape = Physics::InitCompoundShape(mBodyAndEngineShape, masses, shift);
+	//Delete(mBodyAndEngineShape);
+	//mBodyAndEngineShape = newShape;
+
+	//mBodyAndEngineShape->calculateLocalInertia(totalMass, localInertia);
+
+	//mBody = new btRigidBody(totalMass, new btDefaultMotionState(bodyTransform * shift), mBodyAndEngineShape, localInertia);
+#else
+	mBody = new btRigidBody(bodyMass, new btDefaultMotionState(bodyTransform), mBodyShape, Physics::inertia(bodyMass, mBodyShape));
+#endif
 	Physics::DynamicsWorld->addRigidBody(mBody, 4, 1);
 
 	btVector3 cpos = btVector3(carPos.x, carPos.y, carPos.z);
