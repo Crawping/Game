@@ -71,8 +71,8 @@ void Car::Create()
 	Destroy();
 
 	Vec3 carPos(0, 0, 5);
-	Vec3 carSize(mCarParams.bodyLength, mCarParams.bodyWidth, mCarParams.bodyHeight);
-	float bodyMass = mCarParams.bodyMass;
+	Vec3 carSize(mCarParams.Length, mCarParams.Width, mCarParams.Height);
+	float bodyMass = mCarParams.Mass;
 
 	btTransform bodyTransform(btQuaternion::getIdentity(), btVector3(carPos.x, carPos.y, carPos.z));
 
@@ -129,7 +129,7 @@ void Car::Create()
 
 void Car::ApplyParameters()
 {
-	mBody->setMassProps(mCarParams.bodyMass, Physics::inertia(mCarParams.bodyMass, mBodyShape));
+	mBody->setMassProps(mCarParams.Mass, Physics::inertia(mCarParams.Mass, mBodyShape));
 
 	mWheelAssembly[FrontLeft]->ApplyParameters(&mFrontWheelParams);
 	mWheelAssembly[FrontRight]->ApplyParameters(&mFrontWheelParams);
@@ -148,12 +148,12 @@ void WheelAssembly::Create(WheelPairParams *p, btVector3 const &carWorldPos, btV
 	float carWidth = carSize.y();
 	float carHeight = carSize.z();
 
-	Vec3 wheelOffset((carLength - p->WheelOffsetX) * xReflect, (carWidth + p->WheelOffsetY) * -yReflect, 0);
+	Vec3 wheelOffset((carLength - p->Offset_X) * xReflect, (carWidth + p->Offset_Y) * -yReflect, 0);
 	btVector3 wheelPos = btVector3(wheelOffset.x, wheelOffset.y, wheelOffset.z) + carWorldPos;
-	float wheelRadius = p->WheelRadius;
-	float wheelWidth = p->WheelWidth;
-	float wheelMass = p->WheelMass;
-	float wheelFriction = p->WheelFriction;
+	float wheelRadius = p->Radius;
+	float wheelWidth = p->Width;
+	float wheelMass = p->Mass;
+	float wheelFriction = p->Friction;
 	float wheelLinearDamping = p->WheelLinearDamping;
 	float wheelAngularDamping = p->WheelAngularDamping;
 	float wheelRestitution = p->WheelRestitution;
@@ -389,10 +389,10 @@ void WheelAssembly::Create(WheelPairParams *p, btVector3 const &carWorldPos, btV
 
 void WheelAssembly::ApplyParameters(WheelPairParams *p)
 {
-	float wheelRadius = p->WheelRadius;
-	float wheelWidth = p->WheelWidth;
-	float wheelMass = p->WheelMass;
-	float wheelFriction = p->WheelFriction;
+	float wheelRadius = p->Radius;
+	float wheelWidth = p->Width;
+	float wheelMass = p->Mass;
+	float wheelFriction = p->Friction;
 	float wheelLinearDamping = p->WheelLinearDamping;
 	float wheelAngularDamping = p->WheelAngularDamping;
 	float wheelRestitution = p->WheelRestitution;

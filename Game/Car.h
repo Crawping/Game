@@ -11,15 +11,15 @@ class WheelAssembly;
 
 BEGIN_PARAMSET(WheelPairParams, "BOGUS")
 
-	PARAM(WheelMass,				 1.00f,  0.10f, 50.00f);
-	PARAM(WheelFriction,			 1.20f,  0.50f, 16.00f);
+	PARAM(Radius,					 2.50f,  2.00f,  5.00f);
+	PARAM(Width,					 1.00f,  0.15f,  4.00f);
+	PARAM(Mass,						 1.00f,  0.10f, 50.00f);
+	PARAM(Offset_X,					 2.00f,-10.00f, 10.00f);
+	PARAM(Offset_Y,					 5.50f,  2.50f, 10.00f);
+	PARAM(Friction,					 1.20f,  0.50f, 16.00f);
 	PARAM(WheelLinearDamping,		 0.60f,  0.00f,  5.00f);
 	PARAM(WheelAngularDamping,		 0.50f,  0.00f,  1.00f);
 	PARAM(WheelRestitution,			 0.00f,  0.00f,  1.00f);
-	PARAM(WheelOffsetX,				 2.00f,-10.00f, 10.00f);
-	PARAM(WheelOffsetY,				 5.50f,  2.50f, 10.00f);
-	PARAM(WheelRadius,				 2.50f,  2.00f,  5.00f);
-	PARAM(WheelWidth,				 1.00f,  0.15f,  4.00f);
 
 	PARAM(AxleMass,					 4.00f,  1.00f, 50.00f);
 	PARAM(AxleHeight,				 0.25f,  1.00f,  2.00f);
@@ -66,10 +66,10 @@ END_PARAMSET()
 
 BEGIN_PARAMSET(CarParams, "Chassis")
 
-	PARAM(bodyMass, 70, 1, 500);
-	PARAM(bodyLength, 20, 10, 30);
-	PARAM(bodyWidth, 4, 0.5f, 10);
-	PARAM(bodyHeight, 3, 0.5f, 5.0f);
+	PARAM(Mass, 70, 1, 500);
+	PARAM(Length, 20, 10, 30);
+	PARAM(Width, 4, 0.5f, 10);
+	PARAM(Height, 3, 0.5f, 5.0f);
 
 END_PARAMSET()
 
