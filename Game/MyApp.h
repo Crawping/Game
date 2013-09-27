@@ -36,12 +36,6 @@ class MyApp : App
 	void		CreateRamp();
 	void		DeleteRamp();
 
-	uint									mFrame;
-	Timer									mTimer;
-	double									mElapsedTime;
-	float									mDeltaTime;
-	Camera									mCamera;
-
 	enum EditMode : int
 	{
 		Edit = 0,
@@ -58,9 +52,9 @@ class MyApp : App
 
 	enum Axis
 	{
-		X = 0,
-		Y = 1,
-		Z = 2
+		X_Axis = 0,
+		Y_Axis = 1,
+		Z_Axis = 2
 	};
 
 	struct ViewWindow
@@ -106,6 +100,16 @@ class MyApp : App
 
 	void DrawViewWindow(ViewWindow *w);
 
+	Vec4									mCameraPos;
+	Vec4									mPosition;
+	Vec4									mTarget;
+
+	uint									mFrame;
+	Timer									mTimer;
+	double									mElapsedTime;
+	float									mDeltaTime;
+	Camera									mCamera;
+
 	int										mEditMargin;
 	ViewWindow *							mViewWindow[4];
 	ViewWindow *							mActiveViewWindow;
@@ -115,13 +119,10 @@ class MyApp : App
 	ParameterSetCollection					mAppParameterSets;
 
 	CameraParameters						mCameraParameters;
-	Vec3									mCameraPos;
 	float									mCameraDistance;
 	float									mCameraHeight;
 	float									mCameraTargetHeight;
 
-	Vec3									mPosition;
-	Vec3									mTarget;
 	float									mYaw;
 	float									mPitch;
 	float									mRoll;

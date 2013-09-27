@@ -209,17 +209,17 @@ void MyApp::OnInit()
 	int mx = gx + gw; int my = gy + gh;
 	int fx = mx + gw; int fy = my + gh;
 	float aspect = (float)gw/gh;
-	mViewWindow[0] = new ViewWindow(gx, gy, mx, my, Axis::X, Axis::X, Axis::X, Axis::X, false);
-	mViewWindow[1] = new ViewWindow(mx, gy, fx, my, Axis::X, Axis::Z, Axis::Y, Axis::Z, true);
-	mViewWindow[2] = new ViewWindow(gx, my, mx, fy, Axis::Y, Axis::Z, Axis::X, Axis::Z, true, -1.0f);
-	mViewWindow[3] = new ViewWindow(mx, my, fx, fy, Axis::Z, Axis::Y, Axis::X, Axis::Y, true);
+	mViewWindow[0] = new ViewWindow(gx, gy, mx, my, Axis::X_Axis, Axis::X_Axis, Axis::X_Axis, Axis::X_Axis, false);
+	mViewWindow[1] = new ViewWindow(mx, gy, fx, my, Axis::X_Axis, Axis::Z_Axis, Axis::Y_Axis, Axis::Z_Axis, true);
+	mViewWindow[2] = new ViewWindow(gx, my, mx, fy, Axis::Y_Axis, Axis::Z_Axis, Axis::X_Axis, Axis::Z_Axis, true, -1.0f);
+	mViewWindow[3] = new ViewWindow(mx, my, fx, fy, Axis::Z_Axis, Axis::Y_Axis, Axis::X_Axis, Axis::Y_Axis, true);
 
 	mViewWindow[0]->mTargetZoom = 10;
 
 	mCameraYaw = HALF_PI;
 	mCameraPitch = PI + QUARTER_PI;
-	mCameraPos = Vec3(25, 0, 25);
-	mTarget = Vec3(35, 0, 5);
+	mCameraPos = Vec(25, 0, 25);
+	mTarget = Vec(35, 0, 5);
 	mYaw = mPitch = mRoll = 0;
 
 	UpdateCamera();
@@ -261,7 +261,7 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	Vec2 panScale(w->mZoom / gw, w->mZoom / aspect / gh);
 
 	btTransform const &carTransform = mCar->mBody->getWorldTransform();
-	Vec3 carPosition = carTransform.getOrigin();
+	Vec4 carPosition = carTransform.getOrigin().get128();
 
 	bool in = MousePosition.x > l && MousePosition.x < r && MousePosition.y > t && MousePosition.y < b;
 
@@ -313,14 +313,14 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	case Rotate:
 		if(MouseDelta.x != 0 || MouseDelta.y != 0)
 		{
-			Vector v(2.5f, 2.0f, 4.0f);
-			Vector x = Cross(v, Vector(0,0,1));
-			v.Normalize();
-			x.Normalize();
-			mCarOrientation *= TranslationMatrix(Vector(Vec3(carPosition) * -1));
+			Vec4 v = Vec(2.5f, 2.0f, 4.0f);
+			Vec4 x = Cross(v, Vec(0,0,1));
+			v = Normalize(v);
+			x = Normalize(x);
+			mCarOrientation *= TranslationMatrix(carPosition * -1);
 			mCarOrientation *= RotationMatrix(v, MouseDelta.x * 0.01f);
 			mCarOrientation *= RotationMatrix(x, MouseDelta.y * -0.01f);
-			mCarOrientation *= TranslationMatrix(Vector(Vec3(carPosition)));
+			mCarOrientation *= TranslationMatrix(carPosition);
 		}
 		break;
 	}
@@ -331,20 +331,20 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	if(w->mOrtho)
 	{
 		btTransform const &carTransform = mCar->mBody->getWorldTransform();
-		Vec3 carPosition = carTransform.getOrigin();
+		Vec4 carPosition = carTransform.getOrigin().get128();
 		mCamera.CalculateOrthoProjectionMatrix(w->mZoom, w->mZoom / aspect);
 		int y1 = w->mYAxis;
 		int x1 = w->mXAxis;
-		Vec3 xaxis = carTransform.getBasis().getColumn(x1) * w->mPan.x;
-		Vec3 yaxis = carTransform.getBasis().getColumn(y1) * w->mPan.y;
-		carPosition += xaxis + yaxis;
-		Vec3 cameraPos = carPosition + carTransform.getBasis().getColumn(w->mAxis) * w->mFlip * 100;
-		mCamera.CalculateViewMatrix(carPosition, cameraPos, carTransform.getBasis().getColumn(w->mUpAxis));
+		Vec4 xaxis = carTransform.getBasis().getColumn(x1).get128() * w->mPan.x;
+		Vec4 yaxis = carTransform.getBasis().getColumn(y1).get128() * w->mPan.y;
+		carPosition = carPosition + xaxis + yaxis;
+		Vec4 cameraPos = carPosition + carTransform.getBasis().getColumn(w->mAxis).get128() * w->mFlip * 100;
+		mCamera.CalculateViewMatrix(carPosition, cameraPos, carTransform.getBasis().getColumn(w->mUpAxis).get128());
 		mCamera.CalculateViewProjectionMatrix();
 	}
 	else
 	{
-		mCamera.CalculateViewMatrix(Vec3(0, 0, 5), Vec3(2.5f,2,4) * w->mZoom, Vec3(0,0,1));
+		mCamera.CalculateViewMatrix(Vec(0, 0, 5), Vec(2.5f,2,4) * w->mZoom, Vec(0,0,1));
 		mCamera.CalculatePerspectiveProjectionMatrix(0.5f, aspect);
 		mCamera.CalculateViewProjectionMatrix(mCarOrientation);
 		mAxes->Begin();
@@ -1008,28 +1008,28 @@ void MyApp::UpdateCamera()
 		}
 		float len = mCameraDistance;
 
-		Vec3 bcp(cp.x() + cosf(angle) * len, cp.y() + sinf(angle) * len, 0);
+		Vec4 bcp = Vec(cp.x() + cosf(angle) * len, cp.y() + sinf(angle) * len, 0);
 
-		Vec3 diff2 = bcp - mCameraPos;
-		mCameraPos += diff2 * 0.1f;
+		Vec4 diff2 = bcp - mCameraPos;
+		mCameraPos = mCameraPos + diff2 * 0.1f;
 
-		Vec3 car(cp.x(), cp.y(), cp.z());
-		Vec3 diff = car - mCameraPos;
-		float distance = diff.Length();
-		diff.Normalize();
+		Vec4 car = cp.get128();
+		Vec4 diff = car - mCameraPos;
+		float distance = Length(diff);
+		diff = Normalize(diff);
 		diff = diff * (distance - len);
-		mCameraPos += diff * 0.5f;
+		mCameraPos = mCameraPos + diff * 0.5f;
 
 		if(!oldFollow)
 		{
-			mCameraPos = bcp + Vec3(0,0,mCameraHeight);
+			mCameraPos = bcp + Vec(0,0,mCameraHeight);
 		}
-		Vec3 target = car + Vec3(0,0,mCameraTargetHeight);
-		Vec3 pos = mCameraPos + Vec3(0,0,mCameraHeight);
+		Vec4 target = car + Vec(0,0,mCameraTargetHeight);
+		Vec4 pos = mCameraPos + Vec(0,0,mCameraHeight);
 
 		float pitch = atan2f(mCameraTargetHeight - mCameraHeight, distance);
 
-		mCamera.CalculateViewMatrix(target, pos, Vec3(0,0,1));
+		mCamera.CalculateViewMatrix(target, pos, Vec(0,0,1));
 		mCamera.CalculatePerspectiveProjectionMatrix(0.5f, Graphics::FWidth() / Graphics::FHeight());
 		mCamera.CalculateViewProjectionMatrix();
 
@@ -1047,9 +1047,9 @@ void MyApp::UpdateCamera()
 		mCamera.CalculateViewMatrix(mCameraPos, 0, mCameraPitch, mCameraYaw);
 
 		Matrix m = XMMatrixTranspose(mCamera.GetViewMatrix());
-		Vec3 dx(m.r[0]);
-		Vec3 dy(m.r[1]);
-		Vec3 dz(m.r[2]);
+		Vec4 dx(m.r[0]);
+		Vec4 dy(m.r[1]);
+		Vec4 dz(m.r[2]);
 
 		float speed = 0.05f;
 		if(!KeyHeld(VK_SHIFT))
@@ -1059,27 +1059,27 @@ void MyApp::UpdateCamera()
 
 		if(KeyHeld('W'))
 		{
-			mCameraPos += dz * speed;
+			mCameraPos = mCameraPos + dz * speed;
 		}
 		if(KeyHeld('S'))
 		{
-			mCameraPos -= dz * speed;
+			mCameraPos = mCameraPos - dz * speed;
 		}
 		if(KeyHeld('A'))
 		{
-			mCameraPos -= dx * speed;
+			mCameraPos = mCameraPos - dx * speed;
 		}
 		if(KeyHeld('D'))
 		{
-			mCameraPos += dx * speed;
+			mCameraPos = mCameraPos + dx * speed;
 		}
 		if(KeyHeld('R'))
 		{
-			mCameraPos.z += speed;
+			mCameraPos = mCameraPos + Vec(0,0,speed);
 		}
 		if(KeyHeld('F'))
 		{
-			mCameraPos.z -= speed;
+			mCameraPos = mCameraPos - Vec(0,0,speed);
 		}
 		//DebugText(Vec2(50, 50), "Pos: %f,%f,%f\nYaw: %f\nPitch: %f", mCameraPos.x, mCameraPos.y, mCameraPos.z, mCameraYaw, mCameraPitch);
 	}

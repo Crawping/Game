@@ -3,7 +3,7 @@
 		<Parameter Name="Power" Value="20.000000" MinValue="0.500000" MaxValue="20.000000" DefaultValue="1.000000"/>
 		<Parameter Name="Mass" Value="438.262024" MinValue="1.000000" MaxValue="500.000000" DefaultValue="70.000000"/>
 		<Parameter Name="VerticalOffset" Value="-2.180001" MinValue="-5.000000" MaxValue="5.000000" DefaultValue="0.000000"/>
-		<Parameter Name="HorizontalOffset" Value="-4.320000" MinValue="-10.000000" MaxValue="10.000000" DefaultValue="4.000000"/>
+		<Parameter Name="HorizontalOffset" Value="-7.920001" MinValue="-10.000000" MaxValue="10.000000" DefaultValue="4.000000"/>
 		<Parameter Name="Width" Value="1.490000" MinValue="0.500000" MaxValue="5.000000" DefaultValue="2.000000"/>
 		<Parameter Name="Height" Value="0.500000" MinValue="0.500000" MaxValue="5.000000" DefaultValue="2.000000"/>
 		<Parameter Name="Length" Value="5.000000" MinValue="0.500000" MaxValue="5.000000" DefaultValue="2.000000"/>

@@ -38,7 +38,7 @@ public:
 		}
 		if(access != null)
 		{
-			mHandle = _wfopen(name, access);
+			mHandle = _wfsopen(name, access, _SH_DENYWR);
 			if(!IsValid())
 			{
 				MessageBox(null, Format(TEXT("Error %d opening file %s (%s)"), errno, name, access).c_str(), TEXT("File Error"), MB_ICONEXCLAMATION);

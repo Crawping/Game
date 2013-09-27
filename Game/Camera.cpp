@@ -6,31 +6,31 @@
 
 Camera::Camera()
 {
-	CalculateViewMatrix(Vec3(0,0,0), 0, 0, 0);
+	CalculateViewMatrix(Vec(0,0,0), 0, 0, 0);
 	CalculatePerspectiveProjectionMatrix();
 }
 
 //////////////////////////////////////////////////////////////////////
 
-Matrix Camera::ViewMatrix(Vec3 const &target, Vec3 const &position, Vec3 const &up)
+Matrix Camera::ViewMatrix(Vec4 target, Vec4 position, Vec4 up)
 {
-	Vec3 zaxis((target - position).Normalize());
-	Vec3 xaxis(Cross(up, zaxis).Normalize());
-	Vec3 yaxis(Cross(zaxis, xaxis));
-	Vec3 trans(-Dot(xaxis, position), -Dot(yaxis, position), -Dot(zaxis, position));
+	Vec4 zaxis = Normalize(target - position);
+	Vec4 xaxis = Normalize(Cross(up, zaxis));
+	Vec4 yaxis = Cross(zaxis, xaxis);
+	Vec4 trans = Vec(-Dot(xaxis, position), -Dot(yaxis, position), -Dot(zaxis, position), 1);
 
-	return Matrix(	xaxis.x,	yaxis.x,	zaxis.x,	0,
-					xaxis.y,	yaxis.y,	zaxis.y,	0,
-					xaxis.z,	yaxis.z,	zaxis.z,	0,
-					trans.x,	trans.y,	trans.z,	1);
+	return Matrix(	X(xaxis),	X(yaxis),	X(zaxis),	0,
+					Y(xaxis),	Y(yaxis),	Y(zaxis),	0,
+					Z(xaxis),	Z(yaxis),	Z(zaxis),	0,
+					X(trans),	Y(trans),	Z(trans),	1);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-Matrix Camera::ViewMatrix(Vec3 const &position, float yaw, float pitch, float roll)
+Matrix Camera::ViewMatrix(Vec4 position, float yaw, float pitch, float roll)
 {
 	Matrix m = DirectX::XMMatrixIdentity();
-	m.r[3] = Vector(-position.x, -position.y, -position.z, 1.0f);
+	m.r[3] = Vec(-X(position), -Y(position), -Z(position), 1.0f);
 	m *= DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
 	return m;
 }
@@ -80,14 +80,14 @@ Matrix Camera::OrthoProjection2D(int width, int height)
 
 //////////////////////////////////////////////////////////////////////
 
-void Camera::CalculateViewMatrix(Vec3 const &target, Vec3 const &position, Vec3 const &up)
+void Camera::CalculateViewMatrix(Vec4 target, Vec4 position, Vec4 up)
 {
 	mViewMatrix = ViewMatrix(target, position, up);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-void Camera::CalculateViewMatrix(Vec3 const &position, float yaw, float pitch, float roll)
+void Camera::CalculateViewMatrix(Vec4 position, float yaw, float pitch, float roll)
 {
 	mViewMatrix = ViewMatrix(position, yaw, pitch, roll);
 }
