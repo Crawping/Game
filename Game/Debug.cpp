@@ -108,7 +108,7 @@ void DebugText(Vec2 const &pos, char const *text, ...)
 
 //////////////////////////////////////////////////////////////////////
 
-void DebugText(Vec3 const &pos, char const *text, ...)
+void DebugText(Vec4 const &pos, char const *text, ...)
 {
 	DebugBeginFrame();
 	char buffer[1024];
@@ -116,7 +116,7 @@ void DebugText(Vec3 const &pos, char const *text, ...)
 	va_start(v, text);
 	_vsnprintf_s(buffer, ARRAYSIZE(buffer), text, v);
 	Vec2 screenPos;
-	DirectX::XMVECTOR vp = DirectX::XMVectorSet(pos.x, pos.y, pos.z, 1.0f);
+	DirectX::XMVECTOR vp(pos);
 	DirectX::XMVECTOR sp = DirectX::XMVector3TransformCoord(vp, mCamera->GetTransformMatrix());
 	float z = DirectX::XMVectorGetZ(sp);
 	if(z < 1 && z > 0)
@@ -129,7 +129,7 @@ void DebugText(Vec3 const &pos, char const *text, ...)
 
 //////////////////////////////////////////////////////////////////////
 
-void DebugLine(Vec3 const &start, Vec3 const &end, Color color)
+void DebugLine(Vec4 const &start, Vec4 const &end, Color color)
 {
 }
 

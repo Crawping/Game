@@ -14,8 +14,8 @@ Matrix IdentityMatrix(1,0,0,0,
 
 //////////////////////////////////////////////////////////////////////
 
-Vec3 GetYawPitchRollFromMatrix(Matrix const &m)
+Vec4 GetYawPitchRollFromMatrix(Matrix const &m)
 {
 	MatrixArray &a = (MatrixArray &)*(&m);
-	return Vec3( asinf(a[1][0]), atan2f(-a[1][2], a[1][1]), atan2f(-a[2][0], a[0][0]) );
+	return Vec( asinf(a[1][0]), atan2f(-a[1][2], a[1][1]), atan2f(-a[2][0], a[0][0]) );
 }

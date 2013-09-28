@@ -4,7 +4,7 @@
 
 //////////////////////////////////////////////////////////////////////
 
-class App
+ALIGN(16) class App
 {
 public:
 
@@ -50,5 +50,7 @@ protected:
 
 	App();
 	~App();
+	
+	uint32 pad[3];	// +1 for the vtable
 
 };

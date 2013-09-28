@@ -28,7 +28,7 @@ typedef std::basic_string<TCHAR> tstring;
 
 //////////////////////////////////////////////////////////////////////
 
-#define ALIGN(X)	__declspec(align(X))
+#define ALIGN(GetX)	__declspec(align(GetX))
 
 #define null nullptr
 

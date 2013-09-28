@@ -42,4 +42,4 @@ inline Matrix TranslationMatrix(Vec4 translation)
 
 //////////////////////////////////////////////////////////////////////
 
-Vec3 GetYawPitchRollFromMatrix(Matrix const &m);
+Vec4 GetYawPitchRollFromMatrix(Matrix const &m);

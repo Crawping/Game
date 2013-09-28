@@ -50,11 +50,11 @@ void PhysicsDebug::End()
 void PhysicsDebug::drawLine(const btVector3& from,const btVector3& to,const btVector3& color)
 {
 	mIC->BeginVertex();
-	mIC->SetPosition3(Vec3(from.x(), from.y(), from.z()));
+	mIC->SetPosition3(from.get128());
 	mIC->SetColor(FromRGBf(color.x(), color.y(), color.z()));
 	mIC->EndVertex();
 	mIC->BeginVertex();
-	mIC->SetPosition3(Vec3(to.x(), to.y(), to.z()));
+	mIC->SetPosition3(to.get128());
 	mIC->SetColor(FromRGBf(color.x(), color.y(), color.z()));
 	mIC->EndVertex();
 }

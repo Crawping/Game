@@ -281,10 +281,22 @@ void ImmediateContext::BeginVertex()
 
 //////////////////////////////////////////////////////////////////////
 
-void ImmediateContext::SetPosition3(Vec3 const &pos)
+void ImmediateContext::SetPosition3(float x, float y, float z)
 {
-	*reinterpret_cast<Vec3 *>(mVertexBufferPointer) = pos;
-	mVertexBufferPointer += sizeof(Vec3);
+	Vec3Floats &p = *reinterpret_cast<Vec3Floats *>(mVertexBufferPointer);
+	p.x = x;
+	p.y = y;
+	p.z = z;
+	mVertexBufferPointer += sizeof(Vec3Floats);
+	assert(mVertexBufferPointer < mVertexBufferEnd);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void ImmediateContext::SetPosition3(Vec4 pos)
+{
+	*reinterpret_cast<Vec3Floats *>(mVertexBufferPointer) = *reinterpret_cast<Vec3Floats *>(&pos);
+	mVertexBufferPointer += sizeof(Vec3Floats);
 	assert(mVertexBufferPointer < mVertexBufferEnd);
 }
 
@@ -293,6 +305,24 @@ void ImmediateContext::SetPosition3(Vec3 const &pos)
 void ImmediateContext::SetPosition2(Vec2 const &pos)
 {
 	*reinterpret_cast<Vec2 *>(mVertexBufferPointer) = pos;
+	mVertexBufferPointer += sizeof(Vec2);
+	assert(mVertexBufferPointer < mVertexBufferEnd);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void ImmediateContext::SetPosition2(float x, float y)
+{
+	*reinterpret_cast<Vec2 *>(mVertexBufferPointer) = Vec2(x, y);
+	mVertexBufferPointer += sizeof(Vec2);
+	assert(mVertexBufferPointer < mVertexBufferEnd);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void ImmediateContext::SetTexCoord(float u, float v)
+{
+	*reinterpret_cast<Vec2 *>(mVertexBufferPointer) = Vec2(u, v);
 	mVertexBufferPointer += sizeof(Vec2);
 	assert(mVertexBufferPointer < mVertexBufferEnd);
 }
@@ -308,10 +338,25 @@ void ImmediateContext::SetTexCoord(Vec2 const &uv)
 
 //////////////////////////////////////////////////////////////////////
 
-void ImmediateContext::SetNormal(Vec3 const &normal)
+void ImmediateContext::SetNormal(float x, float y, float z)
 {
-	*reinterpret_cast<Vec3 *>(mVertexBufferPointer) = normal;
-	mVertexBufferPointer += sizeof(Vec3);
+	Vec3Floats &p = *reinterpret_cast<Vec3Floats *>(mVertexBufferPointer);
+	p.x = x;
+	p.y = y;
+	p.z = z;
+	mVertexBufferPointer += sizeof(Vec3Floats);
+	assert(mVertexBufferPointer < mVertexBufferEnd);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void ImmediateContext::SetNormal(Vec4 normal)
+{
+	Vec3Floats &p = *reinterpret_cast<Vec3Floats *>(mVertexBufferPointer);
+	p.x = GetX(normal);
+	p.y = GetY(normal);
+	p.z = GetZ(normal);
+	mVertexBufferPointer += sizeof(Vec3Floats);
 	assert(mVertexBufferPointer < mVertexBufferEnd);
 }
 

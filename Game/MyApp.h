@@ -104,6 +104,8 @@ class MyApp : App
 	Vec4									mPosition;
 	Vec4									mTarget;
 
+	Matrix									mCarOrientation;
+
 	uint									mFrame;
 	Timer									mTimer;
 	double									mElapsedTime;
@@ -113,8 +115,6 @@ class MyApp : App
 	int										mEditMargin;
 	ViewWindow *							mViewWindow[4];
 	ViewWindow *							mActiveViewWindow;
-
-	Matrix									mCarOrientation;
 
 	ParameterSetCollection					mAppParameterSets;
 

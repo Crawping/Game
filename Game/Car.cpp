@@ -70,13 +70,13 @@ void Car::Create()
 {
 	Destroy();
 
-	Vec3 carPos(0, 0, 5);
-	Vec3 carSize(mCarParams.Length, mCarParams.Width, mCarParams.Height);
+	Vec4 carPos = Vec(0, 0, 5);
+	Vec4 carSize = Vec(mCarParams.Length, mCarParams.Width, mCarParams.Height);
 	float bodyMass = mCarParams.Mass;
 
-	btTransform bodyTransform(btQuaternion::getIdentity(), btVector3(carPos.x, carPos.y, carPos.z));
+	btTransform bodyTransform(btQuaternion::getIdentity(), carPos);
 
-	mBodyShape = new btBoxShape(btVector3(carSize.x, carSize.y, carSize.z));
+	mBodyShape = new btBoxShape(carSize);
 
 #if ENGINE
 	//mEngineShape = new btBoxShape(btVector3(mEngineParams.Length, mEngineParams.Width, mEngineParams.Height));
@@ -115,8 +115,8 @@ void Car::Create()
 #endif
 	Physics::DynamicsWorld->addRigidBody(mBody, 4, 1);
 
-	btVector3 cpos = btVector3(carPos.x, carPos.y, carPos.z);
-	btVector3 csize = btVector3(carSize.x, carSize.y, carSize.z);
+	btVector3 cpos = carPos;
+	btVector3 csize = carSize;
 
 	mWheelAssembly[FrontLeft]->Create(&mFrontWheelParams, cpos, csize);
 	mWheelAssembly[FrontRight]->Create(&mFrontWheelParams, cpos, csize);
@@ -148,8 +148,8 @@ void WheelAssembly::Create(WheelPairParams *p, btVector3 const &carWorldPos, btV
 	float carWidth = carSize.y();
 	float carHeight = carSize.z();
 
-	Vec3 wheelOffset((carLength - p->Offset_X) * xReflect, (carWidth + p->Offset_Y) * -yReflect, 0);
-	btVector3 wheelPos = btVector3(wheelOffset.x, wheelOffset.y, wheelOffset.z) + carWorldPos;
+	Vec4 wheelOffset = Vec((carLength - p->Offset_X) * xReflect, (carWidth + p->Offset_Y) * -yReflect, 0);
+	btVector3 wheelPos = wheelOffset + carWorldPos;
 	float wheelRadius = p->Radius;
 	float wheelWidth = p->Width;
 	float wheelMass = p->Mass;

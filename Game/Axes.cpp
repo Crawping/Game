@@ -39,37 +39,44 @@ void Axes::End()
 
 //////////////////////////////////////////////////////////////////////
 
-void Axes::Draw(Camera &camera, Vec3 const &origin, Vec3 const &extents, Color x, Color y, Color z)
+void Axes::Draw(Camera &camera, Vec4 origin, Vec4 extents, Color x, Color y, Color z)
 {
-	Vec3 e = extents + origin;
+	Vec4 e = extents + origin;
+	float ex = GetX(e);
+	float ey = GetY(e);
+	float ez = GetZ(e);
 	BeginLines(camera);
-	mIC->BeginVertex();	mIC->SetPosition3(Vec3(-e.x,0,0));	mIC->SetColor(x);	mIC->EndVertex();
-	mIC->BeginVertex();	mIC->SetPosition3(Vec3(e.x,0,0));	mIC->SetColor(x);	mIC->EndVertex();
-	mIC->BeginVertex();	mIC->SetPosition3(Vec3(0,-e.y,0));	mIC->SetColor(y);	mIC->EndVertex();
-	mIC->BeginVertex();	mIC->SetPosition3(Vec3(0,e.y,0));	mIC->SetColor(y);	mIC->EndVertex();
-	mIC->BeginVertex();	mIC->SetPosition3(Vec3(0,0,-e.z));	mIC->SetColor(z);	mIC->EndVertex();
-	mIC->BeginVertex();	mIC->SetPosition3(Vec3(0,0,e.z));	mIC->SetColor(z);	mIC->EndVertex();
+	mIC->BeginVertex();	mIC->SetPosition3(Vec(-ex,0,0));	mIC->SetColor(x);	mIC->EndVertex();
+	mIC->BeginVertex();	mIC->SetPosition3(Vec(ex,0,0));		mIC->SetColor(x);	mIC->EndVertex();
+	mIC->BeginVertex();	mIC->SetPosition3(Vec(0,-ey,0));	mIC->SetColor(y);	mIC->EndVertex();
+	mIC->BeginVertex();	mIC->SetPosition3(Vec(0,ey,0));		mIC->SetColor(y);	mIC->EndVertex();
+	mIC->BeginVertex();	mIC->SetPosition3(Vec(0,0,-ez));	mIC->SetColor(z);	mIC->EndVertex();
+	mIC->BeginVertex();	mIC->SetPosition3(Vec(0,0,ez));		mIC->SetColor(z);	mIC->EndVertex();
 	EndLines();
 }
 
 //////////////////////////////////////////////////////////////////////
 
-void Axes::DrawGrid(Camera &camera, Vec3 const &origin, Vec3 const &extents, int step, Color color)
+void Axes::DrawGrid(Camera &camera, Vec4 origin, Vec4 extents, int step, Color color)
 {
-	Vec3 e = extents;
-	Vec3 d = e / (float)step;
-	e += origin;
+	float x = GetX(extents);
+	float y = GetY(extents);
+	float ex = x + GetX(origin);
+	float ey = y + GetY(origin);
+	float ez = GetZ(origin);
+	float dx = x / (float)step;
+	float dy = y / (float)step;
 	BeginLines(camera);
 	for(int i=-step; i<=step; ++i)
 	{
-		float x1 = i * d.x;
-		float y1 = i * d.y;
-		float x2 = i * d.x;
-		float y2 = i * d.y;
-		mIC->BeginVertex();	mIC->SetPosition3(Vec3(-e.x,y1,0));	mIC->SetColor(color);	mIC->EndVertex();
-		mIC->BeginVertex();	mIC->SetPosition3(Vec3( e.x,y1,0));	mIC->SetColor(color);	mIC->EndVertex();
-		mIC->BeginVertex();	mIC->SetPosition3(Vec3(x1,-e.y,0));	mIC->SetColor(color);	mIC->EndVertex();
-		mIC->BeginVertex();	mIC->SetPosition3(Vec3(x1, e.y,0));	mIC->SetColor(color);	mIC->EndVertex();
+		float x1 = i * dx;
+		float y1 = i * dy;
+		float x2 = i * dx;
+		float y2 = i * dy;
+		mIC->BeginVertex();	mIC->SetPosition3(-ex,y1,ez);	mIC->SetColor(color);	mIC->EndVertex();
+		mIC->BeginVertex();	mIC->SetPosition3( ex,y1,ez);	mIC->SetColor(color);	mIC->EndVertex();
+		mIC->BeginVertex();	mIC->SetPosition3(x1,-ey,ez);	mIC->SetColor(color);	mIC->EndVertex();
+		mIC->BeginVertex();	mIC->SetPosition3(x1, ey,ez);	mIC->SetColor(color);	mIC->EndVertex();
 	}
 	EndLines();
 }
@@ -86,7 +93,7 @@ void Axes::BeginLines(Camera &camera)
 
 //////////////////////////////////////////////////////////////////////
 
-void Axes::DrawLine(Vec3 const &a, Vec3 const &b, Color ca, Color cb)
+void Axes::DrawLine(Vec4 a, Vec4 b, Color ca, Color cb)
 {
 	mIC->BeginVertex();	mIC->SetPosition3(a);	mIC->SetColor(ca);	mIC->EndVertex();
 	mIC->BeginVertex();	mIC->SetPosition3(b);	mIC->SetColor(cb);	mIC->EndVertex();

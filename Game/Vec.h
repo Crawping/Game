@@ -4,13 +4,11 @@
 
 //////////////////////////////////////////////////////////////////////
 
-#include "Vec2.h"
-
-//////////////////////////////////////////////////////////////////////
-
-struct Vec3;
+class btVector3;
 
 typedef __m128 Vec4;
+
+//////////////////////////////////////////////////////////////////////
 
 __declspec(align(16)) struct Vec4i
 {
@@ -28,39 +26,140 @@ __declspec(align(16)) struct Vec4i
 
 extern const __declspec(selectany) Vec4i gMMaskXYZ = { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 };
 
+//////////////////////////////////////////////////////////////////////
+
 #define Permute(d, c, b, a, v) _mm_shuffle_ps(v, v, ((d) << 6) | ((c) << 4) | ((b) << 2) | (a))
 #define Permute2(d, c, b, a, v1, v2) _mm_shuffle_ps(v1, v2, ((d) << 6) | ((c) << 4) | ((b) << 2) | (a))
 
+//////////////////////////////////////////////////////////////////////
 
 inline Vec4 Vec(float x, float y, float z)
 {
 	return _mm_set_ps(0.0f, z, y, x);
 }
 
+//////////////////////////////////////////////////////////////////////
+
 inline Vec4 Vec(float x, float y, float z, float w)
 {
 	return _mm_set_ps(w, z, y, x);
 }
 
-inline float X(Vec4 m)
+//////////////////////////////////////////////////////////////////////
+
+inline Vec4 X3(Vec4 a, Vec4 b, Vec4 c)
+{
+	Vec4 xy = Permute2(0,0,0,0, a, b);
+	Vec4 zw = Permute2(3,3,0,0, c, c);
+	Vec4 r = Permute2(2,0,2,0, xy,zw);
+	return r;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vec4 Y3(Vec4 a, Vec4 b, Vec4 c)
+{
+	Vec4 xy = Permute2(1,1,1,1, a, b);
+	Vec4 zw = Permute2(3,3,1,1, c, c);
+	Vec4 r = Permute2(2,0,2,0, xy,zw);
+	return r;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vec4 Z3(Vec4 a, Vec4 b, Vec4 c)
+{
+	Vec4 xy = Permute2(2,2,2,2, a, b);
+	Vec4 zw = Permute2(3,3,2,2, c, c);
+	Vec4 r = Permute2(2,0,2,0, xy,zw);
+	return r;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vec4 GetXYZ(Vec4 x, Vec4 y, Vec4 z)
+{
+	Vec4 t = _mm_setzero_ps();
+	Vec4 xy = Permute2(1,1,0,0, x, y);
+	Vec4 zw = Permute2(3,3,2,2, z, t);
+	Vec4 r = Permute2(2,0,2,0, xy,zw);
+	return r;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vec4 SetX(Vec4 a, float x)
+{
+	Vec4 r = _mm_set_ss(x);
+	return _mm_move_ss(a, r);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vec4 SetY(Vec4 a, float y)
+{
+	Vec4 r = Permute(3,2,0,1, a);
+	Vec4 t = _mm_set_ss(y);
+	r = _mm_move_ss(r, t);
+	return Permute(3,2,0,1, r);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vec4 SetZ(Vec4 a, float z)
+{
+	Vec4 r = Permute(3,0,1,2, a);
+	Vec4 t = _mm_set_ss(z);
+	r = _mm_move_ss(r, t);
+	return Permute(3,0,1,2, r);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vec4 SetW(Vec4 a, float w)
+{
+	Vec4 r = Permute(0,2,1,3, a);
+	Vec4 t = _mm_set_ss(w);
+	r = _mm_move_ss(r, t);
+	return Permute(0,2,1,3, r);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline float GetX(Vec4 m)
 {
 	return _mm_cvtss_f32(m);
 }
 
-inline float Y(Vec4 m)
+//////////////////////////////////////////////////////////////////////
+
+inline float GetY(Vec4 m)
 {
 	return _mm_cvtss_f32(Permute(1,1,1,1, m));
 }
 
-inline float Z(Vec4 m)
+//////////////////////////////////////////////////////////////////////
+
+inline float GetZ(Vec4 m)
 {
 	return _mm_cvtss_f32(Permute(2,2,2,2, m));
 }
 
-inline float W(Vec4 m)
+//////////////////////////////////////////////////////////////////////
+
+inline float GetW(Vec4 m)
 {
 	return _mm_cvtss_f32(Permute(3,3,3,3, m));
 }
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vec4 Negate(Vec4 v)
+{
+	return _mm_sub_ps(_mm_setzero_ps(), v);
+}
+
+//////////////////////////////////////////////////////////////////////
 
 inline float Dot(Vec4 a, Vec4 b)
 {
@@ -69,13 +168,17 @@ inline float Dot(Vec4 a, Vec4 b)
 	dot = _mm_add_ss(dot, temp);
 	temp = Permute(1,1,1,1, temp);
 	dot = _mm_add_ss(dot, temp);
-	return X(dot);
+	return GetX(dot);
 }
+
+//////////////////////////////////////////////////////////////////////
 
 inline float LengthSquared(Vec4 m)
 {
 	return Dot(m, m);
 }
+
+//////////////////////////////////////////////////////////////////////
 
 inline float Length(Vec4 m)
 {
@@ -85,8 +188,10 @@ inline float Length(Vec4 m)
 	vTemp = Permute(1,1,1,1, vTemp);
 	vLengthSq = _mm_add_ss(vLengthSq,vTemp);
 	vLengthSq = Permute(0,0,0,0, vLengthSq);
-	return X(_mm_sqrt_ps(vLengthSq));
+	return GetX(_mm_sqrt_ps(vLengthSq));
 }
+
+//////////////////////////////////////////////////////////////////////
 
 inline Vec4 Normalize(Vec4 m)
 {
@@ -98,6 +203,8 @@ inline Vec4 Normalize(Vec4 m)
 	vLengthSq = Permute(0,0,0,0, vLengthSq);
 	return _mm_div_ps(m,_mm_sqrt_ps(vLengthSq));
 }
+
+//////////////////////////////////////////////////////////////////////
 
 inline Vec4 Cross(Vec4 a, Vec4 b)
 {
@@ -112,6 +219,9 @@ inline Vec4 Cross(Vec4 a, Vec4 b)
 }
 
 //////////////////////////////////////////////////////////////////////
+
+// Hmmm - bullet defines conflicting functions
+#if !defined (BT_USE_SSE_IN_API)
 
 inline Vec4 operator + (Vec4 a, Vec4 b)
 {
@@ -131,6 +241,7 @@ inline Vec4 operator * (Vec4 a, Vec4 b)
 {
 	return _mm_mul_ps(a, b);
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////
 
@@ -155,7 +266,7 @@ inline Vec4 operator / (Vec4 a, float b)
 
 //////////////////////////////////////////////////////////////////////
 
-struct Vec3
+struct Vec3Floats
 {
 	float x;
 	float y;
@@ -163,125 +274,17 @@ struct Vec3
 
 	//////////////////////////////////////////////////////////////////////
 
-	Vec3()
+	Vec3Floats()
 	{
 	}
 
 	//////////////////////////////////////////////////////////////////////
 
-	Vec3(float _x, float _y, float _z)
+	Vec3Floats(float _x, float _y, float _z)
 		: x(_x)
 		, y(_y)
 		, z(_z)
 
 	{
 	}
-
-	//////////////////////////////////////////////////////////////////////
-
-	Vec3(btVector3 const &bt)
-		: x(bt.x())
-		, y(bt.y())
-		, z(bt.z())
-	{
-	}
-
-	//////////////////////////////////////////////////////////////////////
-
-	float LengthSquared() const throw()
-	{
-		return x * x + y * y + z * z;
-	}
-
-	//////////////////////////////////////////////////////////////////////
-
-	float Length() const throw()
-	{
-		return sqrtf(LengthSquared());
-	}
-
-	//////////////////////////////////////////////////////////////////////
-
-	Vec3 &Normalize() throw()
-	{
-		float l = 1.0f / Length();
-		x *= l;
-		y *= l;
-		z *= l;
-		return *this;
-	}
 };
-
-//////////////////////////////////////////////////////////////////////
-
-inline Vec3 operator - (Vec3 const &a)
-{
-	return Vec3(-a.x, -a.y, -a.z);
-}
-
-//////////////////////////////////////////////////////////////////////
-
-inline Vec3 operator - (Vec3 const &a, Vec3 const &b)
-{
-	return Vec3(a.x - b.x, a.y - b.y, a.z - b.z);
-}
-
-//////////////////////////////////////////////////////////////////////
-
-inline Vec3 operator + (Vec3 const &a, Vec3 const &b)
-{
-	return Vec3(a.x + b.x, a.y + b.y, a.z + b.z);
-}
-
-//////////////////////////////////////////////////////////////////////
-
-inline Vec3 &operator += (Vec3 &a, Vec3 const &b)
-{
-	a.x += b.x;
-	a.y += b.y;
-	a.z += b.z;
-	return a;
-}
-
-//////////////////////////////////////////////////////////////////////
-
-inline Vec3 &operator -= (Vec3 &a, Vec3 const &b)
-{
-	a.x -= b.x;
-	a.y -= b.y;
-	a.z -= b.z;
-	return a;
-}
-
-//////////////////////////////////////////////////////////////////////
-
-inline Vec3 operator * (Vec3 const &a, float b)
-{
-	return Vec3(a.x * b, a.y * b, a.z * b);
-}
-
-//////////////////////////////////////////////////////////////////////
-
-inline Vec3 operator / (Vec3 const &a, float b)
-{
-	return Vec3(a.x / b, a.y / b, a.z / b);
-}
-
-//////////////////////////////////////////////////////////////////////
-
-inline float Dot(Vec3 const &a, Vec3 const &b)
-{
-	return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-
-//////////////////////////////////////////////////////////////////////
-
-inline Vec3 Cross3(Vec3 const &a, Vec3 const &b)
-{
-	return Vec3(a.y * b.z - a.z * b.y,
-				a.z * b.x - a.x * b.z,
-				a.x * b.y - a.y * b.x);
-}
-
-//////////////////////////////////////////////////////////////////////
-

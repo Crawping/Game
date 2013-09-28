@@ -26,7 +26,7 @@ MyApp app;
 
 struct Vert
 {
-	Vec3	mPosition;
+	Vec3Floats	mPosition;
 	Vec2	mTexCoord;
 	Color	mColor;
 };
@@ -37,7 +37,7 @@ struct Vert
 #pragma push_macro("V2")
 #define N 0.5f
 #define C 0xffffffff	// ABGR
-#define V3 Vec3
+#define V3 Vec3Floats
 #define V2 Vec2
 
 Vert verts[36] =
@@ -82,6 +82,12 @@ vector<uint16>	index;
 
 void MyApp::OnInit()
 {
+	Vec4 x = Vec(1,0,0);
+	Vec4 y = Vec(0,2,0);
+	Vec4 z = Vec(0,0,3);
+	Vec4 r = GetXYZ(x, y, z);
+	TRACE("%f,%f,%f,%f\n", GetX(r), GetY(r), GetZ(r), GetW(r));
+
 	//scene = assimporter.ReadFile("data\\cube.dae", 0);
 	//DumpNode(scene, scene->mRootNode, 0);
 
@@ -105,7 +111,7 @@ void MyApp::OnInit()
 		float x = sinf(r);
 		float y = cosf(r);
 		Vert v;
-		v.mPosition = Vec3(x * 0.5f, 0.5f, y * 0.5f);
+		v.mPosition = Vec3Floats(x * 0.5f, 0.5f, y * 0.5f);
 		v.mTexCoord = Vec2(x * 0.5f + 0.5f, y * 0.5f + 0.5f);
 		v.mColor = FromRGBA(255, 255, 255, 255);
 		vertex[i] = v;
@@ -120,7 +126,7 @@ void MyApp::OnInit()
 		float x = sinf(r);
 		float y = cosf(r);
 		Vert v;
-		v.mPosition = Vec3(x * 0.5f, 0.5f, y * 0.5f);
+		v.mPosition = Vec3Floats(x * 0.5f, 0.5f, y * 0.5f);
 		v.mTexCoord = Vec2(x * 0.5f + 0.5f, y * 0.5f + 0.5f);
 		v.mColor = FromRGBA(255, 255, 255, 255);
 		v.mTexCoord.x = (float)i / step;
@@ -348,8 +354,8 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 		mCamera.CalculatePerspectiveProjectionMatrix(0.5f, aspect);
 		mCamera.CalculateViewProjectionMatrix(mCarOrientation);
 		mAxes->Begin();
-		mAxes->DrawGrid(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 0), 100, 0x80ffffff);
-		mAxes->Draw(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
+		mAxes->DrawGrid(mCamera, Vec(0,0,0), Vec(1000, 1000, 0), 100, 0x80ffffff);
+		mAxes->Draw(mCamera, Vec(0,0,0), Vec(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
 		mAxes->End();
 	}
 	DrawPhysics();
@@ -425,8 +431,8 @@ bool MyApp::OnUpdate()
 			UpdateCamera();
 
 			mAxes->Begin();
-			mAxes->DrawGrid(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 0), 100, 0x80ffffff);
-			mAxes->Draw(mCamera, Vec3(0,0,0), Vec3(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
+			mAxes->DrawGrid(mCamera, Vec(0,0,0), Vec(1000, 1000, 0), 100, 0x80ffffff);
+			mAxes->Draw(mCamera, Vec(0,0,0), Vec(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
 			mAxes->End();
 
 			DrawPhysics();
@@ -1048,7 +1054,7 @@ void MyApp::UpdateCamera()
 
 		Matrix m = XMMatrixTranspose(mCamera.GetViewMatrix());
 		Vec4 dx(m.r[0]);
-		Vec4 dy(m.r[1]);
+//		Vec4 dy(m.r[1]);
 		Vec4 dz(m.r[2]);
 
 		float speed = 0.05f;
@@ -1203,7 +1209,7 @@ void MyApp::DrawNode(aiScene const *scene, aiNode const *node)
 					{
 						int x = face->mIndices[i];	// get group index for current index
 						mImmediateContext->BeginVertex();
-						mImmediateContext->SetPosition3(Vec3(mesh->mVertices[x].x, mesh->mVertices[x].y, mesh->mVertices[x].z));
+						mImmediateContext->SetPosition3(Vec(mesh->mVertices[x].x, mesh->mVertices[x].y, mesh->mVertices[x].z));
 						if(mesh->HasTextureCoords(0))
 						{
 							aiVector3D *v = &mesh->mTextureCoords[0][x];

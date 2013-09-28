@@ -22,11 +22,21 @@ public:
 	void BeginLines();
 	void BeginLineStrip();
 	void BeginVertex();
+
+	void SetPosition2(float x, float y);	// they get stuffed into the vertex buffer in the order they're set.... (for now)
 	void SetPosition2(Vec2 const &pos);		// they get stuffed into the vertex buffer in the order they're set.... (for now)
-	void SetPosition3(Vec3 const &pos);
+
+	void SetPosition3(float x, float y, float z);
+	void SetPosition3(Vec4 pos);
+
+	void SetTexCoord(float u, float v);
 	void SetTexCoord(Vec2 const &uv);
-	void SetNormal(Vec3 const &normal);
+
+	void SetNormal(float x, float y, float z);
+	void SetNormal(Vec4 normal);
+
 	void SetColor(Color color);
+
 	void EndVertex();
 	void EndStrip();
 	void EndTriangles();

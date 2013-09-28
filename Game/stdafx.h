@@ -66,6 +66,7 @@
 #include "File.h"
 #include "UTF8.h"
 #include "ParameterSet.h"
+#include "Vec2.h"
 #include "Vec.h"
 #include "Point.h"
 #include "Size.h"
