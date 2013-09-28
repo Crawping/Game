@@ -33,40 +33,40 @@ extern const __declspec(selectany) Vec4i gMMaskXYZ = { 0xFFFFFFFF, 0xFFFFFFFF, 0
 
 //////////////////////////////////////////////////////////////////////
 
-Vec4 Vec(float x, float y, float z);
-Vec4 Vec(float x, float y, float z, float w);
-Vec4 GetX3(Vec4 a, Vec4 b, Vec4 c);
-Vec4 GetY3(Vec4 a, Vec4 b, Vec4 c);
-Vec4 GetZ3(Vec4 a, Vec4 b, Vec4 c);
-Vec4 GetXYZ(Vec4 x, Vec4 y, Vec4 z);
-Vec4 SetX(Vec4 a, float x);
-Vec4 SetY(Vec4 a, float y);
-Vec4 SetZ(Vec4 a, float z);
-Vec4 SetW(Vec4 a, float w);
-float GetX(Vec4 m);
-float GetY(Vec4 m);
-float GetZ(Vec4 m);
-float GetW(Vec4 m);
-Vec4 Negate(Vec4 v);
-float Dot(Vec4 a, Vec4 b);
-float LengthSquared(Vec4 m);
-float Length(Vec4 m);
-Vec4 Normalize(Vec4 m);
-Vec4 Cross(Vec4 a, Vec4 b);
+Vec4		Vec(float x, float y, float z);
+Vec4		Vec(float x, float y, float z, float w);
+Vec4		GetX3(Vec4 a, Vec4 b, Vec4 c);
+Vec4		GetY3(Vec4 a, Vec4 b, Vec4 c);
+Vec4		GetZ3(Vec4 a, Vec4 b, Vec4 c);
+Vec4		GetXYZ(Vec4 x, Vec4 y, Vec4 z);
+Vec4		SetX(Vec4 a, float x);
+Vec4		SetY(Vec4 a, float y);
+Vec4		SetZ(Vec4 a, float z);
+Vec4		SetW(Vec4 a, float w);
+float		GetX(Vec4 m);
+float		GetY(Vec4 m);
+float		GetZ(Vec4 m);
+float		GetW(Vec4 m);
+Vec4		Negate(Vec4 v);
+float		Dot(Vec4 a, Vec4 b);
+float		LengthSquared(Vec4 m);
+float		Length(Vec4 m);
+Vec4		Normalize(Vec4 m);
+Vec4		Cross(Vec4 a, Vec4 b);
 #if !defined (BT_USE_SSE_IN_API)
-Vec4 operator + (Vec4 a, Vec4 b);
-Vec4 operator - (Vec4 a, Vec4 b);
-Vec4 operator * (Vec4 a, Vec4 b);
+Vec4		operator + (Vec4 a, Vec4 b);
+Vec4		operator - (Vec4 a, Vec4 b);
+Vec4		operator * (Vec4 a, Vec4 b);
 #endif
-Vec4 operator / (Vec4 a, Vec4 b);
-Vec4 operator * (Vec4 a, float b);
-Vec4 operator / (Vec4 a, float b);
-Vec4 &operator += (Vec4 &a, Vec4 b);
-Vec4 &operator -= (Vec4 &a, Vec4 b);
-Vec4 &operator *= (Vec4 &a, Vec4 b);
-Vec4 &operator *= (Vec4 &a, float b);
-Vec4 &operator /= (Vec4 &a, Vec4 b);
-Vec4 &operator /= (Vec4 &a, float b);
+Vec4		operator / (Vec4 a, Vec4 b);
+Vec4		operator * (Vec4 a, float b);
+Vec4		operator / (Vec4 a, float b);
+Vec4 &		operator += (Vec4 &a, Vec4 b);
+Vec4 &		operator -= (Vec4 &a, Vec4 b);
+Vec4 &		operator *= (Vec4 &a, Vec4 b);
+Vec4 &		operator *= (Vec4 &a, float b);
+Vec4 &		operator /= (Vec4 &a, Vec4 b);
+Vec4 &		operator /= (Vec4 &a, float b);
 
 //////////////////////////////////////////////////////////////////////
 
