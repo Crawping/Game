@@ -18,9 +18,9 @@ Matrix Camera::ViewMatrix(Vec4 target, Vec4 position, Vec4 up)
 	Vec4 xaxis = Normalize(Cross(up, zaxis));
 	Vec4 yaxis = Cross(zaxis, xaxis);
 	Vec4 trans = Vec(-Dot(xaxis, position), -Dot(yaxis, position), -Dot(zaxis, position), 1);
-	return Matrix(	X3(xaxis, yaxis, zaxis),
-					Y3(xaxis, yaxis, zaxis),
-					Z3(xaxis, yaxis, zaxis),
+	return Matrix(	GetX3(xaxis, yaxis, zaxis),
+					GetY3(xaxis, yaxis, zaxis),
+					GetZ3(xaxis, yaxis, zaxis),
 					trans);
 }
 
@@ -29,7 +29,7 @@ Matrix Camera::ViewMatrix(Vec4 target, Vec4 position, Vec4 up)
 Matrix Camera::ViewMatrix(Vec4 position, float yaw, float pitch, float roll)
 {
 	Matrix m = DirectX::XMMatrixIdentity();
-	m.r[3] = Vec(-GetX(position), -GetY(position), -GetZ(position), 1.0f);
+	m.r[3] = SetW(Negate(position), 1.0f);
 	m *= DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
 	return m;
 }
