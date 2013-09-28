@@ -39,9 +39,9 @@ void Axes::End()
 
 //////////////////////////////////////////////////////////////////////
 
-void Axes::Draw(Camera &camera, Vec4 origin, Vec4 extents, Color x, Color y, Color z)
+void Axes::Draw(Camera &camera, Vector origin, Vector extents, Color x, Color y, Color z)
 {
-	Vec4 e = extents + origin;
+	Vector e = extents + origin;
 	float ex = GetX(e);
 	float ey = GetY(e);
 	float ez = GetZ(e);
@@ -57,7 +57,7 @@ void Axes::Draw(Camera &camera, Vec4 origin, Vec4 extents, Color x, Color y, Col
 
 //////////////////////////////////////////////////////////////////////
 
-void Axes::DrawGrid(Camera &camera, Vec4 origin, Vec4 extents, int step, Color color)
+void Axes::DrawGrid(Camera &camera, Vector origin, Vector extents, int step, Color color)
 {
 	float x = GetX(extents);
 	float y = GetY(extents);
@@ -93,7 +93,7 @@ void Axes::BeginLines(Camera &camera)
 
 //////////////////////////////////////////////////////////////////////
 
-void Axes::DrawLine(Vec4 a, Vec4 b, Color ca, Color cb)
+void Axes::DrawLine(Vector a, Vector b, Color ca, Color cb)
 {
 	mIC->BeginVertex();	mIC->SetPosition3(a);	mIC->SetColor(ca);	mIC->EndVertex();
 	mIC->BeginVertex();	mIC->SetPosition3(b);	mIC->SetColor(cb);	mIC->EndVertex();

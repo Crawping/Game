@@ -82,11 +82,9 @@ vector<uint16>	index;
 
 void MyApp::OnInit()
 {
-	Vec4 x = Vec(1,0,0);
-	Vec4 y = Vec(0,2,0);
-	Vec4 z = Vec(0,0,3);
-	Vec4 r = GetXYZ(x, y, z);
-	TRACE("%f,%f,%f,%f\n", GetX(r), GetY(r), GetZ(r), GetW(r));
+	Vector x = Vec(0,5,10);
+	float r = Length(x);
+	TRACE("%f\n", r);
 
 	//scene = assimporter.ReadFile("data\\cube.dae", 0);
 	//DumpNode(scene, scene->mRootNode, 0);
@@ -267,7 +265,7 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	Vec2 panScale(w->mZoom / gw, w->mZoom / aspect / gh);
 
 	btTransform const &carTransform = mCar->mBody->getWorldTransform();
-	Vec4 carPosition = carTransform.getOrigin().get128();
+	Vector carPosition = carTransform.getOrigin().get128();
 
 	bool in = MousePosition.x > l && MousePosition.x < r && MousePosition.y > t && MousePosition.y < b;
 
@@ -319,8 +317,8 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	case Rotate:
 		if(MouseDelta.x != 0 || MouseDelta.y != 0)
 		{
-			Vec4 v = Vec(2.5f, 2.0f, 4.0f);
-			Vec4 x = Cross(v, Vec(0,0,1));
+			Vector v = Vec(2.5f, 2.0f, 4.0f);
+			Vector x = Cross(v, Vec(0,0,1));
 			v = Normalize(v);
 			x = Normalize(x);
 			mCarOrientation *= TranslationMatrix(carPosition * -1);
@@ -337,14 +335,14 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	if(w->mOrtho)
 	{
 		btTransform const &carTransform = mCar->mBody->getWorldTransform();
-		Vec4 carPosition = carTransform.getOrigin().get128();
+		Vector carPosition = carTransform.getOrigin().get128();
 		mCamera.CalculateOrthoProjectionMatrix(w->mZoom, w->mZoom / aspect);
 		int y1 = w->mYAxis;
 		int x1 = w->mXAxis;
-		Vec4 xaxis = carTransform.getBasis().getColumn(x1).get128() * w->mPan.x;
-		Vec4 yaxis = carTransform.getBasis().getColumn(y1).get128() * w->mPan.y;
+		Vector xaxis = carTransform.getBasis().getColumn(x1).get128() * w->mPan.x;
+		Vector yaxis = carTransform.getBasis().getColumn(y1).get128() * w->mPan.y;
 		carPosition = carPosition + xaxis + yaxis;
-		Vec4 cameraPos = carPosition + carTransform.getBasis().getColumn(w->mAxis).get128() * w->mFlip * 100;
+		Vector cameraPos = carPosition + carTransform.getBasis().getColumn(w->mAxis).get128() * w->mFlip * 100;
 		mCamera.CalculateViewMatrix(carPosition, cameraPos, carTransform.getBasis().getColumn(w->mUpAxis).get128());
 		mCamera.CalculateViewProjectionMatrix();
 	}
@@ -1014,13 +1012,13 @@ void MyApp::UpdateCamera()
 		}
 		float len = mCameraDistance;
 
-		Vec4 bcp = Vec(cp.x() + cosf(angle) * len, cp.y() + sinf(angle) * len, 0);
+		Vector bcp = Vec(cp.x() + cosf(angle) * len, cp.y() + sinf(angle) * len, 0);
 
-		Vec4 diff2 = bcp - mCameraPos;
+		Vector diff2 = bcp - mCameraPos;
 		mCameraPos = mCameraPos + diff2 * 0.1f;
 
-		Vec4 car = cp.get128();
-		Vec4 diff = car - mCameraPos;
+		Vector car = cp.get128();
+		Vector diff = car - mCameraPos;
 		float distance = Length(diff);
 		diff = Normalize(diff);
 		diff = diff * (distance - len);
@@ -1030,8 +1028,8 @@ void MyApp::UpdateCamera()
 		{
 			mCameraPos = bcp + Vec(0,0,mCameraHeight);
 		}
-		Vec4 target = car + Vec(0,0,mCameraTargetHeight);
-		Vec4 pos = mCameraPos + Vec(0,0,mCameraHeight);
+		Vector target = car + Vec(0,0,mCameraTargetHeight);
+		Vector pos = mCameraPos + Vec(0,0,mCameraHeight);
 
 		float pitch = atan2f(mCameraTargetHeight - mCameraHeight, distance);
 
@@ -1053,9 +1051,9 @@ void MyApp::UpdateCamera()
 		mCamera.CalculateViewMatrix(mCameraPos, 0, mCameraPitch, mCameraYaw);
 
 		Matrix m = XMMatrixTranspose(mCamera.GetViewMatrix());
-		Vec4 dx(m.r[0]);
+		Vector dx(m.r[0]);
 //		Vec4 dy(m.r[1]);
-		Vec4 dz(m.r[2]);
+		Vector dz(m.r[2]);
 
 		float speed = 0.05f;
 		if(!KeyHeld(VK_SHIFT))

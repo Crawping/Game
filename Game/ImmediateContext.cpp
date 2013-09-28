@@ -293,7 +293,7 @@ void ImmediateContext::SetPosition3(float x, float y, float z)
 
 //////////////////////////////////////////////////////////////////////
 
-void ImmediateContext::SetPosition3(Vec4 pos)
+void ImmediateContext::SetPosition3(Vector pos)
 {
 	*reinterpret_cast<Vec3Floats *>(mVertexBufferPointer) = *reinterpret_cast<Vec3Floats *>(&pos);
 	mVertexBufferPointer += sizeof(Vec3Floats);
@@ -350,7 +350,7 @@ void ImmediateContext::SetNormal(float x, float y, float z)
 
 //////////////////////////////////////////////////////////////////////
 
-void ImmediateContext::SetNormal(Vec4 normal)
+void ImmediateContext::SetNormal(Vector normal)
 {
 	Vec3Floats &p = *reinterpret_cast<Vec3Floats *>(mVertexBufferPointer);
 	p.x = GetX(normal);

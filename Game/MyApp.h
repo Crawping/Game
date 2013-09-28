@@ -100,9 +100,9 @@ class MyApp : App
 
 	void DrawViewWindow(ViewWindow *w);
 
-	Vec4									mCameraPos;
-	Vec4									mPosition;
-	Vec4									mTarget;
+	Vector									mCameraPos;
+	Vector									mPosition;
+	Vector									mTarget;
 
 	Matrix									mCarOrientation;
 

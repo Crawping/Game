@@ -108,7 +108,7 @@ void DebugText(Vec2 const &pos, char const *text, ...)
 
 //////////////////////////////////////////////////////////////////////
 
-void DebugText(Vec4 const &pos, char const *text, ...)
+void DebugText(Vector const &pos, char const *text, ...)
 {
 	DebugBeginFrame();
 	char buffer[1024];
@@ -129,7 +129,7 @@ void DebugText(Vec4 const &pos, char const *text, ...)
 
 //////////////////////////////////////////////////////////////////////
 
-void DebugLine(Vec4 const &start, Vec4 const &end, Color color)
+void DebugLine(Vector const &start, Vector const &end, Color color)
 {
 }
 
