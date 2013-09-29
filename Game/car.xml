@@ -1,5 +1,5 @@
 <xml>
-	<ParameterSet Name="Engine" ParameterCount="7" Expanded="1">
+	<ParameterSet Name="Engine" ParameterCount="7" Expanded="0">
 		<Parameter Name="Power" Value="20.000000" MinValue="0.500000" MaxValue="20.000000" DefaultValue="1.000000"/>
 		<Parameter Name="Mass" Value="438.262024" MinValue="1.000000" MaxValue="500.000000" DefaultValue="70.000000"/>
 		<Parameter Name="VerticalOffset" Value="-2.180001" MinValue="-5.000000" MaxValue="5.000000" DefaultValue="0.000000"/>
@@ -8,13 +8,13 @@
 		<Parameter Name="Height" Value="0.500000" MinValue="0.500000" MaxValue="5.000000" DefaultValue="2.000000"/>
 		<Parameter Name="Length" Value="5.000000" MinValue="0.500000" MaxValue="5.000000" DefaultValue="2.000000"/>
 	</ParameterSet>
-	<ParameterSet Name="Chassis" ParameterCount="4" Expanded="1">
+	<ParameterSet Name="Chassis" ParameterCount="4" Expanded="0">
 		<Parameter Name="Mass" Value="119.761978" MinValue="1.000000" MaxValue="500.000000" DefaultValue="70.000000"/>
 		<Parameter Name="Length" Value="10.000000" MinValue="10.000000" MaxValue="30.000000" DefaultValue="20.000000"/>
-		<Parameter Name="Width" Value="5.671999" MinValue="0.500000" MaxValue="10.000000" DefaultValue="4.000000"/>
+		<Parameter Name="Width" Value="2.514000" MinValue="0.500000" MaxValue="10.000000" DefaultValue="4.000000"/>
 		<Parameter Name="Height" Value="0.500000" MinValue="0.500000" MaxValue="5.000000" DefaultValue="3.000000"/>
 	</ParameterSet>
-	<ParameterSet Name="Rear Wheels" ParameterCount="30" Expanded="1">
+	<ParameterSet Name="Rear Wheels" ParameterCount="30" Expanded="0">
 		<Parameter Name="Radius" Value="5.000000" MinValue="2.000000" MaxValue="5.000000" DefaultValue="2.500000"/>
 		<Parameter Name="Width" Value="2.447599" MinValue="0.150000" MaxValue="4.000000" DefaultValue="1.000000"/>
 		<Parameter Name="Mass" Value="1.000000" MinValue="0.100000" MaxValue="50.000000" DefaultValue="1.000000"/>
@@ -47,7 +47,7 @@
 		<Parameter Name="WishBoneUpperOffset" Value="0.855000" MinValue="-0.250000" MaxValue="2.250000" DefaultValue="1.250000"/>
 	</ParameterSet>
 	<ParameterSet Name="Front Wheels" ParameterCount="30" Expanded="1">
-		<Parameter Name="Radius" Value="2.758000" MinValue="2.000000" MaxValue="5.000000" DefaultValue="2.500000"/>
+		<Parameter Name="Radius" Value="2.799999" MinValue="2.000000" MaxValue="5.000000" DefaultValue="2.500000"/>
 		<Parameter Name="Width" Value="1.331100" MinValue="0.150000" MaxValue="4.000000" DefaultValue="1.000000"/>
 		<Parameter Name="Mass" Value="1.000000" MinValue="0.100000" MaxValue="50.000000" DefaultValue="1.000000"/>
 		<Parameter Name="Offset_X" Value="-0.440000" MinValue="-10.000000" MaxValue="10.000000" DefaultValue="2.000000"/>

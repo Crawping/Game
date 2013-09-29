@@ -46,9 +46,9 @@ Vector		SetW(Vector a, float w);
 Vector		Splat(float x);
 
 Vector		SplatX(Vector x);
-Vector		SplatY(Vector x);
-Vector		SplatZ(Vector x);
-Vector		SplatW(Vector x);
+Vector		SplatY(Vector y);
+Vector		SplatZ(Vector z);
+Vector		SplatW(Vector w);
 
 float		GetX(Vector v);
 float		GetY(Vector v);
