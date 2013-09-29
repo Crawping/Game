@@ -108,6 +108,32 @@ void DebugText(Vec2 const &pos, char const *text, ...)
 
 //////////////////////////////////////////////////////////////////////
 
+void DebugText(Point2D const &pos, char const *text, ...)
+{
+	char buffer[1024];
+	va_list v;
+	va_start(v, text);
+	_vsnprintf_s(buffer, ARRAYSIZE(buffer), text, v);
+	DebugBeginFrame();
+	Vec2 p(pos);
+	mFont->DrawString(mSpriteList, buffer, p);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void DebugText(int x, int y, char const *text, ...)
+{
+	char buffer[1024];
+	va_list v;
+	va_start(v, text);
+	_vsnprintf_s(buffer, ARRAYSIZE(buffer), text, v);
+	DebugBeginFrame();
+	Vec2 p(x, y);
+	mFont->DrawString(mSpriteList, buffer, p);
+}
+
+//////////////////////////////////////////////////////////////////////
+
 void DebugText(Vector const &pos, char const *text, ...)
 {
 	DebugBeginFrame();
@@ -115,14 +141,16 @@ void DebugText(Vector const &pos, char const *text, ...)
 	va_list v;
 	va_start(v, text);
 	_vsnprintf_s(buffer, ARRAYSIZE(buffer), text, v);
-	Vec2 screenPos;
-	DirectX::XMVECTOR vp(pos);
-	DirectX::XMVECTOR sp = DirectX::XMVector3TransformCoord(vp, mCamera->GetTransformMatrix());
-	float z = DirectX::XMVectorGetZ(sp);
+	
+	Matrix const &m = mCamera->GetTransformMatrix();
+
+	Vector r = SplatX(pos) * m.r[0] + SplatY(pos) * m.r[1] + SplatZ(pos) * m.r[2] + m.r[3];
+	r /= SplatW(r);
+
+	float z = GetZ(r);
 	if(z < 1 && z > 0)
 	{
-		screenPos.x = (DirectX::XMVectorGetX(sp) + 1) / 2 * Graphics::FWidth();
-		screenPos.y = (1 - DirectX::XMVectorGetY(sp)) / 2 * Graphics::FHeight();
+		Vec2 screenPos((GetX(r) + 1) / 2 * Graphics::FWidth(), (1 - GetY(r)) / 2 * Graphics::FHeight());
 		mFont->DrawString(mSpriteList, buffer, screenPos, Font::HCentre, Font::VCentre);
 	}
 }

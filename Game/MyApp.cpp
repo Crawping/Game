@@ -82,10 +82,6 @@ vector<uint16>	index;
 
 void MyApp::OnInit()
 {
-	Vector x = Vec(0,5,10);
-	float r = Length(x);
-	TRACE("%f\n", r);
-
 	//scene = assimporter.ReadFile("data\\cube.dae", 0);
 	//DumpNode(scene, scene->mRootNode, 0);
 
@@ -434,6 +430,9 @@ bool MyApp::OnUpdate()
 			mAxes->End();
 
 			DrawPhysics();
+
+			DebugSetCamera(&mCamera);
+			DebugText(mCar->mBody->getWorldTransform().getOrigin().get128(), "HELLO");
 		}
 		break;
 	}

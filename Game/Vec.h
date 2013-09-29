@@ -4,13 +4,11 @@
 
 //////////////////////////////////////////////////////////////////////
 
-class btVector3;
-
 typedef __m128 Vector;
 
 //////////////////////////////////////////////////////////////////////
 
-__declspec(align(16)) struct Vec4i
+ALIGN(16, struct) Vec4i
 {
 	union
 	{
@@ -28,6 +26,10 @@ extern const __declspec(selectany) Vec4i gMMaskXYZ = { 0xFFFFFFFF, 0xFFFFFFFF, 0
 
 //////////////////////////////////////////////////////////////////////
 
+#pragma push_macro("Permute")
+#pragma push_macro("Permute2")
+#undef Permute
+#undef Permute2
 #define Permute(d, c, b, a, v) _mm_shuffle_ps(v, v, ((d) << 6) | ((c) << 4) | ((b) << 2) | (a))
 #define Permute2(d, c, b, a, v1, v2) _mm_shuffle_ps(v1, v2, ((d) << 6) | ((c) << 4) | ((b) << 2) | (a))
 
@@ -36,27 +38,31 @@ extern const __declspec(selectany) Vec4i gMMaskXYZ = { 0xFFFFFFFF, 0xFFFFFFFF, 0
 Vector		Vec(float x, float y, float z);
 Vector		Vec(float x, float y, float z, float w);
 
-Vector		GetX3(Vector a, Vector b, Vector c);
-Vector		GetY3(Vector a, Vector b, Vector c);
-Vector		GetZ3(Vector a, Vector b, Vector c);
-
-Vector		GetXYZ(Vector x, Vector y, Vector z);
-
 Vector		SetX(Vector a, float x);
 Vector		SetY(Vector a, float y);
 Vector		SetZ(Vector a, float z);
 Vector		SetW(Vector a, float w);
+
+Vector		SplatX(Vector x);
+Vector		SplatY(Vector x);
+Vector		SplatZ(Vector x);
+Vector		SplatW(Vector x);
 
 float		GetX(Vector v);
 float		GetY(Vector v);
 float		GetZ(Vector v);
 float		GetW(Vector v);
 
+Vector		GetX3(Vector a, Vector b, Vector c);
+Vector		GetY3(Vector a, Vector b, Vector c);
+Vector		GetZ3(Vector a, Vector b, Vector c);
+Vector		GetXYZ(Vector x, Vector y, Vector z);
+
 Vector		Negate(Vector v);
 float		Dot(Vector a, Vector b);
-float		LengthSquared(Vector m);
-float		Length(Vector m);
-Vector		Normalize(Vector m);
+float		LengthSquared(Vector v);
+float		Length(Vector v);
+Vector		Normalize(Vector v);
 Vector		Cross(Vector a, Vector b);
 
 Vector		operator + (Vector a, Vector b);
@@ -170,6 +176,34 @@ inline Vector SetW(Vector a, float w)
 
 //////////////////////////////////////////////////////////////////////
 
+inline Vector SplatX(Vector x)
+{
+	return Permute(0,0,0,0, x);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vector SplatY(Vector x)
+{
+	return Permute(1,1,1,1, x);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vector SplatZ(Vector x)
+{
+	return Permute(2,2,2,2, x);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vector SplatW(Vector x)
+{
+	return Permute(3,3,3,3, x);
+}
+
+//////////////////////////////////////////////////////////////////////
+
 inline float GetX(Vector v)
 {
 	return _mm_cvtss_f32(v);
@@ -217,16 +251,16 @@ inline float Dot(Vector a, Vector b)
 
 //////////////////////////////////////////////////////////////////////
 
-inline float LengthSquared(Vector m)
+inline float LengthSquared(Vector v)
 {
-	return Dot(m, m);
+	return Dot(v, v);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-inline float Length(Vector m)
+inline float Length(Vector v)
 {
-	Vector l = _mm_mul_ps(m, m);
+	Vector l = _mm_mul_ps(v, v);
 	Vector t = Permute(2,1,2,1, l);
 	l = _mm_add_ss(l,t);
 	t = Permute(1,1,1,1, t);
@@ -236,15 +270,15 @@ inline float Length(Vector m)
 
 //////////////////////////////////////////////////////////////////////
 
-inline Vector Normalize(Vector m)
+inline Vector Normalize(Vector v)
 {
-	Vector ls = _mm_mul_ps(m, m);
+	Vector ls = _mm_mul_ps(v, v);
 	Vector t = Permute(2,1,2,1, ls);
 	ls = _mm_add_ss(ls,t);
 	t = Permute(1,1,1,1, t);
 	ls = _mm_add_ss(ls,t);
 	ls = Permute(0,0,0,0, ls);
-	return _mm_div_ps(m,_mm_sqrt_ps(ls));
+	return _mm_div_ps(v,_mm_sqrt_ps(ls));
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -354,6 +388,11 @@ inline Vector &operator /= (Vector &a, float b)
 	a = _mm_div_ps(a, _mm_set_ps(b, b, b, b));
 	return a;
 }
+
+//////////////////////////////////////////////////////////////////////
+
+#pragma pop_macro("Permute")
+#pragma pop_macro("Permute2")
 
 //////////////////////////////////////////////////////////////////////
 

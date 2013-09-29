@@ -13,20 +13,22 @@ struct Point2D
 	{
 	}
 
-	Point2D(int _x, int _y) : x(_x), y(_y)
+	Point2D(int _x, int _y)
+		: x(_x)
+		, y(_y)
 	{
 	}
 
 	Point2D(Point2D const &o)
+		: x(o.x)
+		, y(o.y)
 	{
-		x = o.x;
-		y = o.y;
 	}
 
 	explicit Point2D(Vec2 const &o)
+		: x((int)o.x)
+		, y((int)o.y)
 	{
-		x = (int)o.x;
-		y = (int)o.y;
 	}
 
 	void Clear()
@@ -34,21 +36,21 @@ struct Point2D
 		x = y = 0;
 	}
 
-	Point2D const &operator = (Point2D const &b)
+	Point2D &operator = (Point2D const &b)
 	{
 		x = b.x;
 		y = b.y;
 		return *this;
 	}
 
-	Point2D const &operator += (Point2D const &b)
+	Point2D &operator += (Point2D const &b)
 	{
 		x += b.x;
 		y += b.y;
 		return *this;
 	}
 
-	Point2D const &operator -= (Point2D const &b)
+	Point2D &operator -= (Point2D const &b)
 	{
 		x -= b.x;
 		y -= b.y;
