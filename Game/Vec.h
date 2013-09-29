@@ -43,6 +43,8 @@ Vector		SetY(Vector a, float y);
 Vector		SetZ(Vector a, float z);
 Vector		SetW(Vector a, float w);
 
+Vector		Splat(float x);
+
 Vector		SplatX(Vector x);
 Vector		SplatY(Vector x);
 Vector		SplatZ(Vector x);
@@ -56,6 +58,7 @@ float		GetW(Vector v);
 Vector		GetX3(Vector a, Vector b, Vector c);
 Vector		GetY3(Vector a, Vector b, Vector c);
 Vector		GetZ3(Vector a, Vector b, Vector c);
+
 Vector		GetXYZ(Vector x, Vector y, Vector z);
 
 Vector		Negate(Vector v);
@@ -183,23 +186,30 @@ inline Vector SplatX(Vector x)
 
 //////////////////////////////////////////////////////////////////////
 
-inline Vector SplatY(Vector x)
+inline Vector Splat(float v)
 {
-	return Permute(1,1,1,1, x);
+	return _mm_set_ps1(v);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-inline Vector SplatZ(Vector x)
+inline Vector SplatY(Vector y)
 {
-	return Permute(2,2,2,2, x);
+	return Permute(1,1,1,1, y);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-inline Vector SplatW(Vector x)
+inline Vector SplatZ(Vector z)
 {
-	return Permute(3,3,3,3, x);
+	return Permute(2,2,2,2, z);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vector SplatW(Vector w)
+{
+	return Permute(3,3,3,3, w);
 }
 
 //////////////////////////////////////////////////////////////////////
