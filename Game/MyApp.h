@@ -148,10 +148,19 @@ class MyApp : App
 
 	Axes *									mAxes;
 
+	vector<Vector>							mControlPoints;
+	vector<Vector>							mBezierPoints;
+
 	VertexShader *							m2DUntexturedVS;
 	PixelShader *							m2DUntexturedPS;
 	Material *								mUntexturedMaterial;
 	ImmediateContext *						m2DUntexturedIC;
+
+	VertexShader *							mUntexturedVertexShader;
+	PixelShader *							mUntexturedPixelShader;
+	Material *								mUntexturedMaterial3D;
+	ImmediateContext *						mUntexturedIC;
+
 
 	int										mTransformConstantBufferIndex;
 

@@ -27,8 +27,8 @@ MyApp app;
 struct Vert
 {
 	Vec3Floats	mPosition;
-	Vec2	mTexCoord;
-	Color	mColor;
+	Vec2		mTexCoord;
+	Color		mColor;
 };
 
 #pragma push_macro("N")
@@ -196,7 +196,13 @@ void MyApp::OnInit()
 	m2DUntexturedVS = VertexShader::Load(L"2DSimpleVertexShader", mask);
 	m2DUntexturedPS = PixelShader::Load(L"2DSimplePixelShader");
 	mUntexturedMaterial = Material::Create(m2DUntexturedPS, m2DUntexturedVS, BM_Modulate);
-	m2DUntexturedIC = ImmediateContext::Create(mask, 16384, 64);
+	m2DUntexturedIC = ImmediateContext::Create(mask, 65536, 65536);
+
+	mask = VertexElement::Position3 | VertexElement::Color;
+	mUntexturedVertexShader = VertexShader::Load(L"UntexturedVertexShader", mask);
+	mUntexturedPixelShader = PixelShader::Load(L"UntexturedPixelShader");
+	mUntexturedMaterial3D = Material::Create(mPixelShader, mVertexShader, BM_None);
+	mUntexturedIC = ImmediateContext::Create(mask, 65536, 65536);
 
 	mOldMouseDelta = Vec2(0,0);
 
@@ -245,6 +251,20 @@ void MyApp::OnInit()
 
 	mTimer.Reset();
 	mFrame = 0;
+
+	for(int i=0; i<30; ++i)
+	{
+		float t = i / (30 * PI * 2);
+		float x = sinf(t) * 50;
+		float y = cosf(t) * 50;
+		float z = rand() / (float)RAND_MAX * 20 + 10;
+		mControlPoints.push_back(Vec(x, y, z));
+	}
+
+	mBezierPoints.resize(30 * 16 + 1);
+	Vector *p = &mControlPoints[0];
+	Vector *q = &mBezierPoints[0];
+	CalculateBezier(p, mControlPoints.size(), q, 16);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -430,6 +450,20 @@ bool MyApp::OnUpdate()
 			mAxes->End();
 
 			DrawPhysics();
+
+			mUntexturedIC->Begin();
+			mUntexturedIC->SetMaterial(mUntexturedMaterial3D);
+			mUntexturedIC->SetConstants(&mCamera.GetTransformMatrix(), sizeof(Matrix));
+			mUntexturedIC->BeginLineStrip();
+			for(auto p: mBezierPoints)
+			{
+				mUntexturedIC->BeginVertex();
+				mUntexturedIC->SetPosition3(p);
+				mUntexturedIC->SetColor(0xffffffff);
+				mUntexturedIC->EndVertex();
+			}
+			mUntexturedIC->EndLineStrip();
+			mUntexturedIC->End();
 
 			DebugSetCamera(&mCamera);
 			DebugText(mCar->mBody->getWorldTransform().getOrigin().get128(), "HELLO");

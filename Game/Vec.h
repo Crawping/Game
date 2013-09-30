@@ -74,6 +74,8 @@ Vector		operator * (Vector a, Vector b);
 Vector		operator / (Vector a, Vector b);
 Vector		operator * (Vector a, float b);
 Vector		operator / (Vector a, float b);
+Vector		operator * (float b, Vector a);
+Vector		operator / (float b, Vector a);
 Vector &	operator += (Vector &a, Vector b);
 Vector &	operator -= (Vector &a, Vector b);
 Vector &	operator *= (Vector &a, Vector b);
@@ -347,6 +349,20 @@ inline Vector operator * (Vector a, float b)
 //////////////////////////////////////////////////////////////////////
 
 inline Vector operator / (Vector a, float b)
+{
+	return _mm_div_ps(a, _mm_set_ps(b, b, b, b));
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vector operator * (float b, Vector a)
+{
+	return _mm_mul_ps(a, _mm_set_ps(b, b, b, b));
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vector operator / (float b, Vector a)
 {
 	return _mm_div_ps(a, _mm_set_ps(b, b, b, b));
 }

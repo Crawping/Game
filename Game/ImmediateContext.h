@@ -41,6 +41,7 @@ public:
 	void EndStrip();
 	void EndTriangles();
 	void EndLines();
+	void EndLineStrip();
 	void End();
 
 private:

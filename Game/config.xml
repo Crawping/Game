@@ -1,7 +1,7 @@
 <xml>
 	<ParameterSet Name="Camera" ParameterCount="3" Expanded="0">
-		<Parameter Name="Distance" Value="262.372711" MinValue="5.000000" MaxValue="100.000000" DefaultValue="30.000000"/>
-		<Parameter Name="Height" Value="98.074982" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="50.000000"/>
+		<Parameter Name="Distance" Value="91.168571" MinValue="5.000000" MaxValue="100.000000" DefaultValue="30.000000"/>
+		<Parameter Name="Height" Value="32.396648" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="50.000000"/>
 		<Parameter Name="TargetHeight" Value="6.916904" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="5.000000"/>
 	</ParameterSet>
 </xml>

@@ -408,6 +408,16 @@ void ImmediateContext::EndLines()
 
 //////////////////////////////////////////////////////////////////////
 
+void ImmediateContext::EndLineStrip()
+{
+	IMC_DrawCommand *cmd = reinterpret_cast<IMC_DrawCommand *>(mCommandBufferPointer);
+	cmd->mVertexCount = mVertexIndex - cmd->mVertexBase;
+	mCommandBufferPointer += sizeof(IMC_DrawCommand);
+	++mNumCommands;
+}
+
+//////////////////////////////////////////////////////////////////////
+
 void ImmediateContext::End()
 {
 	mVertexBuffer[mBufferIndex]->UnMap();
