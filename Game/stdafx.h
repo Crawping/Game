@@ -67,7 +67,7 @@
 #include "UTF8.h"
 #include "ParameterSet.h"
 #include "Vec2.h"
-#include "Vec.h"
+#include "Vector.h"
 #include "Point.h"
 #include "Size.h"
 #include "Matrix.h"

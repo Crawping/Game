@@ -322,7 +322,7 @@
     <ClInclude Include="Types.h" />
     <ClInclude Include="UTF8.h" />
     <ClInclude Include="Util.h" />
-    <ClInclude Include="Vec.h" />
+    <ClInclude Include="Vector.h" />
     <ClInclude Include="Vec2.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexElement.h" />
