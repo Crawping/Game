@@ -17,7 +17,7 @@ BEGIN_PARAMSET(CameraParameters, "Camera")
 
 END_PARAMSET()
 
-BEGIN_PARAMSET(ViewParameters, "View")
+BEGIN_PRIVATE_PARAMSET(ViewParameters, "View")
 
 	PARAM(PanX, 0, -100, 100);
 	PARAM(PanY, 0, -100, 100);
@@ -170,19 +170,18 @@ class MyApp : App
 
 	Axes *									mAxes;
 
-	vector<Vector>							mControlPoints;
-	vector<Vector>							mBezierPoints;
+	Vector									mControlPoints[31];
+	Vector									mBezierPoints[(31 / 3) * 16 + 1];
 
 	VertexShader *							m2DUntexturedVS;
 	PixelShader *							m2DUntexturedPS;
 	Material *								mUntexturedMaterial;
 	ImmediateContext *						m2DUntexturedIC;
 
-	VertexShader *							mUntexturedVertexShader;
-	PixelShader *							mUntexturedPixelShader;
-	Material *								mUntexturedMaterial3D;
-	ImmediateContext *						mUntexturedIC;
-
+	ImmediateContext *						mLinesIC;
+	VertexShader *							mLinesVS;
+	PixelShader *							mLinesPS;
+	Material *								mLinesMaterial;
 
 	int										mTransformConstantBufferIndex;
 

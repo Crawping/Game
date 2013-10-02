@@ -11,10 +11,11 @@ int Parameter::sNextParameterIndex = 0;
 
 //////////////////////////////////////////////////////////////////////
 
-void ParameterSet::CopyParameterSet(char const *name)
+void ParameterSet::CopyParameterSet(char const *name, bool _private)
 {
 	mName = name;
 	mExpanded = true;
+	mPrivate = _private;
 	mSets.push_back(this);
 	mParameters = sTemporaryParameterList;	// Yoink!
 	sTemporaryParameterList.clear();

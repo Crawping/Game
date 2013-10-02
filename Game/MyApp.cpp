@@ -120,7 +120,6 @@ void MyApp::OnInit()
 	mCameraDistance = mCameraParameters.Distance;
 
 	mPhysicsDebug = new PhysicsDebug();
-	mAxes = new Axes();
 
 	const float g = (float)(M_PI * 2/step);
 	for(int i=0; i<step; ++i)
@@ -155,6 +154,14 @@ void MyApp::OnInit()
 		v.mPosition.y = -0.5f;
 		v.mTexCoord.y = 0;
 		vertex[step * 3 + i + 1] = v;
+	}
+
+	{
+		uint32 mask = VertexElement::Position3 + VertexElement::Color;
+		mLinesVS = VertexShader::Load(L"UntexturedVertexShader", mask);
+		mLinesPS = PixelShader::Load(L"UntexturedPixelShader");
+		mLinesMaterial = Material::Create(mLinesPS, mLinesVS, BM_Modulate);
+		mLinesIC = ImmediateContext::Create(mask, 65536, 65536);
 	}
 
 	uint32 mask = VertexElement::Position3 + VertexElement::TexCoord + VertexElement::Color;
@@ -222,12 +229,6 @@ void MyApp::OnInit()
 	mUntexturedMaterial = Material::Create(m2DUntexturedPS, m2DUntexturedVS, BM_Modulate);
 	m2DUntexturedIC = ImmediateContext::Create(mask, 65536, 65536);
 
-	mask = VertexElement::Position3 | VertexElement::Color;
-	mUntexturedVertexShader = VertexShader::Load(L"UntexturedVertexShader", mask);
-	mUntexturedPixelShader = PixelShader::Load(L"UntexturedPixelShader");
-	mUntexturedMaterial3D = Material::Create(mPixelShader, mVertexShader, BM_None);
-	mUntexturedIC = ImmediateContext::Create(mask, 65536, 65536);
-
 	mOldMouseDelta = Vec2(0,0);
 
 	mCarOrientation = IdentityMatrix;
@@ -262,19 +263,16 @@ void MyApp::OnInit()
 	mTimer.Reset();
 	mFrame = 0;
 
-	for(int i=0; i<30; ++i)
+	for(int i=0; i<=30; ++i)
 	{
-		float t = i / (30 * PI * 2);
+		float t = i / 30.0f * PI * 2;
 		float x = sinf(t) * 50;
 		float y = cosf(t) * 50;
 		float z = rand() / (float)RAND_MAX * 20 + 10;
-		mControlPoints.push_back(Vec(x, y, z));
+		mControlPoints[i] = Vec(x, y, z);
 	}
 
-	mBezierPoints.resize(30 * 16 + 1);
-	Vector *p = &mControlPoints[0];
-	Vector *q = &mBezierPoints[0];
-	CalculateBezier(p, mControlPoints.size(), q, 16);
+	CalculateBezier(mControlPoints, ARRAYSIZE(mControlPoints), mBezierPoints, 16);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -377,10 +375,12 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 		mCamera.CalculateViewMatrix(Vec(0, 0, 5), Vec(2.5f,2,4) * w->mZoom, Vec(0,0,1));
 		mCamera.CalculatePerspectiveProjectionMatrix(0.5f, aspect);
 		mCamera.CalculateViewProjectionMatrix(mCarOrientation);
-		mAxes->Begin();
-		mAxes->DrawGrid(mCamera, Vec(0,0,0), Vec(1000, 1000, 0), 100, 0x80ffffff);
-		mAxes->Draw(mCamera, Vec(0,0,0), Vec(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
-		mAxes->End();
+		mLinesIC->Begin();
+		mLinesIC->SetMaterial(mLinesMaterial);
+		mLinesIC->SetConstants(&mCamera.GetTransformMatrix(), sizeof(Matrix));
+		Axes::DrawGrid(mLinesIC, Vec(0,0,0), Vec(1000, 1000, 0), 100, 0x80ffffff);
+		Axes::Draw(mLinesIC, Vec(0,0,0), Vec(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
+		mLinesIC->End();
 	}
 	DrawPhysics();
 }
@@ -454,26 +454,31 @@ bool MyApp::OnUpdate()
 
 			UpdateCamera();
 
-			mAxes->Begin();
-			mAxes->DrawGrid(mCamera, Vec(0,0,0), Vec(1000, 1000, 0), 100, 0x80ffffff);
-			mAxes->Draw(mCamera, Vec(0,0,0), Vec(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
-			mAxes->End();
+			mLinesIC->Begin();
+			mLinesIC->SetMaterial(mLinesMaterial);
+			mLinesIC->SetConstants(&mCamera.GetTransformMatrix(), sizeof(Matrix));
+
+			Axes::DrawGrid(mLinesIC, Vec(0,0,0), Vec(1000, 1000, 0), 100, 0x80ffffff);
+			Axes::Draw(mLinesIC, Vec(0,0,0), Vec(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
+
+			mLinesIC->BeginLineStrip();
+			for(int i=0; i<ARRAYSIZE(mBezierPoints); ++i)
+			{
+				mLinesIC->BeginVertex();
+				mLinesIC->SetPosition3(mBezierPoints[i]);
+				mLinesIC->SetColor(0x80ffffff);
+				mLinesIC->EndVertex();
+			}
+			mLinesIC->EndLineStrip();
+
+			for(int i=0; i<ARRAYSIZE(mControlPoints); ++i)
+			{
+				Axes::Draw(mLinesIC, mControlPoints[i], Vec(2,2,2), 0xffff0000, 0xff00ff00, 0xff0000ff);
+			}
+
+			mLinesIC->End();
 
 			DrawPhysics();
-
-			mUntexturedIC->Begin();
-			mUntexturedIC->SetMaterial(mUntexturedMaterial3D);
-			mUntexturedIC->SetConstants(&mCamera.GetTransformMatrix(), sizeof(Matrix));
-			mUntexturedIC->BeginLineStrip();
-			for(auto p: mBezierPoints)
-			{
-				mUntexturedIC->BeginVertex();
-				mUntexturedIC->SetPosition3(p);
-				mUntexturedIC->SetColor(0xffffffff);
-				mUntexturedIC->EndVertex();
-			}
-			mUntexturedIC->EndLineStrip();
-			mUntexturedIC->End();
 
 			DebugSetCamera(&mCamera);
 			DebugText(mCar->mBody->getWorldTransform().getOrigin().get128(), "HELLO");
@@ -530,10 +535,13 @@ void MyApp::CountParameters()
 	mNumParameterLines = 0;
 	for(auto s: ParameterSet::mSets)
 	{
-		++mNumParameterLines;
-		if(s->mExpanded)
+		if(!s->mPrivate)
 		{
-			mNumParameterLines += s->mParameters.size();
+			++mNumParameterLines;
+			if(s->mExpanded)
+			{
+				mNumParameterLines += s->mParameters.size();
+			}
 		}
 	}
 }
@@ -604,94 +612,97 @@ void MyApp::DrawParameters()
 	mFixedSysFont->BeginMultipleStrings(mSpriteList);
 	for(auto s: ParameterSet::mSets)
 	{
-		Vec2 tl(0.0f, y);
-		bool hover = MousePosition.x < margin - sbw && MousePosition.y >= tl.y && MousePosition.y < tl.y + fh;
-
-		if(tl.y > -fh && tl.y < Graphics::FHeight())
+		if(!s->mPrivate)
 		{
-			Vec2 tc(tl);
-			mFixedSysFont->DrawStringMultiple(Format("%s%s", hover ? "#FFFFFFFF#" : "#FF00FFFF#", s->mName.c_str()).c_str(), tc);
-		}
+			Vec2 tl(0.0f, y);
+			bool hover = MousePosition.x < margin - sbw && MousePosition.y >= tl.y && MousePosition.y < tl.y + fh;
 
-		if(hover)
-		{
-			Draw2DUntexturedRectangle(m2DUntexturedIC, tl, tl + Vec2(margin - sbw, (float)fh), 0xff808080);
-			if(mode == Pick && (MousePressed & MouseButton::Left))
+			if(tl.y > -fh && tl.y < Graphics::FHeight())
 			{
-				s->mExpanded = !s->mExpanded;
+				Vec2 tc(tl);
+				mFixedSysFont->DrawStringMultiple(Format("%s%s", hover ? "#FFFFFFFF#" : "#FF00FFFF#", s->mName.c_str()).c_str(), tc);
 			}
-		}
-		y += fh;
 
-		if(s->mExpanded)
-		{
-			for(auto p: s->mParameters)
+			if(hover)
 			{
-				Vec2 tl(0.0f, y);
-				bool hover = MousePosition.x < margin - sbw && MousePosition.y >= tl.y && MousePosition.y < tl.y + fh;
-				if(tl.y > -fh && tl.y < Graphics::FHeight())
+				Draw2DUntexturedRectangle(m2DUntexturedIC, tl, tl + Vec2(margin - sbw, (float)fh), 0xff808080);
+				if(mode == Pick && (MousePressed & MouseButton::Left))
 				{
-					bool drawRect = false;
-					Color textColor(0);
-					Color rectColor(0);
-
-					if(hover && mode == Pick && (MousePressed & MouseButton::Left))
-					{
-						// yes, set it as the selected one and start tracking the mouse delta
-						SetMouseMode(MouseMode::Captured);
-						currentParameterIndex = p->mIndex;
-						mode = Modify;
-					}
-
-					if(mode == Modify && currentParameterIndex == p->mIndex)
-					{
-						textColor = 0xffffffff;
-						rectColor = 0xff000000;
-						drawRect = true;
-					}
-					else if(mode == Pick && hover)
-					{
-						textColor = 0xffffffff;
-						rectColor = 0xff808080;
-						drawRect = true;
-					}
-					else
-					{
-						textColor = 0xffd0d0d0;
-						drawRect = false;
-					}
-
-					if(mode == Modify && p->mIndex == currentParameterIndex)
-					{
-						const int ts = 9;
-						const int tw = 13;
-						const int w = 500;
-						Draw2DUntexturedRectangle(m2DUntexturedIC, tl + Vec2(margin, 0.0f), tl + Vec2((int)margin + w + tw, fh), 0xff000000);
-						float low = p->mMinValue;
-						float high = p->mMaxValue;
-						float range = high - low;
-						float tick = range / w;
-						p->mValue += MouseDelta.x * tick;
-						if(p->mValue < low)
-						{
-							p->mValue = low;
-						}
-						if(p->mValue > high)
-						{
-							p->mValue = high;
-						}
-						float xpos = (p->mValue - low) / range * w;
-						DrawTriangle(m2DUntexturedIC, tl + Vec2(margin + xpos, 0.0f), tl + Vec2(margin + xpos + tw, (float)fh), 0xffffffff);
-						mCar->ApplyParameters();
-					}
-					if(drawRect)
-					{
-						Draw2DUntexturedRectangle(m2DUntexturedIC, tl, tl + Vec2(margin - sbw, (float)fh), rectColor);
-					}
-					string s = Format("#%08x#%-24.24s %10.3f", textColor, p->mName.c_str(), p->mValue);
-					mFixedSysFont->DrawStringMultiple( s.c_str(), tl);
+					s->mExpanded = !s->mExpanded;
 				}
-				y += fh;
+			}
+			y += fh;
+
+			if(s->mExpanded)
+			{
+				for(auto p: s->mParameters)
+				{
+					Vec2 tl(0.0f, y);
+					bool hover = MousePosition.x < margin - sbw && MousePosition.y >= tl.y && MousePosition.y < tl.y + fh;
+					if(tl.y > -fh && tl.y < Graphics::FHeight())
+					{
+						bool drawRect = false;
+						Color textColor(0);
+						Color rectColor(0);
+
+						if(hover && mode == Pick && (MousePressed & MouseButton::Left))
+						{
+							// yes, set it as the selected one and start tracking the mouse delta
+							SetMouseMode(MouseMode::Captured);
+							currentParameterIndex = p->mIndex;
+							mode = Modify;
+						}
+
+						if(mode == Modify && currentParameterIndex == p->mIndex)
+						{
+							textColor = 0xffffffff;
+							rectColor = 0xff000000;
+							drawRect = true;
+						}
+						else if(mode == Pick && hover)
+						{
+							textColor = 0xffffffff;
+							rectColor = 0xff808080;
+							drawRect = true;
+						}
+						else
+						{
+							textColor = 0xffd0d0d0;
+							drawRect = false;
+						}
+
+						if(mode == Modify && p->mIndex == currentParameterIndex)
+						{
+							const int ts = 9;
+							const int tw = 13;
+							const int w = 500;
+							Draw2DUntexturedRectangle(m2DUntexturedIC, tl + Vec2(margin, 0.0f), tl + Vec2((int)margin + w + tw, fh), 0xff000000);
+							float low = p->mMinValue;
+							float high = p->mMaxValue;
+							float range = high - low;
+							float tick = range / w;
+							p->mValue += MouseDelta.x * tick;
+							if(p->mValue < low)
+							{
+								p->mValue = low;
+							}
+							if(p->mValue > high)
+							{
+								p->mValue = high;
+							}
+							float xpos = (p->mValue - low) / range * w;
+							DrawTriangle(m2DUntexturedIC, tl + Vec2(margin + xpos, 0.0f), tl + Vec2(margin + xpos + tw, (float)fh), 0xffffffff);
+							mCar->ApplyParameters();
+						}
+						if(drawRect)
+						{
+							Draw2DUntexturedRectangle(m2DUntexturedIC, tl, tl + Vec2(margin - sbw, (float)fh), rectColor);
+						}
+						string s = Format("#%08x#%-24.24s %10.3f", textColor, p->mName.c_str(), p->mValue);
+						mFixedSysFont->DrawStringMultiple( s.c_str(), tl);
+					}
+					y += fh;
+				}
 			}
 		}
 	}
@@ -826,12 +837,18 @@ void MyApp::OnClose()
 	DebugClose();
 
 	CleanUpPhysics();
+
+	Release(mLinesVS);
+	Release(mLinesPS);
+	Release(mLinesMaterial);
+	Release(mLinesIC);
+
 	Release(m2DUntexturedVS);
 	Release(m2DUntexturedPS);
 	Release(mUntexturedMaterial);
 	Release(m2DUntexturedIC);
+
 	Delete(mPhysicsDebug);
-	Delete(mAxes);
 	Release(mCylinderIB);
 	Release(mCylinderVB);
 	Release(mCylinderMesh);

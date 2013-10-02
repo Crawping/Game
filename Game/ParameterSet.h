@@ -54,8 +54,9 @@ struct ParameterSet
 	vector<Parameter *> mParameters;
 	string mName;
 	bool mExpanded;
+	bool mPrivate;
 
-	void CopyParameterSet(char const *name);
+	void CopyParameterSet(char const *name, bool _private = false);
 	string ToXML() const;
 	void FromXML(XmlDocument *xmlDocument);
 };
@@ -94,6 +95,21 @@ struct pname : ParameterSet											\
 	pname()															\
 	{																\
 		CopyParameterSet(displayName);								\
+	}
+
+//////////////////////////////////////////////////////////////////////
+
+#define BEGIN_PRIVATE_PARAMSET(pname, displayName)					\
+																	\
+struct pname : ParameterSet											\
+{																	\
+	pname(char const *name)											\
+	{																\
+		CopyParameterSet(name, true);								\
+	}																\
+	pname()															\
+	{																\
+		CopyParameterSet(displayName, true);						\
 	}
 
 //////////////////////////////////////////////////////////////////////

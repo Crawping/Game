@@ -23,6 +23,10 @@ ALIGN(16, struct) Vec4i
 };
 
 extern const __declspec(selectany) Vec4i gMMaskXYZ = { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 };
+extern const __declspec(selectany) Vec4i gMMaskX   = { 0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000 };
+extern const __declspec(selectany) Vec4i gMMaskY   = { 0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000 };
+extern const __declspec(selectany) Vec4i gMMaskZ   = { 0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000 };
+extern const __declspec(selectany) Vec4i gMMaskW   = { 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF};
 
 //////////////////////////////////////////////////////////////////////
 
@@ -49,6 +53,11 @@ Vector		SplatX(Vector x);
 Vector		SplatY(Vector y);
 Vector		SplatZ(Vector z);
 Vector		SplatW(Vector w);
+
+Vector		MaskX(Vector x);
+Vector		MaskY(Vector y);
+Vector		MaskZ(Vector z);
+Vector		MaskW(Vector w);
 
 float		GetX(Vector v);
 float		GetY(Vector v);
@@ -240,6 +249,34 @@ inline float GetZ(Vector v)
 inline float GetW(Vector v)
 {
 	return _mm_cvtss_f32(Permute(3,3,3,3, v));
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vector MaskX(Vector x)
+{
+	return _mm_and_ps(x, gMMaskX);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vector MaskY(Vector y)
+{
+	return _mm_and_ps(y, gMMaskY);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vector MaskZ(Vector z)
+{
+	return _mm_and_ps(z, gMMaskZ);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vector MaskW(Vector w)
+{
+	return _mm_and_ps(w, gMMaskW);
 }
 
 //////////////////////////////////////////////////////////////////////
