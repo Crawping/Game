@@ -283,10 +283,10 @@ void ImmediateContext::BeginVertex()
 
 void ImmediateContext::SetPosition3(float x, float y, float z)
 {
-	Vec3Floats &p = *reinterpret_cast<Vec3Floats *>(mVertexBufferPointer);
-	p.x = x;
-	p.y = y;
-	p.z = z;
+	float *p = (float *)mVertexBufferPointer;
+	p[0] = x;
+	p[1] = y;
+	p[2] = z;
 	mVertexBufferPointer += sizeof(Vec3Floats);
 	assert(mVertexBufferPointer < mVertexBufferEnd);
 }
