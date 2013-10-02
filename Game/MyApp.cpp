@@ -87,9 +87,33 @@ void MyApp::OnInit()
 
 	mCar = null;
 
+	int gx = editMargin;
+	int gy = 0;
+	int gw = (Graphics::Width() - gx) / 2;
+	int gh = (Graphics::Height() - gy) / 2;
+	int mx = gx + gw; int my = gy + gh;
+	int fx = mx + gw; int fy = my + gh;
+	float aspect = (float)gw/gh;
+	mViewWindow[0] = new ViewWindow(gx, gy, mx, my, Axis::X_Axis, Axis::X_Axis, Axis::X_Axis, Axis::X_Axis, false);
+	mViewWindow[1] = new ViewWindow(mx, gy, fx, my, Axis::X_Axis, Axis::Z_Axis, Axis::Y_Axis, Axis::Z_Axis, true);
+	mViewWindow[2] = new ViewWindow(gx, my, mx, fy, Axis::Y_Axis, Axis::Z_Axis, Axis::X_Axis, Axis::Z_Axis, true, -1.0f);
+	mViewWindow[3] = new ViewWindow(mx, my, fx, fy, Axis::Z_Axis, Axis::Y_Axis, Axis::X_Axis, Axis::Y_Axis, true);
+
+	mViewWindow[0]->mTargetZoom = 10;
+
 	mAppParameterSets.mFilename = TEXT("config.xml");
 	mAppParameterSets.AddParameterSet(&mCameraParameters);
+	for(int i=0; i<4; ++i)
+	{
+		mViewWindow[i]->mViewParameters.mName = Format("View%d", i);
+		mAppParameterSets.AddParameterSet(&mViewWindow[i]->mViewParameters);
+	}
 	mAppParameterSets.Load();
+
+	for(int i=0; i<4; ++i)
+	{
+		mViewWindow[i]->LoadParameters();
+	}
 
 	mCameraHeight = mCameraParameters.Height;
 	mCameraTargetHeight = mCameraParameters.TargetHeight;
@@ -207,20 +231,6 @@ void MyApp::OnInit()
 	mOldMouseDelta = Vec2(0,0);
 
 	mCarOrientation = IdentityMatrix;
-
-	int gx = editMargin;
-	int gy = 0;
-	int gw = (Graphics::Width() - gx) / 2;
-	int gh = (Graphics::Height() - gy) / 2;
-	int mx = gx + gw; int my = gy + gh;
-	int fx = mx + gw; int fy = my + gh;
-	float aspect = (float)gw/gh;
-	mViewWindow[0] = new ViewWindow(gx, gy, mx, my, Axis::X_Axis, Axis::X_Axis, Axis::X_Axis, Axis::X_Axis, false);
-	mViewWindow[1] = new ViewWindow(mx, gy, fx, my, Axis::X_Axis, Axis::Z_Axis, Axis::Y_Axis, Axis::Z_Axis, true);
-	mViewWindow[2] = new ViewWindow(gx, my, mx, fy, Axis::Y_Axis, Axis::Z_Axis, Axis::X_Axis, Axis::Z_Axis, true, -1.0f);
-	mViewWindow[3] = new ViewWindow(mx, my, fx, fy, Axis::Z_Axis, Axis::Y_Axis, Axis::X_Axis, Axis::Y_Axis, true);
-
-	mViewWindow[0]->mTargetZoom = 10;
 
 	mCameraYaw = HALF_PI;
 	mCameraPitch = PI + QUARTER_PI;
@@ -805,6 +815,12 @@ void MyApp::OnClose()
 	mCameraParameters.TargetHeight.set(mCameraTargetHeight);
 	mCameraParameters.Distance.set(mCameraDistance);
 
+	for(int i=0; i<4; ++i)
+	{
+		mViewWindow[i]->SaveParameters();
+	}
+
+	mCar->mParameterSets.Save();
 	mAppParameterSets.Save();
 
 	DebugClose();

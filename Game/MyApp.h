@@ -17,6 +17,14 @@ BEGIN_PARAMSET(CameraParameters, "Camera")
 
 END_PARAMSET()
 
+BEGIN_PARAMSET(ViewParameters, "View")
+
+	PARAM(PanX, 0, -100, 100);
+	PARAM(PanY, 0, -100, 100);
+	PARAM(Zoom, 20, 0.1f, 100);
+
+END_PARAMSET()
+
 class MyApp : App
 {
 	void		OnInit() override;
@@ -73,6 +81,7 @@ class MyApp : App
 		float			mZoom;
 		float			mFlip;
 		ControlMode		mControlMode;
+		ViewParameters	mViewParameters;
 
 		ViewWindow(int left, int top, int right, int bottom, Axis axis, Axis upAxis, Axis xAxis, Axis yAxis, bool ortho, float flip = 1.0f)
 			: mLeft(left)
@@ -95,6 +104,19 @@ class MyApp : App
 		bool IsActive() const
 		{
 			return mControlMode != Idle;
+		}
+
+		void LoadParameters()
+		{
+			mPan = Vec2(mViewParameters.PanX, mViewParameters.PanY);
+			mZoom = mTargetZoom = mViewParameters.Zoom;
+		}
+
+		void SaveParameters()
+		{
+			mViewParameters.PanX.set(mPan.x);
+			mViewParameters.PanY.set(mPan.y);
+			mViewParameters.Zoom.set(mZoom);
 		}
 	};
 
