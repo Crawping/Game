@@ -170,9 +170,6 @@ class MyApp : App
 
 	Axes *									mAxes;
 
-	Vector									mControlPoints[31];
-	Vector									mBezierPoints[(31 / 3) * 16 + 1];
-
 	VertexShader *							m2DUntexturedVS;
 	PixelShader *							m2DUntexturedPS;
 	Material *								mUntexturedMaterial;

@@ -1,7 +1,27 @@
 <xml>
 	<ParameterSet Name="Camera" ParameterCount="3" Expanded="0">
-		<Parameter Name="Distance" Value="91.168571" MinValue="5.000000" MaxValue="100.000000" DefaultValue="30.000000"/>
-		<Parameter Name="Height" Value="32.396648" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="50.000000"/>
-		<Parameter Name="TargetHeight" Value="6.916904" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="5.000000"/>
+		<Parameter Name="Distance" Value="301.058380" MinValue="5.000000" MaxValue="100.000000" DefaultValue="30.000000"/>
+		<Parameter Name="Height" Value="240.365326" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="50.000000"/>
+		<Parameter Name="TargetHeight" Value="73.765999" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="5.000000"/>
+	</ParameterSet>
+	<ParameterSet Name="View0" ParameterCount="3" Expanded="0">
+		<Parameter Name="PanX" Value="0.000000" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="100.000000"/>
+		<Parameter Name="PanY" Value="0.000000" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="100.000000"/>
+		<Parameter Name="Zoom" Value="16.328415" MinValue="0.100000" MaxValue="100.000000" DefaultValue="20.000000"/>
+	</ParameterSet>
+	<ParameterSet Name="View1" ParameterCount="3" Expanded="0">
+		<Parameter Name="PanX" Value="7.969821" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="100.000000"/>
+		<Parameter Name="PanY" Value="-0.292471" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="100.000000"/>
+		<Parameter Name="Zoom" Value="35.827629" MinValue="0.100000" MaxValue="100.000000" DefaultValue="20.000000"/>
+	</ParameterSet>
+	<ParameterSet Name="View2" ParameterCount="3" Expanded="0">
+		<Parameter Name="PanX" Value="9.510143" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="100.000000"/>
+		<Parameter Name="PanY" Value="0.194088" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="100.000000"/>
+		<Parameter Name="Zoom" Value="17.148468" MinValue="0.100000" MaxValue="100.000000" DefaultValue="20.000000"/>
+	</ParameterSet>
+	<ParameterSet Name="View3" ParameterCount="3" Expanded="0">
+		<Parameter Name="PanX" Value="9.906919" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="100.000000"/>
+		<Parameter Name="PanY" Value="7.443985" MinValue="-100.000000" MaxValue="100.000000" DefaultValue="100.000000"/>
+		<Parameter Name="Zoom" Value="26.243156" MinValue="0.100000" MaxValue="100.000000" DefaultValue="20.000000"/>
 	</ParameterSet>
 </xml>

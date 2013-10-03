@@ -262,17 +262,6 @@ void MyApp::OnInit()
 
 	mTimer.Reset();
 	mFrame = 0;
-
-	for(int i=0; i<=30; ++i)
-	{
-		float t = i / 30.0f * PI * 2;
-		float x = sinf(t) * 50;
-		float y = cosf(t) * 50;
-		float z = rand() / (float)RAND_MAX * 20 + 10;
-		mControlPoints[i] = Vec(x, y, z);
-	}
-
-	CalculateBezier(mControlPoints, ARRAYSIZE(mControlPoints), mBezierPoints, 16);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -378,8 +367,10 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 		mLinesIC->Begin();
 		mLinesIC->SetMaterial(mLinesMaterial);
 		mLinesIC->SetConstants(&mCamera.GetTransformMatrix(), sizeof(Matrix));
+		mLinesIC->BeginLines();
 		Axes::DrawGrid(mLinesIC, Vec(0,0,0), Vec(1000, 1000, 0), 100, 0x80ffffff);
 		Axes::Draw(mLinesIC, Vec(0,0,0), Vec(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
+		mLinesIC->EndLines();
 		mLinesIC->End();
 	}
 	DrawPhysics();
@@ -457,25 +448,13 @@ bool MyApp::OnUpdate()
 			mLinesIC->Begin();
 			mLinesIC->SetMaterial(mLinesMaterial);
 			mLinesIC->SetConstants(&mCamera.GetTransformMatrix(), sizeof(Matrix));
-
+			mLinesIC->BeginLines();
+	
 			Axes::DrawGrid(mLinesIC, Vec(0,0,0), Vec(1000, 1000, 0), 100, 0x80ffffff);
+
 			Axes::Draw(mLinesIC, Vec(0,0,0), Vec(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
 
-			mLinesIC->BeginLineStrip();
-			for(int i=0; i<ARRAYSIZE(mBezierPoints); ++i)
-			{
-				mLinesIC->BeginVertex();
-				mLinesIC->SetPosition3(mBezierPoints[i]);
-				mLinesIC->SetColor(0x80ffffff);
-				mLinesIC->EndVertex();
-			}
-			mLinesIC->EndLineStrip();
-
-			for(int i=0; i<ARRAYSIZE(mControlPoints); ++i)
-			{
-				Axes::Draw(mLinesIC, mControlPoints[i], Vec(2,2,2), 0xffff0000, 0xff00ff00, 0xff0000ff);
-			}
-
+			mLinesIC->EndLines();
 			mLinesIC->End();
 
 			DrawPhysics();

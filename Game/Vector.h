@@ -39,6 +39,13 @@ extern const __declspec(selectany) Vec4i gMMaskW   = { 0x00000000, 0x00000000, 0
 
 //////////////////////////////////////////////////////////////////////
 
+template <typename T> struct aligned
+{
+	typedef vector<T, aligned_allocator<T, sizeof(T)> > vector;
+};
+
+//////////////////////////////////////////////////////////////////////
+
 Vector		Vec(float x, float y, float z);
 Vector		Vec(float x, float y, float z, float w);
 

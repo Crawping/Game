@@ -58,6 +58,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "Aligned.h"
+#include "aligned_allocator.h"
 #include "Types.h"
 #include "Constants.h"
 #include "Util.h"
@@ -100,3 +101,4 @@
 #include "PhysicsDebug.h"
 #include "Axes.h"
 #include "Bezier.h"
+#include "Track.h"
