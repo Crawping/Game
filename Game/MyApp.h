@@ -170,6 +170,8 @@ class MyApp : App
 
 	Axes *									mAxes;
 
+	Track *									mTrack;
+
 	VertexShader *							m2DUntexturedVS;
 	PixelShader *							m2DUntexturedPS;
 	Material *								mUntexturedMaterial;

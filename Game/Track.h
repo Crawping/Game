@@ -14,10 +14,8 @@ public:
 
 private:
 
-	aligned<Vector>::vector			mControlPoints;
-	aligned<Vector>::vector			mTrack;
-
-	vector<btConvexHullShape *>		mTrackSectionShapes;
-	vector<btRigidBody *>			mTrackSections;
+	btTriangleMesh *				mTrackMesh;
+	btBvhTriangleMeshShape *		mTrackShape;
+	btRigidBody *					mTrackBody;
 
 };

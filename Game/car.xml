@@ -1,6 +1,6 @@
 <xml>
 	<ParameterSet Name="Engine" ParameterCount="7" Expanded="1">
-		<Parameter Name="Power" Value="20.000000" MinValue="0.500000" MaxValue="20.000000" DefaultValue="1.000000"/>
+		<Parameter Name="Power" Value="19.882999" MinValue="0.500000" MaxValue="20.000000" DefaultValue="1.000000"/>
 		<Parameter Name="Mass" Value="438.262024" MinValue="1.000000" MaxValue="500.000000" DefaultValue="70.000000"/>
 		<Parameter Name="VerticalOffset" Value="-2.180001" MinValue="-5.000000" MaxValue="5.000000" DefaultValue="0.000000"/>
 		<Parameter Name="HorizontalOffset" Value="-7.920001" MinValue="-10.000000" MaxValue="10.000000" DefaultValue="4.000000"/>
@@ -9,18 +9,18 @@
 		<Parameter Name="Length" Value="5.000000" MinValue="0.500000" MaxValue="5.000000" DefaultValue="2.000000"/>
 	</ParameterSet>
 	<ParameterSet Name="Chassis" ParameterCount="4" Expanded="1">
-		<Parameter Name="Mass" Value="119.761879" MinValue="1.000000" MaxValue="500.000000" DefaultValue="70.000000"/>
-		<Parameter Name="Length" Value="13.199999" MinValue="10.000000" MaxValue="30.000000" DefaultValue="20.000000"/>
-		<Parameter Name="Width" Value="5.858001" MinValue="0.500000" MaxValue="10.000000" DefaultValue="4.000000"/>
+		<Parameter Name="Mass" Value="332.335876" MinValue="1.000000" MaxValue="500.000000" DefaultValue="70.000000"/>
+		<Parameter Name="Length" Value="10.000000" MinValue="10.000000" MaxValue="30.000000" DefaultValue="20.000000"/>
+		<Parameter Name="Width" Value="4.756001" MinValue="0.500000" MaxValue="10.000000" DefaultValue="4.000000"/>
 		<Parameter Name="Height" Value="0.500000" MinValue="0.500000" MaxValue="5.000000" DefaultValue="3.000000"/>
 	</ParameterSet>
 	<ParameterSet Name="Rear Wheels" ParameterCount="30" Expanded="1">
-		<Parameter Name="Radius" Value="5.000000" MinValue="2.000000" MaxValue="5.000000" DefaultValue="2.500000"/>
-		<Parameter Name="Width" Value="2.447599" MinValue="0.150000" MaxValue="4.000000" DefaultValue="1.000000"/>
+		<Parameter Name="Radius" Value="4.297999" MinValue="2.000000" MaxValue="5.000000" DefaultValue="2.500000"/>
+		<Parameter Name="Width" Value="2.532298" MinValue="0.150000" MaxValue="4.000000" DefaultValue="1.000000"/>
 		<Parameter Name="Mass" Value="1.000000" MinValue="0.100000" MaxValue="50.000000" DefaultValue="1.000000"/>
-		<Parameter Name="Offset_X" Value="-0.559999" MinValue="-10.000000" MaxValue="10.000000" DefaultValue="2.000000"/>
-		<Parameter Name="Offset_Y" Value="7.179998" MinValue="2.500000" MaxValue="10.000000" DefaultValue="5.500000"/>
-		<Parameter Name="Friction" Value="13.705999" MinValue="0.500000" MaxValue="16.000000" DefaultValue="1.200000"/>
+		<Parameter Name="Offset_X" Value="-0.279999" MinValue="-10.000000" MaxValue="10.000000" DefaultValue="2.000000"/>
+		<Parameter Name="Offset_Y" Value="5.394999" MinValue="2.500000" MaxValue="10.000000" DefaultValue="5.500000"/>
+		<Parameter Name="Friction" Value="13.861000" MinValue="0.500000" MaxValue="16.000000" DefaultValue="1.200000"/>
 		<Parameter Name="WheelLinearDamping" Value="0.000000" MinValue="0.000000" MaxValue="5.000000" DefaultValue="0.600000"/>
 		<Parameter Name="WheelAngularDamping" Value="0.000000" MinValue="0.000000" MaxValue="1.000000" DefaultValue="0.500000"/>
 		<Parameter Name="WheelRestitution" Value="0.244000" MinValue="0.000000" MaxValue="1.000000" DefaultValue="0.000000"/>
@@ -30,16 +30,16 @@
 		<Parameter Name="AxleLinearDamping" Value="0.100000" MinValue="0.000000" MaxValue="1.000000" DefaultValue="0.100000"/>
 		<Parameter Name="AxleAngularDamping" Value="0.888000" MinValue="0.000000" MaxValue="2.000000" DefaultValue="1.000000"/>
 		<Parameter Name="HubMass" Value="13.150002" MinValue="1.000000" MaxValue="16.000000" DefaultValue="8.000000"/>
-		<Parameter Name="HubWidth" Value="0.723200" MinValue="0.100000" MaxValue="2.000000" DefaultValue="1.000000"/>
+		<Parameter Name="HubWidth" Value="0.647200" MinValue="0.100000" MaxValue="2.000000" DefaultValue="1.000000"/>
 		<Parameter Name="HubHeight" Value="1.183000" MinValue="0.100000" MaxValue="2.000000" DefaultValue="1.000000"/>
-		<Parameter Name="HubLength" Value="0.852400" MinValue="0.100000" MaxValue="2.000000" DefaultValue="1.000000"/>
+		<Parameter Name="HubLength" Value="0.594000" MinValue="0.100000" MaxValue="2.000000" DefaultValue="1.000000"/>
 		<Parameter Name="SpringLength" Value="3.447999" MinValue="2.000000" MaxValue="10.000000" DefaultValue="5.000000"/>
-		<Parameter Name="SpringStiffness" Value="1940.299927" MinValue="10.000000" MaxValue="2000.000000" DefaultValue="1200.000000"/>
+		<Parameter Name="SpringStiffness" Value="2000.000000" MinValue="10.000000" MaxValue="2000.000000" DefaultValue="1200.000000"/>
 		<Parameter Name="SpringDamping" Value="0.005000" MinValue="0.000100" MaxValue="0.100000" DefaultValue="0.005000"/>
-		<Parameter Name="SpringLoad" Value="2.116200" MinValue="0.150000" MaxValue="4.500000" DefaultValue="0.750000"/>
+		<Parameter Name="SpringLoad" Value="2.429399" MinValue="0.150000" MaxValue="4.500000" DefaultValue="0.750000"/>
 		<Parameter Name="SpringAngle" Value="0.454135" MinValue="-0.436332" MaxValue="1.047198" DefaultValue="0.436332"/>
 		<Parameter Name="WishBoneMass" Value="31.439997" MinValue="1.000000" MaxValue="50.000000" DefaultValue="4.000000"/>
-		<Parameter Name="WishBoneWidth" Value="1.500000" MinValue="0.100000" MaxValue="1.500000" DefaultValue="0.600000"/>
+		<Parameter Name="WishBoneWidth" Value="0.618000" MinValue="0.100000" MaxValue="1.500000" DefaultValue="0.600000"/>
 		<Parameter Name="WishBoneHeight" Value="0.099040" MinValue="0.010000" MaxValue="0.200000" DefaultValue="0.020000"/>
 		<Parameter Name="WishBoneLinearDamping" Value="0.250000" MinValue="0.000000" MaxValue="1.000000" DefaultValue="0.250000"/>
 		<Parameter Name="WishBoneAngularDamping" Value="0.380000" MinValue="0.000000" MaxValue="5.000000" DefaultValue="2.950000"/>
@@ -47,8 +47,8 @@
 		<Parameter Name="WishBoneUpperOffset" Value="0.855000" MinValue="-0.250000" MaxValue="2.250000" DefaultValue="1.250000"/>
 	</ParameterSet>
 	<ParameterSet Name="Front Wheels" ParameterCount="30" Expanded="1">
-		<Parameter Name="Radius" Value="3.645998" MinValue="2.000000" MaxValue="5.000000" DefaultValue="2.500000"/>
-		<Parameter Name="Width" Value="2.493800" MinValue="0.150000" MaxValue="4.000000" DefaultValue="1.000000"/>
+		<Parameter Name="Radius" Value="3.675998" MinValue="2.000000" MaxValue="5.000000" DefaultValue="2.500000"/>
+		<Parameter Name="Width" Value="1.947098" MinValue="0.150000" MaxValue="4.000000" DefaultValue="1.000000"/>
 		<Parameter Name="Mass" Value="1.000000" MinValue="0.100000" MaxValue="50.000000" DefaultValue="1.000000"/>
 		<Parameter Name="Offset_X" Value="-0.440000" MinValue="-10.000000" MaxValue="10.000000" DefaultValue="2.000000"/>
 		<Parameter Name="Offset_Y" Value="4.224999" MinValue="2.500000" MaxValue="10.000000" DefaultValue="5.500000"/>
@@ -63,15 +63,15 @@
 		<Parameter Name="AxleAngularDamping" Value="1.000000" MinValue="0.000000" MaxValue="2.000000" DefaultValue="1.000000"/>
 		<Parameter Name="HubMass" Value="9.440000" MinValue="1.000000" MaxValue="16.000000" DefaultValue="8.000000"/>
 		<Parameter Name="HubWidth" Value="0.517400" MinValue="0.100000" MaxValue="2.000000" DefaultValue="1.000000"/>
-		<Parameter Name="HubHeight" Value="2.000000" MinValue="0.100000" MaxValue="2.000000" DefaultValue="1.000000"/>
+		<Parameter Name="HubHeight" Value="1.460400" MinValue="0.100000" MaxValue="2.000000" DefaultValue="1.000000"/>
 		<Parameter Name="HubLength" Value="0.726400" MinValue="0.100000" MaxValue="2.000000" DefaultValue="1.000000"/>
 		<Parameter Name="SpringLength" Value="2.984001" MinValue="2.000000" MaxValue="10.000000" DefaultValue="5.000000"/>
-		<Parameter Name="SpringStiffness" Value="642.798828" MinValue="10.000000" MaxValue="2000.000000" DefaultValue="1200.000000"/>
+		<Parameter Name="SpringStiffness" Value="1701.478882" MinValue="10.000000" MaxValue="2000.000000" DefaultValue="1200.000000"/>
 		<Parameter Name="SpringDamping" Value="0.003402" MinValue="0.000100" MaxValue="0.100000" DefaultValue="0.005000"/>
-		<Parameter Name="SpringLoad" Value="1.750501" MinValue="0.150000" MaxValue="4.500000" DefaultValue="0.750000"/>
+		<Parameter Name="SpringLoad" Value="2.751000" MinValue="0.150000" MaxValue="4.500000" DefaultValue="0.750000"/>
 		<Parameter Name="SpringAngle" Value="0.255341" MinValue="-0.436332" MaxValue="1.047198" DefaultValue="0.436332"/>
 		<Parameter Name="WishBoneMass" Value="41.925995" MinValue="1.000000" MaxValue="50.000000" DefaultValue="4.000000"/>
-		<Parameter Name="WishBoneWidth" Value="1.218800" MinValue="0.100000" MaxValue="1.500000" DefaultValue="0.600000"/>
+		<Parameter Name="WishBoneWidth" Value="0.759600" MinValue="0.100000" MaxValue="1.500000" DefaultValue="0.600000"/>
 		<Parameter Name="WishBoneHeight" Value="0.020000" MinValue="0.010000" MaxValue="0.200000" DefaultValue="0.020000"/>
 		<Parameter Name="WishBoneLinearDamping" Value="0.250000" MinValue="0.000000" MaxValue="1.000000" DefaultValue="0.250000"/>
 		<Parameter Name="WishBoneAngularDamping" Value="1.070001" MinValue="0.000000" MaxValue="5.000000" DefaultValue="2.950000"/>

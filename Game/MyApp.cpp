@@ -161,7 +161,7 @@ void MyApp::OnInit()
 		mLinesVS = VertexShader::Load(L"UntexturedVertexShader", mask);
 		mLinesPS = PixelShader::Load(L"UntexturedPixelShader");
 		mLinesMaterial = Material::Create(mLinesPS, mLinesVS, BM_Modulate);
-		mLinesIC = ImmediateContext::Create(mask, 65536, 65536);
+		mLinesIC = ImmediateContext::Create(mask, 1048576, 65536);
 	}
 
 	uint32 mask = VertexElement::Position3 + VertexElement::TexCoord + VertexElement::Color;
@@ -244,6 +244,8 @@ void MyApp::OnInit()
 	gCurrentCamera = &mCamera;
 
 	InitPhysics();
+
+	mTrack = new Track(16, 8);
 
 	mEditMode = EditMode::Edit;
 	mParameterIndex = 0;
@@ -801,6 +803,8 @@ void MyApp::Draw()
 
 void MyApp::OnClose()
 {
+	Delete(mTrack);
+
 	mCameraParameters.Height.set(mCameraHeight);
 	mCameraParameters.TargetHeight.set(mCameraTargetHeight);
 	mCameraParameters.Distance.set(mCameraDistance);

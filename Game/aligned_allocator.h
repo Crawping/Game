@@ -45,8 +45,7 @@ public:
 	//////////////////////////////////////////////////////////////////////
 	// The following must be the same for all allocators.
 
-	template <typename U>
-	struct rebind
+	template <typename U> struct rebind
 	{
 		typedef aligned_allocator<U, Alignment> other;
 	} ;
@@ -84,16 +83,19 @@ public:
 		return true;
 	}
 
-
 	//////////////////////////////////////////////////////////////////////
 	// Default constructor, copy constructor, rebinding constructor, and destructor.
 	// Empty for stateless allocators.
 
-	aligned_allocator() { }
+	aligned_allocator()
+	{
+	}
 
 	//////////////////////////////////////////////////////////////////////
 
-	aligned_allocator(const aligned_allocator&) { }
+	aligned_allocator(const aligned_allocator&)
+	{
+	}
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -101,8 +103,9 @@ public:
 
 	//////////////////////////////////////////////////////////////////////
 
-	~aligned_allocator() { }
-
+	~aligned_allocator()
+	{
+	}
 
 	//////////////////////////////////////////////////////////////////////
 	// The following will be different for each allocator.
@@ -115,7 +118,8 @@ public:
 		// (the implementation can define malloc(0) to return NULL,
 		// in which case the bad_alloc check below would fire).
 		// All allocators can return NULL in this case.
-		if (n == 0) {
+		if (n == 0)
+		{
 			return NULL;
 		}
 
@@ -162,6 +166,7 @@ public:
 	// "assignment operator could not be generated because a
 	// base class assignment operator is inaccessible" within
 	// the STL headers, but that warning is useless.
+
 private:
 	aligned_allocator& operator=(const aligned_allocator&);
 };
