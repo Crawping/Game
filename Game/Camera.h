@@ -42,16 +42,16 @@ public:
 
 	//////////////////////////////////////////////////////////////////////
 
-	void CalculateViewMatrix(Vector target, Vector position, Vector up);
-	void CalculateViewMatrix(Vector position, float yaw, float pitch, float roll);
+	void CalculateViewMatrix(Vec4f target, Vec4f position, Vec4f up);
+	void CalculateViewMatrix(Vec4f position, float yaw, float pitch, float roll);
 	void CalculatePerspectiveProjectionMatrix(float fov = 0.5f, float aspectRatio = 4.0f / 3.0f, float nearZ = 1.0f, float farZ = 1000.0f);
 	void CalculateOrthoProjectionMatrix(float width = 40, float height = 30, float nearZ = 1.0f, float farZ = 1000.0f);
 	void CalculateOrthoProjectionMatrix2D(int width, int height);
 	void CalculateViewProjectionMatrix();
 	void CalculateViewProjectionMatrix(Matrix const &modelMatrix);
 
-	static Matrix ViewMatrix(Vector target, Vector position, Vector up);
-	static Matrix ViewMatrix(Vector position, float yaw, float pitch, float roll);
+	static Matrix ViewMatrix(Vec4f target, Vec4f position, Vec4f up);
+	static Matrix ViewMatrix(Vec4f position, float yaw, float pitch, float roll);
 
 	static Matrix PerspectiveProjection(float fov = 0.5f, float aspectRatio = 4.0f / 3.0f, float nearZ = 1.0f, float farZ = 1000.0f);
 	static Matrix OrthoProjection3D(float width, float height, float nearZ = 1.0f, float farZ = 1000.0f);

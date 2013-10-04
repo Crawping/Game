@@ -122,9 +122,9 @@ class MyApp : App
 
 	void DrawViewWindow(ViewWindow *w);
 
-	Vector									mCameraPos;
-	Vector									mPosition;
-	Vector									mTarget;
+	Vec4f									mCameraPos;
+	Vec4f									mPosition;
+	Vec4f									mTarget;
 
 	Matrix									mCarOrientation;
 

@@ -235,8 +235,8 @@ void MyApp::OnInit()
 
 	mCameraYaw = HALF_PI;
 	mCameraPitch = PI + QUARTER_PI;
-	mCameraPos = Vec(25, 0, 25);
-	mTarget = Vec(35, 0, 5);
+	mCameraPos = Vec4(25, 0, 25);
+	mTarget = Vec4(35, 0, 5);
 	mYaw = mPitch = mRoll = 0;
 
 	UpdateCamera();
@@ -244,8 +244,6 @@ void MyApp::OnInit()
 	gCurrentCamera = &mCamera;
 
 	InitPhysics();
-
-	mTrack = new Track(16, 8);
 
 	mEditMode = EditMode::Edit;
 	mParameterIndex = 0;
@@ -280,7 +278,7 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	Vec2 panScale(w->mZoom / gw, w->mZoom / aspect / gh);
 
 	btTransform const &carTransform = mCar->mBody->getWorldTransform();
-	Vector carPosition = carTransform.getOrigin().get128();
+	Vec4f carPosition = carTransform.getOrigin().get128();
 
 	bool in = MousePosition.x > l && MousePosition.x < r && MousePosition.y > t && MousePosition.y < b;
 
@@ -332,8 +330,8 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	case Rotate:
 		if(MouseDelta.x != 0 || MouseDelta.y != 0)
 		{
-			Vector v = Vec(2.5f, 2.0f, 4.0f);
-			Vector x = Cross(v, Vec(0,0,1));
+			Vec4f v = Vec4(2.5f, 2.0f, 4.0f);
+			Vec4f x = Cross(v, Vec4(0,0,1));
 			v = Normalize(v);
 			x = Normalize(x);
 			mCarOrientation *= TranslationMatrix(carPosition * -1);
@@ -350,28 +348,28 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	if(w->mOrtho)
 	{
 		btTransform const &carTransform = mCar->mBody->getWorldTransform();
-		Vector carPosition = carTransform.getOrigin().get128();
+		Vec4f carPosition = carTransform.getOrigin().get128();
 		mCamera.CalculateOrthoProjectionMatrix(w->mZoom, w->mZoom / aspect);
 		int y1 = w->mYAxis;
 		int x1 = w->mXAxis;
-		Vector xaxis = carTransform.getBasis().getColumn(x1).get128() * w->mPan.x;
-		Vector yaxis = carTransform.getBasis().getColumn(y1).get128() * w->mPan.y;
+		Vec4f xaxis = carTransform.getBasis().getColumn(x1).get128() * w->mPan.x;
+		Vec4f yaxis = carTransform.getBasis().getColumn(y1).get128() * w->mPan.y;
 		carPosition = carPosition + xaxis + yaxis;
-		Vector cameraPos = carPosition + carTransform.getBasis().getColumn(w->mAxis).get128() * w->mFlip * 100;
+		Vec4f cameraPos = carPosition + carTransform.getBasis().getColumn(w->mAxis).get128() * w->mFlip * 100;
 		mCamera.CalculateViewMatrix(carPosition, cameraPos, carTransform.getBasis().getColumn(w->mUpAxis).get128());
 		mCamera.CalculateViewProjectionMatrix();
 	}
 	else
 	{
-		mCamera.CalculateViewMatrix(Vec(0, 0, 5), Vec(2.5f,2,4) * w->mZoom, Vec(0,0,1));
+		mCamera.CalculateViewMatrix(Vec4(0, 0, 5), Vec4(2.5f,2,4) * w->mZoom, Vec4(0,0,1));
 		mCamera.CalculatePerspectiveProjectionMatrix(0.5f, aspect);
 		mCamera.CalculateViewProjectionMatrix(mCarOrientation);
 		mLinesIC->Begin();
 		mLinesIC->SetMaterial(mLinesMaterial);
 		mLinesIC->SetConstants(&mCamera.GetTransformMatrix(), sizeof(Matrix));
 		mLinesIC->BeginLines();
-		Axes::DrawGrid(mLinesIC, Vec(0,0,0), Vec(1000, 1000, 0), 100, 0x80ffffff);
-		Axes::Draw(mLinesIC, Vec(0,0,0), Vec(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
+		Axes::DrawGrid(mLinesIC, Vec4(0,0,0), Vec4(1000, 1000, 0), 100, 0x80ffffff);
+		Axes::Draw(mLinesIC, Vec4(0,0,0), Vec4(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
 		mLinesIC->EndLines();
 		mLinesIC->End();
 	}
@@ -414,11 +412,14 @@ bool MyApp::OnUpdate()
 	if(KeyPressed('E'))
 	{
 		DeleteRamp();
+		Delete(mTrack);
 		mEditMode = Edit;
 	}
 	else if(KeyPressed('D'))
 	{
 		mEditMode = Drive;
+		Delete(mTrack);
+		mTrack = new Track(32, 32);
 	}
 
 	switch(mEditMode)
@@ -452,9 +453,9 @@ bool MyApp::OnUpdate()
 			mLinesIC->SetConstants(&mCamera.GetTransformMatrix(), sizeof(Matrix));
 			mLinesIC->BeginLines();
 	
-			Axes::DrawGrid(mLinesIC, Vec(0,0,0), Vec(1000, 1000, 0), 100, 0x80ffffff);
+			Axes::DrawGrid(mLinesIC, Vec4(0,0,0), Vec4(1000, 1000, 0), 100, 0x80ffffff);
 
-			Axes::Draw(mLinesIC, Vec(0,0,0), Vec(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
+			Axes::Draw(mLinesIC, Vec4(0,0,0), Vec4(1000, 1000, 1000), 0xff0000ff, 0xff00ff00, 0xffff0000);
 
 			mLinesIC->EndLines();
 			mLinesIC->End();
@@ -944,11 +945,10 @@ void MyApp::InitPhysics()
 
 void MyApp::UpdatePhysics()
 {
-	float scale = 10;
 	if(!KeyHeld('X') || KeyPressed('Z'))
 	{
-		float dt = 1.0f/10;
-		Physics::DynamicsWorld->stepSimulation(dt, 10, dt/scale);
+		float dt = 1.0f/15;
+		Physics::DynamicsWorld->stepSimulation(dt, 100, dt/100);
 	}
 
 	if(mEditMode == Edit)
@@ -1061,13 +1061,13 @@ void MyApp::UpdateCamera()
 		}
 		float len = mCameraDistance;
 
-		Vector bcp = Vec(cp.x() + cosf(angle) * len, cp.y() + sinf(angle) * len, 0);
+		Vec4f bcp = Vec4(cp.x() + cosf(angle) * len, cp.y() + sinf(angle) * len, 0);
 
-		Vector diff2 = bcp - mCameraPos;
+		Vec4f diff2 = bcp - mCameraPos;
 		mCameraPos = mCameraPos + diff2 * 0.1f;
 
-		Vector car = cp.get128();
-		Vector diff = car - mCameraPos;
+		Vec4f car = cp.get128();
+		Vec4f diff = car - mCameraPos;
 		float distance = Length(diff);
 		diff = Normalize(diff);
 		diff = diff * (distance - len);
@@ -1075,14 +1075,14 @@ void MyApp::UpdateCamera()
 
 		if(!oldFollow)
 		{
-			mCameraPos = bcp + Vec(0,0,mCameraHeight);
+			mCameraPos = bcp + Vec4(0,0,mCameraHeight);
 		}
-		Vector target = car + Vec(0,0,mCameraTargetHeight);
-		Vector pos = mCameraPos + Vec(0,0,mCameraHeight);
+		Vec4f target = car + Vec4(0,0,mCameraTargetHeight);
+		Vec4f pos = mCameraPos + Vec4(0,0,mCameraHeight);
 
 		float pitch = atan2f(mCameraTargetHeight - mCameraHeight, distance);
 
-		mCamera.CalculateViewMatrix(target, pos, Vec(0,0,1));
+		mCamera.CalculateViewMatrix(target, pos, Vec4(0,0,1));
 		mCamera.CalculatePerspectiveProjectionMatrix(0.5f, Graphics::FWidth() / Graphics::FHeight());
 		mCamera.CalculateViewProjectionMatrix();
 
@@ -1100,9 +1100,9 @@ void MyApp::UpdateCamera()
 		mCamera.CalculateViewMatrix(mCameraPos, 0, mCameraPitch, mCameraYaw);
 
 		Matrix m = XMMatrixTranspose(mCamera.GetViewMatrix());
-		Vector dx(m.r[0]);
+		Vec4f dx(m.r[0]);
 //		Vec4 dy(m.r[1]);
-		Vector dz(m.r[2]);
+		Vec4f dz(m.r[2]);
 
 		float speed = 0.05f;
 		if(!KeyHeld(VK_SHIFT))
@@ -1128,11 +1128,11 @@ void MyApp::UpdateCamera()
 		}
 		if(KeyHeld('R'))
 		{
-			mCameraPos = mCameraPos + Vec(0,0,speed);
+			mCameraPos = mCameraPos + Vec4(0,0,speed);
 		}
 		if(KeyHeld('F'))
 		{
-			mCameraPos = mCameraPos - Vec(0,0,speed);
+			mCameraPos = mCameraPos - Vec4(0,0,speed);
 		}
 		//DebugText(Vec2(50, 50), "Pos: %f,%f,%f\nYaw: %f\nPitch: %f", mCameraPos.x, mCameraPos.y, mCameraPos.z, mCameraYaw, mCameraPitch);
 	}
@@ -1256,7 +1256,7 @@ void MyApp::DrawNode(aiScene const *scene, aiNode const *node)
 					{
 						int x = face->mIndices[i];	// get group index for current index
 						mImmediateContext->BeginVertex();
-						mImmediateContext->SetPosition3(Vec(mesh->mVertices[x].x, mesh->mVertices[x].y, mesh->mVertices[x].z));
+						mImmediateContext->SetPosition3(Vec4(mesh->mVertices[x].x, mesh->mVertices[x].y, mesh->mVertices[x].z));
 						if(mesh->HasTextureCoords(0))
 						{
 							aiVector3D *v = &mesh->mTextureCoords[0][x];

@@ -134,7 +134,7 @@ void DebugText(int x, int y, char const *text, ...)
 
 //////////////////////////////////////////////////////////////////////
 
-void DebugText(Vector const &pos, char const *text, ...)
+void DebugText(Vec4f const &pos, char const *text, ...)
 {
 	DebugBeginFrame();
 	char buffer[1024];
@@ -144,7 +144,7 @@ void DebugText(Vector const &pos, char const *text, ...)
 	
 	Matrix const &m = mCamera->GetTransformMatrix();
 
-	Vector r = SplatX(pos) * m.r[0] + SplatY(pos) * m.r[1] + SplatZ(pos) * m.r[2] + m.r[3];
+	Vec4f r = SplatX(pos) * m.r[0] + SplatY(pos) * m.r[1] + SplatZ(pos) * m.r[2] + m.r[3];
 	r /= SplatW(r);
 
 	float z = GetZ(r);
@@ -157,7 +157,7 @@ void DebugText(Vector const &pos, char const *text, ...)
 
 //////////////////////////////////////////////////////////////////////
 
-void DebugLine(Vector const &start, Vector const &end, Color color)
+void DebugLine(Vec4f const &start, Vec4f const &end, Color color)
 {
 }
 

@@ -27,13 +27,13 @@ public:
 	void SetPosition2(Vec2 const &pos);		// they get stuffed into the vertex buffer in the order they're set.... (for now)
 
 	void SetPosition3(float x, float y, float z);
-	void SetPosition3(Vector pos);
+	void SetPosition3(Vec4f pos);
 
 	void SetTexCoord(float u, float v);
 	void SetTexCoord(Vec2 const &uv);
 
 	void SetNormal(float x, float y, float z);
-	void SetNormal(Vector normal);
+	void SetNormal(Vec4f normal);
 
 	void SetColor(Color color);
 

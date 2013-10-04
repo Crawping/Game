@@ -4,7 +4,7 @@
 
 //////////////////////////////////////////////////////////////////////
 
-Vector CalculateBezierPoint(float t, Vector p0, Vector p1, Vector p2, Vector const &p3)
+Vec4f CalculateBezierPoint(float t, Vec4f p0, Vec4f p1, Vec4f p2, Vec4f const &p3)
 {
 	float u = 1 - t;
 	float tt = t * t;
@@ -18,15 +18,15 @@ Vector CalculateBezierPoint(float t, Vector p0, Vector p1, Vector p2, Vector con
 // ControlPoints must be at least 4
 // Results must be (ControlPoints * Steps + 1) big
 
-uint CalculateBezier(Vector const *ControlPoints, uint NumControlPoints, Vector *Results, int Steps)
+uint CalculateBezier(Vec4f const *ControlPoints, uint NumControlPoints, Vec4f *Results, int Steps)
 {
 	uint o = 0;
 	for(uint i=0; i<NumControlPoints-3; i+=3)
 	{
-		Vector const &p0 = ControlPoints[i + 0];
-		Vector const &p1 = ControlPoints[i + 1];
-		Vector const &p2 = ControlPoints[i + 2];
-		Vector const &p3 = ControlPoints[i + 3];
+		Vec4f const &p0 = ControlPoints[i + 0];
+		Vec4f const &p1 = ControlPoints[i + 1];
+		Vec4f const &p2 = ControlPoints[i + 2];
+		Vec4f const &p3 = ControlPoints[i + 3];
 
 		if(i == 0)
 		{

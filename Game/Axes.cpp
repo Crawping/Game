@@ -4,15 +4,15 @@
 
 //////////////////////////////////////////////////////////////////////
 
-void Axes::Draw(ImmediateContext *mIC, Vector origin, Vector extents, Color x, Color y, Color z)
+void Axes::Draw(ImmediateContext *mIC, Vec4f origin, Vec4f extents, Color x, Color y, Color z)
 {
-	Vector vx = MaskX(extents);
-	Vector vy = MaskY(extents);
-	Vector vz = MaskZ(extents);
+	Vec4f vx = MaskX(extents);
+	Vec4f vy = MaskY(extents);
+	Vec4f vz = MaskZ(extents);
 
-	Vector wx = Negate(vx);
-	Vector wy = Negate(vy);
-	Vector wz = Negate(vz);
+	Vec4f wx = Negate(vx);
+	Vec4f wy = Negate(vy);
+	Vec4f wz = Negate(vz);
 	
 	vx += origin;
 	vy += origin;
@@ -32,7 +32,7 @@ void Axes::Draw(ImmediateContext *mIC, Vector origin, Vector extents, Color x, C
 
 //////////////////////////////////////////////////////////////////////
 
-void Axes::DrawGrid(ImmediateContext *mIC, Vector origin, Vector extents, int step, Color color)
+void Axes::DrawGrid(ImmediateContext *mIC, Vec4f origin, Vec4f extents, int step, Color color)
 {
 	float x = GetX(extents);
 	float y = GetY(extents);

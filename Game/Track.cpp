@@ -1,11 +1,10 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "..\Bullet\src\BulletCollision\CollisionShapes\btShapeHull.h"
 
 //////////////////////////////////////////////////////////////////////
 
-static void AddQuad(btTriangleMesh *m, Vector const &a, Vector const &b, Vector const &c, Vector const &d)
+static void AddQuad(btTriangleMesh *m, Vec4f const &a, Vec4f const &b, Vec4f const &c, Vec4f const &d)
 {
 	m->addTriangle(c, b, a, true);
 	m->addTriangle(a, d, c, true);
@@ -15,74 +14,52 @@ static void AddQuad(btTriangleMesh *m, Vector const &a, Vector const &b, Vector 
 
 Track::Track(uint numControlPoints, uint step)
 {
-	aligned<Vector>::vector controlPoints;
-	aligned<Vector>::vector track;
-
-	controlPoints.resize(numControlPoints + 1);
-
+	// setup arrays of control points and track points
+	aligned<Vec4f>::vector controlPoints;
+	aligned<Vec4f>::vector trackPoints;
 	uint numTrackPoints = (numControlPoints / 3) * step + 1;
+	controlPoints.resize(numControlPoints);
+	trackPoints.resize(numTrackPoints);
 
-	track.resize(numTrackPoints);
-
-	for(uint i=0; i<=numControlPoints; ++i)
+	// build circular undulating track
+	for(uint i=0; i<numControlPoints; ++i)
 	{
-		float t = (float)i / (numControlPoints - 2) * PI * 2;
+		float t = i * PI * 2 / (numControlPoints - 2);
 		float x = sinf(t) * 290;
 		float y = cosf(t) * 290;
-		float z = 0;
-
+		float z;
 		switch(i % 3)
 		{
-		case 0:
-			break;
-		case 1:
-			z += rand() / (float)RAND_MAX * 50;
-			break;
-		case 2:
-			z -= rand() / (float)RAND_MAX * 15;
-			break;
+			case 1:	z = rand() / (float)RAND_MAX * 50;	break;
+			case 2:	z = rand() / (float)RAND_MAX * -15;	break;
+			default: z = 0;
 		}
-		controlPoints[i] = Vec(x, y, z);
+		controlPoints[i] = Vec4(x, y, z);
 	}
+	CalculateBezier(controlPoints.data(), numControlPoints, trackPoints.data(), step);
 
-	CalculateBezier(controlPoints.data(), numControlPoints, track.data(), step);
-
-	Vector in = Vec(0.9f, 0.9f, 1);
-	Vector out = Vec(1.1f, 1.1f, 1);
-	Vector flr = Vec(0,0,-2);
-
+	// make the mesh shape
+	Vec4f in = Vec4(0.9f, 0.9f, 1);
+	Vec4f out = Vec4(1.1f, 1.1f, 1);
+	Vec4f flr = Vec4(0,0,-2);
 	mTrackMesh = new btTriangleMesh();
-
 	for(uint i=0; i<numTrackPoints; ++i )
 	{
-		int j = (i + 1) % numTrackPoints;	// loop
-
-		Vector a = track[i] * in;
-		Vector b = track[i] * out;
-		Vector c = track[j] * out;
-		Vector d = track[j] * in;
-
-		Vector e = a + flr;
-		Vector f = b + flr;
-		Vector g = c + flr;
-		Vector h = d + flr;
-
+		int j = (i + 1) % numTrackPoints;
+		Vec4f a = trackPoints[i] * in;
+		Vec4f b = trackPoints[i] * out;
+		Vec4f c = trackPoints[j] * out;
+		Vec4f d = trackPoints[j] * in;
 		AddQuad(mTrackMesh, a, b, c, d);
-		AddQuad(mTrackMesh, a, d, h, e);
-		AddQuad(mTrackMesh, b, a, e, f);
-
-		AddQuad(mTrackMesh, c, b, f, g);
-		AddQuad(mTrackMesh, h, g, f, e);
-		AddQuad(mTrackMesh, d, c, g, h);
 	}
+	mTrackShape = new btBvhTriangleMeshShape(mTrackMesh, true, true);
 
-	mTrackShape = new btBvhTriangleMeshShape(mTrackMesh, false);
-	btDefaultMotionState *ms = new btDefaultMotionState(btTransform::getIdentity());
-	mTrackBody = new btRigidBody(0, ms, mTrackShape);
-	Physics::DynamicsWorld->addRigidBody(mTrackBody, 1, 2);
+	// make the rigidbody
+	mTrackBody = new btRigidBody(0, new btDefaultMotionState(btTransform::getIdentity()), mTrackShape);
 	mTrackBody->setActivationState(DISABLE_DEACTIVATION);
 	mTrackBody->setFriction(1.0f);
 	mTrackBody->setRestitution(0.0f);
+	Physics::DynamicsWorld->addRigidBody(mTrackBody, 1, 2);
 }
 
 //////////////////////////////////////////////////////////////////////

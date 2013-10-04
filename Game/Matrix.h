@@ -28,18 +28,18 @@ inline Matrix RotationMatrix(float yaw, float pitch, float roll)
 
 //////////////////////////////////////////////////////////////////////
 
-inline Matrix RotationMatrix(Vector axis, float angle)
+inline Matrix RotationMatrix(Vec4f axis, float angle)
 {
 	return DirectX::XMMatrixRotationNormal(axis, angle);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-inline Matrix TranslationMatrix(Vector translation)
+inline Matrix TranslationMatrix(Vec4f translation)
 {
 	return DirectX::XMMatrixTranslationFromVector(translation);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-Vector GetYawPitchRollFromMatrix(Matrix const &m);
+Vec4f GetYawPitchRollFromMatrix(Matrix const &m);

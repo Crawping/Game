@@ -1,4 +1,4 @@
 #pragma once
 
-uint CalculateBezier(Vector const *ControlPoints, uint NumControlPoints, Vector *Results, int Steps);
+uint CalculateBezier(Vec4f const *ControlPoints, uint NumControlPoints, Vec4f *Results, int Steps);
 uint CalculateNumBezierPoints(uint numControlPoints, uint steps);

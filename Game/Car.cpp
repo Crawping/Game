@@ -70,8 +70,8 @@ void Car::Create()
 {
 	Destroy();
 
-	Vector carPos = Vec(0, 0, 5);
-	Vector carSize = Vec(mCarParams.Length, mCarParams.Width, mCarParams.Height);
+	Vec4f carPos = Vec4(0, 0, 5);
+	Vec4f carSize = Vec4(mCarParams.Length, mCarParams.Width, mCarParams.Height);
 	float bodyMass = mCarParams.Mass;
 
 	btTransform bodyTransform(btQuaternion::getIdentity(), carPos);
@@ -148,7 +148,7 @@ void WheelAssembly::Create(WheelPairParams *p, btVector3 const &carWorldPos, btV
 	float carWidth = carSize.y();
 	float carHeight = carSize.z();
 
-	Vector wheelOffset = Vec((carLength - p->Offset_X) * xReflect, (carWidth + p->Offset_Y) * -yReflect, 0);
+	Vec4f wheelOffset = Vec4((carLength - p->Offset_X) * xReflect, (carWidth + p->Offset_Y) * -yReflect, 0);
 	btVector3 wheelPos = wheelOffset + carWorldPos;
 	float wheelRadius = p->Radius;
 	float wheelWidth = p->Width;

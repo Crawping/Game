@@ -6,18 +6,18 @@
 
 Camera::Camera()
 {
-	CalculateViewMatrix(Vec(0,0,0), 0, 0, 0);
+	CalculateViewMatrix(Vec4(0,0,0), 0, 0, 0);
 	CalculatePerspectiveProjectionMatrix();
 }
 
 //////////////////////////////////////////////////////////////////////
 
-Matrix Camera::ViewMatrix(Vector target, Vector position, Vector up)
+Matrix Camera::ViewMatrix(Vec4f target, Vec4f position, Vec4f up)
 {
-	Vector zaxis = Normalize(target - position);
-	Vector xaxis = Normalize(Cross(up, zaxis));
-	Vector yaxis = Cross(zaxis, xaxis);
-	Vector trans = Vec(-Dot(xaxis, position), -Dot(yaxis, position), -Dot(zaxis, position), 1);
+	Vec4f zaxis = Normalize(target - position);
+	Vec4f xaxis = Normalize(Cross(up, zaxis));
+	Vec4f yaxis = Cross(zaxis, xaxis);
+	Vec4f trans = Vec4(-Dot(xaxis, position), -Dot(yaxis, position), -Dot(zaxis, position), 1);
 	return Matrix(	GetX3(xaxis, yaxis, zaxis),
 					GetY3(xaxis, yaxis, zaxis),
 					GetZ3(xaxis, yaxis, zaxis),
@@ -26,7 +26,7 @@ Matrix Camera::ViewMatrix(Vector target, Vector position, Vector up)
 
 //////////////////////////////////////////////////////////////////////
 
-Matrix Camera::ViewMatrix(Vector position, float yaw, float pitch, float roll)
+Matrix Camera::ViewMatrix(Vec4f position, float yaw, float pitch, float roll)
 {
 	Matrix m = DirectX::XMMatrixIdentity();
 	m.r[3] = SetW(Negate(position), 1.0f);
@@ -79,14 +79,14 @@ Matrix Camera::OrthoProjection2D(int width, int height)
 
 //////////////////////////////////////////////////////////////////////
 
-void Camera::CalculateViewMatrix(Vector target, Vector position, Vector up)
+void Camera::CalculateViewMatrix(Vec4f target, Vec4f position, Vec4f up)
 {
 	mViewMatrix = ViewMatrix(target, position, up);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-void Camera::CalculateViewMatrix(Vector position, float yaw, float pitch, float roll)
+void Camera::CalculateViewMatrix(Vec4f position, float yaw, float pitch, float roll)
 {
 	mViewMatrix = ViewMatrix(position, yaw, pitch, roll);
 }

@@ -8,8 +8,8 @@ class Axes
 {
 public:
 
-	static void Draw(ImmediateContext *mIC, Vector origin, Vector extents, Color x, Color y, Color z);
-	static void DrawGrid(ImmediateContext *mIC, Vector origin, Vector extents, int step, Color color);
+	static void Draw(ImmediateContext *mIC, Vec4f origin, Vec4f extents, Color x, Color y, Color z);
+	static void DrawGrid(ImmediateContext *mIC, Vec4f origin, Vec4f extents, int step, Color color);
 
 };
 
