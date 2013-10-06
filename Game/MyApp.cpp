@@ -908,7 +908,7 @@ void MyApp::CreateRamp()
 	mTestBody->setRestitution(0.5f);
 
 	mBoxMesh = new btTriangleMesh();
-	mBoxMesh->addTriangle(Vec4(-20, 20, 2), Vec4(-20, -20, 2), Vec4(-40, 1, 2));
+	mBoxMesh->addTriangle(Vec4(-20, 20, 3), Vec4(-20, -20, 2), Vec4(-40, 1, 1));
 	mBoxShape = new btBvhTriangleMeshShape(mBoxMesh, true, true);
 	mBoxBody = new btRigidBody(0, new btDefaultMotionState(), mBoxShape);
 	Physics::DynamicsWorld->addRigidBody(mBoxBody, -1, -1);
