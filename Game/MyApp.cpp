@@ -26,7 +26,7 @@ MyApp app;
 
 struct Vert
 {
-	Vec3Floats	mPosition;
+	Vec3f	mPosition;
 	Vec2		mTexCoord;
 	Color		mColor;
 };
@@ -37,7 +37,7 @@ struct Vert
 #pragma push_macro("V2")
 #define N 0.5f
 #define C 0xffffffff	// ABGR
-#define V3 Vec3Floats
+#define V3 Vec3f
 #define V2 Vec2
 
 Vert verts[36] =
@@ -128,7 +128,7 @@ void MyApp::OnInit()
 		float x = sinf(r);
 		float y = cosf(r);
 		Vert v;
-		v.mPosition = Vec3Floats(x * 0.5f, 0.5f, y * 0.5f);
+		v.mPosition = Vec3f(x * 0.5f, 0.5f, y * 0.5f);
 		v.mTexCoord = Vec2(x * 0.5f + 0.5f, y * 0.5f + 0.5f);
 		v.mColor = FromRGBA(255, 255, 255, 255);
 		vertex[i] = v;
@@ -143,7 +143,7 @@ void MyApp::OnInit()
 		float x = sinf(r);
 		float y = cosf(r);
 		Vert v;
-		v.mPosition = Vec3Floats(x * 0.5f, 0.5f, y * 0.5f);
+		v.mPosition = Vec3f(x * 0.5f, 0.5f, y * 0.5f);
 		v.mTexCoord = Vec2(x * 0.5f + 0.5f, y * 0.5f + 0.5f);
 		v.mColor = FromRGBA(255, 255, 255, 255);
 		v.mTexCoord.x = (float)i / step;
@@ -285,12 +285,12 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	switch(w->mControlMode)
 	{
 	case Idle:
-		if(in && MousePressed == MouseButton::Left)
+		if(in && MousePressed == MouseButton::Left && w->mOrtho)
 		{
 			w->mControlMode = Pan;
 			SetMouseMode(MouseMode::Captured);
 		}
-		else if(in && MousePressed == MouseButton::Right)
+		else if(in && MousePressed == MouseButton::Right && !w->mOrtho)
 		{
 			w->mControlMode = Rotate;
 			SetMouseMode(MouseMode::Captured);
@@ -860,16 +860,16 @@ void MyApp::OnClose()
 void MyApp::CreateRamp()
 {
 	DeleteRamp();
-	mRampShape = new btBoxShape(btVector3(40, 40, 40));
+	//mRampShape = new btBoxShape(btVector3(40, 40, 40));
 
-	btTransform t(btQuaternion(btVector3(0,1,0), SIMD_PI / 5), btVector3(-180, 0, -36));
-	btDefaultMotionState *ms = new btDefaultMotionState(t);
-	btRigidBody::btRigidBodyConstructionInfo inf(0, ms, mRampShape);
-	mRamp = new btRigidBody(inf);
-	Physics::DynamicsWorld->addRigidBody(mRamp, -1, -1);
-	mRamp->setActivationState(DISABLE_DEACTIVATION);
-	mRamp->setFriction(1.0f);
-	mRamp->setRestitution(0.0f);
+	//btTransform t(btQuaternion(btVector3(0,1,0), SIMD_PI / 5), btVector3(-180, 0, -36));
+	//btDefaultMotionState *ms = new btDefaultMotionState(t);
+	//btRigidBody::btRigidBodyConstructionInfo inf(0, ms, mRampShape);
+	//mRamp = new btRigidBody(inf);
+	//Physics::DynamicsWorld->addRigidBody(mRamp, -1, -1);
+	//mRamp->setActivationState(DISABLE_DEACTIVATION);
+	//mRamp->setFriction(1.0f);
+	//mRamp->setRestitution(0.0f);
 
 	mTestShape[0] = new btBoxShape(btVector3(2,2,2));
 	mTestShape[1] = new btBoxShape(btVector3(8,1,1));
@@ -890,7 +890,7 @@ void MyApp::CreateRamp()
 	btTransform startTransform;
 	shift.setIdentity();
 	startTransform.setIdentity();
-	startTransform.setOrigin(btVector3(10,10,45));
+	startTransform.setOrigin(btVector3(-35, 0, 5));
 
 	float masses[2] = { 0.99f, 0.01f };
 
@@ -906,6 +906,20 @@ void MyApp::CreateRamp()
 	mTestBody->setActivationState(DISABLE_DEACTIVATION);
 	mTestBody->setFriction(0.5f);
 	mTestBody->setRestitution(0.5f);
+
+	mBoxMesh = new btTriangleMesh();
+	mBoxMesh->addTriangle(Vec4(-20, 20, 2), Vec4(-20, -20, 2), Vec4(-40, 1, 2));
+	mBoxShape = new btBvhTriangleMeshShape(mBoxMesh, true, true);
+	mBoxBody = new btRigidBody(0, new btDefaultMotionState(), mBoxShape);
+	Physics::DynamicsWorld->addRigidBody(mBoxBody, -1, -1);
+	mBoxBody->setRestitution(0);
+	mBoxBody->setFriction(0);
+	mBoxBody->setContactProcessingThreshold(0);
+	// Create a btBvhTriangleMeshShape of a cube
+	// Create a btRigidBody
+	// Create a btSphereShape
+	// Create a bRigidBody
+
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -918,6 +932,10 @@ void MyApp::DeleteRamp()
 	Delete(mTestShape[0]);
 	Delete(mTestShape[1]);
 	Delete(mTestCompoundShape);
+
+	Delete(mBoxMesh);
+	Delete(mBoxShape);
+	Physics::DeleteRigidBody(mBoxBody);
 }
 
 //////////////////////////////////////////////////////////////////////

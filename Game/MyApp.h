@@ -213,6 +213,10 @@ class MyApp : App
 	btCollisionShape *						mTestShape[2];
 	btCompoundShape *						mTestCompoundShape;
 	btRigidBody *							mTestBody;
+
+	btTriangleMesh *						mBoxMesh;
+	btBvhTriangleMeshShape *				mBoxShape;
+	btRigidBody *							mBoxBody;
 };
 
 //////////////////////////////////////////////////////////////////////

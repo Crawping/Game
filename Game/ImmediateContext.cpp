@@ -287,7 +287,7 @@ void ImmediateContext::SetPosition3(float x, float y, float z)
 	p[0] = x;
 	p[1] = y;
 	p[2] = z;
-	mVertexBufferPointer += sizeof(Vec3Floats);
+	mVertexBufferPointer += sizeof(Vec3f);
 	assert(mVertexBufferPointer < mVertexBufferEnd);
 }
 
@@ -295,8 +295,8 @@ void ImmediateContext::SetPosition3(float x, float y, float z)
 
 void ImmediateContext::SetPosition3(Vec4f pos)
 {
-	*reinterpret_cast<Vec3Floats *>(mVertexBufferPointer) = *reinterpret_cast<Vec3Floats *>(&pos);
-	mVertexBufferPointer += sizeof(Vec3Floats);
+	*reinterpret_cast<Vec3f *>(mVertexBufferPointer) = *reinterpret_cast<Vec3f *>(&pos);
+	mVertexBufferPointer += sizeof(Vec3f);
 	assert(mVertexBufferPointer < mVertexBufferEnd);
 }
 
@@ -340,11 +340,11 @@ void ImmediateContext::SetTexCoord(Vec2 const &uv)
 
 void ImmediateContext::SetNormal(float x, float y, float z)
 {
-	Vec3Floats &p = *reinterpret_cast<Vec3Floats *>(mVertexBufferPointer);
+	Vec3f &p = *reinterpret_cast<Vec3f *>(mVertexBufferPointer);
 	p.x = x;
 	p.y = y;
 	p.z = z;
-	mVertexBufferPointer += sizeof(Vec3Floats);
+	mVertexBufferPointer += sizeof(Vec3f);
 	assert(mVertexBufferPointer < mVertexBufferEnd);
 }
 
@@ -352,11 +352,11 @@ void ImmediateContext::SetNormal(float x, float y, float z)
 
 void ImmediateContext::SetNormal(Vec4f normal)
 {
-	Vec3Floats &p = *reinterpret_cast<Vec3Floats *>(mVertexBufferPointer);
+	Vec3f &p = *reinterpret_cast<Vec3f *>(mVertexBufferPointer);
 	p.x = GetX(normal);
 	p.y = GetY(normal);
 	p.z = GetZ(normal);
-	mVertexBufferPointer += sizeof(Vec3Floats);
+	mVertexBufferPointer += sizeof(Vec3f);
 	assert(mVertexBufferPointer < mVertexBufferEnd);
 }
 

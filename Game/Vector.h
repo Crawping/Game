@@ -54,7 +54,7 @@ Vec4f		SetY(Vec4f a, float y);
 Vec4f		SetZ(Vec4f a, float z);
 Vec4f		SetW(Vec4f a, float w);
 
-Vec4f		Splat(float x);
+Vec4f		Splat(float n);
 
 Vec4f		SplatX(Vec4f x);
 Vec4f		SplatY(Vec4f y);
@@ -197,9 +197,9 @@ inline Vec4f SetW(Vec4f a, float w)
 
 //////////////////////////////////////////////////////////////////////
 
-inline Vec4f SplatX(Vec4f x)
+inline Vec4f SplatX(Vec4f n)
 {
-	return Permute(0,0,0,0, x);
+	return Permute(0,0,0,0, n);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -466,7 +466,7 @@ inline Vec4f &operator /= (Vec4f &a, float b)
 
 //////////////////////////////////////////////////////////////////////
 
-struct Vec3Floats
+struct Vec3f
 {
 	float x;
 	float y;
@@ -474,13 +474,13 @@ struct Vec3Floats
 
 	//////////////////////////////////////////////////////////////////////
 
-	Vec3Floats()
+	Vec3f()
 	{
 	}
 
 	//////////////////////////////////////////////////////////////////////
 
-	Vec3Floats(float _x, float _y, float _z)
+	Vec3f(float _x, float _y, float _z)
 		: x(_x)
 		, y(_y)
 		, z(_z)
