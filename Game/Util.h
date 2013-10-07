@@ -63,35 +63,6 @@ inline void DX(HRESULT x)
 }
 
 //////////////////////////////////////////////////////////////////////
-
-template <typename T> struct scoped_ptr
-{
-	scoped_ptr(function<void (T *)> OnDelete)
-		: ptr(null)
-		, mOnDelete(OnDelete)
-	{
-	}
-
-	T ** addressof()
-	{
-		return &ptr;
-	}
-
-	operator T *()
-	{
-		return ptr;
-	}
-
-	~scoped_ptr()
-	{
-		mOnDelete(ptr);
-	}
-
-	T *ptr;
-	std::function<void (T *)>	mOnDelete;
-};
-
-//////////////////////////////////////////////////////////////////////
 // !! BY VALUE
 
 template <typename T> T Max(T a, T b)
