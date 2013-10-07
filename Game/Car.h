@@ -16,6 +16,7 @@ BEGIN_PARAMSET(WheelPairParams, "BOGUS")
 	PARAM(Mass,						 1.00f,  0.10f, 50.00f);
 	PARAM(Offset_X,					 2.00f,-10.00f, 10.00f);
 	PARAM(Offset_Y,					 5.50f,  2.50f, 10.00f);
+	PARAM(Offset_Z,					 0.00f,  -5.0f, 10.00f);
 	PARAM(Friction,					 1.20f,  0.50f, 16.00f);
 	PARAM(WheelLinearDamping,		 0.60f,  0.00f,  5.00f);
 	PARAM(WheelAngularDamping,		 0.50f,  0.00f,  1.00f);
@@ -33,7 +34,7 @@ BEGIN_PARAMSET(WheelPairParams, "BOGUS")
 	PARAM(HubLength,				 1.00f,  0.10f,  2.00f);
 
 	PARAM(SpringLength,				 5.00f,  2.00f, 10.00f);
-	PARAM(SpringStiffness,			  1200,     10,   2000);
+	PARAM(SpringStiffness,			  1200,      1,   2000);
 	PARAM(SpringDamping,			0.005f, 0.0001f, 0.10f);
 	PARAM(SpringLoad,				 0.75f,  0.15f,  4.50f);
 	PARAM(SpringAngle,				 DEG(25), DEG(-25), DEG(60));

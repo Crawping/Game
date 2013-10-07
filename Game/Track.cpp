@@ -39,16 +39,16 @@ Track::Track(uint numControlPoints, uint step)
 	CalculateBezier(controlPoints.data(), numControlPoints, trackPoints.data(), step);
 
 	// make the mesh shape
-	Vec4f in = Vec4(0.9f, 0.9f, 1);
-	Vec4f out = Vec4(1.1f, 1.1f, 1);
+	Vec4f in = Vec4(0.9f, 0.9f, 1.0f);
+	Vec4f out = Vec4(1.1f, 1.1f, 1.0f);
 	Vec4f flr = Vec4(0,0,-2);
 	mTrackMesh = new btTriangleMesh();
 	for(uint i=0; i<numTrackPoints; ++i )
 	{
 		int j = (i + 1) % numTrackPoints;
 		Vec4f a = trackPoints[i] * in;
-		Vec4f b = trackPoints[i] * out;
-		Vec4f c = trackPoints[j] * out;
+		Vec4f b = trackPoints[i] * out + Vec4(0,0,5);
+		Vec4f c = trackPoints[j] * out + Vec4(0,0,5);
 		Vec4f d = trackPoints[j] * in;
 		AddQuad(mTrackMesh, a, b, c, d);
 	}
@@ -56,10 +56,10 @@ Track::Track(uint numControlPoints, uint step)
 
 	// make the rigidbody
 	mTrackBody = new btRigidBody(0, new btDefaultMotionState(btTransform::getIdentity()), mTrackShape);
-	mTrackBody->setActivationState(DISABLE_DEACTIVATION);
-	mTrackBody->setFriction(1.0f);
-	mTrackBody->setRestitution(0.0f);
+	mTrackBody->setFriction(0.1f);
+	mTrackBody->setRestitution(0.9f);
 	Physics::DynamicsWorld->addRigidBody(mTrackBody, 1, 2);
+	mTrackBody->setActivationState(DISABLE_DEACTIVATION);
 }
 
 //////////////////////////////////////////////////////////////////////

@@ -860,16 +860,6 @@ void MyApp::OnClose()
 void MyApp::CreateRamp()
 {
 	DeleteRamp();
-	//mRampShape = new btBoxShape(btVector3(40, 40, 40));
-
-	//btTransform t(btQuaternion(btVector3(0,1,0), SIMD_PI / 5), btVector3(-180, 0, -36));
-	//btDefaultMotionState *ms = new btDefaultMotionState(t);
-	//btRigidBody::btRigidBodyConstructionInfo inf(0, ms, mRampShape);
-	//mRamp = new btRigidBody(inf);
-	//Physics::DynamicsWorld->addRigidBody(mRamp, -1, -1);
-	//mRamp->setActivationState(DISABLE_DEACTIVATION);
-	//mRamp->setFriction(1.0f);
-	//mRamp->setRestitution(0.0f);
 
 	mTestShape[0] = new btBoxShape(btVector3(2,2,2));
 	mTestShape[1] = new btBoxShape(btVector3(8,1,1));
@@ -890,7 +880,7 @@ void MyApp::CreateRamp()
 	btTransform startTransform;
 	shift.setIdentity();
 	startTransform.setIdentity();
-	startTransform.setOrigin(btVector3(-35, 0, 5));
+	startTransform.setOrigin(btVector3(-290, 0, 45));
 
 	float masses[2] = { 0.99f, 0.01f };
 
@@ -902,23 +892,35 @@ void MyApp::CreateRamp()
 
 	mTestBody = new btRigidBody(testMass, new btDefaultMotionState(startTransform * shift), mTestCompoundShape, localInertia);
 
-	Physics::DynamicsWorld->addRigidBody(mTestBody);
+	Physics::DynamicsWorld->addRigidBody(mTestBody, -1, -1);
 	mTestBody->setActivationState(DISABLE_DEACTIVATION);
-	mTestBody->setFriction(0.5f);
-	mTestBody->setRestitution(0.5f);
+	mTestBody->setFriction(0.01f);
+	mTestBody->setRestitution(0.95f);
 
 	mBoxMesh = new btTriangleMesh();
 	mBoxMesh->addTriangle(Vec4(-20, 20, 3), Vec4(-20, -20, 2), Vec4(-40, 1, 1));
-	mBoxShape = new btBvhTriangleMeshShape(mBoxMesh, true, true);
+	Vec4f minaabb = Vec4(-40, -20, 1);
+	Vec4f maxaabb = Vec4(-20, 20, 3);
+	mBoxShape = new btBvhTriangleMeshShape(mBoxMesh, true, minaabb, maxaabb, true);
 	mBoxBody = new btRigidBody(0, new btDefaultMotionState(), mBoxShape);
 	Physics::DynamicsWorld->addRigidBody(mBoxBody, -1, -1);
-	mBoxBody->setRestitution(0);
+	mBoxBody->setRestitution(0.5f);
 	mBoxBody->setFriction(0);
 	mBoxBody->setContactProcessingThreshold(0);
-	// Create a btBvhTriangleMeshShape of a cube
-	// Create a btRigidBody
-	// Create a btSphereShape
-	// Create a bRigidBody
+
+	mBallShape = new btSphereShape(6);
+
+	for(uint i=0; i<kNumBalls; ++i)
+	{
+		float t = i / (float)kNumBalls * PI * 2;
+		btTransform position;
+		position = btTransform::getIdentity();
+		position.setOrigin(Vec4(sinf(t) * 290, cosf(t) * 290, 50));
+		mBalls[i] = new btRigidBody(5, new btDefaultMotionState(position), mBallShape);
+		mBalls[i]->setRestitution(0.9f);
+		mBalls[i]->setFriction(0.01f);
+		Physics::DynamicsWorld->addRigidBody(mBalls[i], -1, -1);
+	}
 
 }
 
@@ -936,6 +938,12 @@ void MyApp::DeleteRamp()
 	Delete(mBoxMesh);
 	Delete(mBoxShape);
 	Physics::DeleteRigidBody(mBoxBody);
+
+	Delete(mBallShape);
+	for(uint i=0; i<kNumBalls; ++i)
+	{
+		Physics::DeleteRigidBody(mBalls[i]);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////

@@ -70,7 +70,7 @@ void Car::Create()
 {
 	Destroy();
 
-	Vec4f carPos = Vec4(0, 0, 5);
+	Vec4f carPos = Vec4(0, 0, 15);
 	Vec4f carSize = Vec4(mCarParams.Length, mCarParams.Width, mCarParams.Height);
 	float bodyMass = mCarParams.Mass;
 
@@ -148,7 +148,8 @@ void WheelAssembly::Create(WheelPairParams *p, btVector3 const &carWorldPos, btV
 	float carWidth = carSize.y();
 	float carHeight = carSize.z();
 
-	Vec4f wheelOffset = Vec4((carLength - p->Offset_X) * xReflect, (carWidth + p->Offset_Y) * -yReflect, 0);
+	Vec4f wheelOffset = Vec4((carLength - p->Offset_X) * xReflect, (carWidth + p->Offset_Y) * -yReflect, p->Offset_Z);
+//	Vec4f wheelOffset = Vec4((carLength - p->Offset_X) * xReflect, (carWidth + p->Offset_Y) * -yReflect, 0);
 	btVector3 wheelPos = wheelOffset + carWorldPos;
 	float wheelRadius = p->Radius;
 	float wheelWidth = p->Width;
@@ -372,9 +373,9 @@ void WheelAssembly::Create(WheelPairParams *p, btVector3 const &carWorldPos, btV
 	mShockAbsorber = new btGeneric6DofSpringConstraint(*mShockAbsorberBodyMount, *mShockAbsorberWheelMount, ta, tb, true);
 	Physics::DynamicsWorld->addConstraint(mShockAbsorber, true);
 
-	mShockAbsorber->setLimit(0,0,0);
-	mShockAbsorber->setLimit(1,0,0);
-	mShockAbsorber->setLimit(2,-springLoad, springLoad);
+	mShockAbsorber->setLimit(0, 0, 0);
+	mShockAbsorber->setLimit(1, 0, 0);
+	mShockAbsorber->setLimit(2, 0, springLoad * 2);
 
 	mShockAbsorber->setLimit(3,-1,1);
 	mShockAbsorber->setLimit(4,-1,1);
@@ -457,7 +458,7 @@ void WheelAssembly::ApplyParameters(WheelPairParams *p)
 	mShockAbsorber->enableSpring(2, true);
 	mShockAbsorber->setStiffness(2, springStiffness);
 	mShockAbsorber->setDamping(2, springDamping);
-	mShockAbsorber->setEquilibriumPoint(2, springLoad);
+	mShockAbsorber->setEquilibriumPoint(2);
 	mShockAbsorber->setEnabled(true);
 }
 

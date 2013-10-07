@@ -214,6 +214,10 @@ class MyApp : App
 	btCompoundShape *						mTestCompoundShape;
 	btRigidBody *							mTestBody;
 
+	static const uint						kNumBalls = 10;
+	btSphereShape *							mBallShape;
+	btRigidBody *							mBalls[kNumBalls];
+
 	btTriangleMesh *						mBoxMesh;
 	btBvhTriangleMeshShape *				mBoxShape;
 	btRigidBody *							mBoxBody;
