@@ -4,7 +4,25 @@
 
 //////////////////////////////////////////////////////////////////////
 
-class File
+class IFile
+{
+protected:
+
+	virtual ~IFile()
+	{
+	}
+
+	virtual bool IsValid() const = 0;
+	virtual long Size() = 0;
+	virtual long Position() = 0;
+	virtual void Seek(long offset, int mode = SEEK_SET) = 0;
+	virtual long Read(void *p, long s) = 0;
+	virtual long Write(void const *p, long s) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////
+
+class File : IFile
 {
 public:
 

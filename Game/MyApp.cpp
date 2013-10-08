@@ -409,19 +409,6 @@ bool MyApp::OnUpdate()
 		speed = 2;
 	}
 
-	if(KeyPressed('E'))
-	{
-		DeleteRamp();
-		Delete(mTrack);
-		mEditMode = Edit;
-	}
-	else if(KeyPressed('D'))
-	{
-		mEditMode = Drive;
-		Delete(mTrack);
-		mTrack = new Track(32, 32);
-	}
-
 	switch(mEditMode)
 	{
 	case EditMode::Edit:
@@ -434,6 +421,12 @@ bool MyApp::OnUpdate()
 			Draw2DAxes(editMargin, 0, Graphics::Width() - editMargin, Graphics::Height());
 			DrawParameters();
 			m2DUntexturedIC->End();
+			if(KeyPressed('D'))
+			{
+				mEditMode = Drive;
+				Delete(mTrack);
+				mTrack = new Track(32, 32);
+			}
 		}
 		break;
 
@@ -464,6 +457,13 @@ bool MyApp::OnUpdate()
 
 			DebugSetCamera(&mCamera);
 			DebugText(mCar->mBody->getWorldTransform().getOrigin().get128(), "HELLO");
+
+			if(KeyPressed('E'))
+			{
+				DeleteRamp();
+				Delete(mTrack);
+				mEditMode = Edit;
+			}
 		}
 		break;
 	}
@@ -973,8 +973,9 @@ void MyApp::UpdatePhysics()
 {
 	if(!KeyHeld('X') || KeyPressed('Z'))
 	{
-		float dt = 1.0f/15;
-		Physics::DynamicsWorld->stepSimulation(dt, 100, dt/100);
+		float dt = 1.0f/10;
+		int step = 10;
+		Physics::DynamicsWorld->stepSimulation(dt, step, dt/step);
 	}
 
 	if(mEditMode == Edit)
