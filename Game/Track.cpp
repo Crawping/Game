@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "..\Bullet\src\BulletCollision\CollisionDispatch\btInternalEdgeUtility.h"
 
 //////////////////////////////////////////////////////////////////////
 
@@ -9,6 +10,16 @@ static void AddQuad(btTriangleMesh *m, Vec4f const &a, Vec4f const &b, Vec4f con
 	m->addTriangle(c, b, a, true);
 	m->addTriangle(a, d, c, true);
 }
+
+//////////////////////////////////////////////////////////////////////
+
+static bool CustomMaterialCombinerCallback(btManifoldPoint &cp, btCollisionObjectWrapper const *colObj0, int partId0, int index0, btCollisionObjectWrapper const *colObj1, int partId1, int index1)
+{
+	btAdjustInternalEdgeContacts(cp, colObj1, colObj0, partId1,index1);
+	return true;
+}
+
+extern ContactAddedCallback      gContactAddedCallback;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -54,10 +65,16 @@ Track::Track(uint numControlPoints, uint step)
 	}
 	mTrackShape = new btBvhTriangleMeshShape(mTrackMesh, true, true);
 
+	btTriangleInfoMap* triangleInfoMap = new btTriangleInfoMap();
+	btGenerateInternalEdgeInfo(mTrackShape, triangleInfoMap);
+
+
 	// make the rigidbody
 	mTrackBody = new btRigidBody(0, new btDefaultMotionState(btTransform::getIdentity()), mTrackShape);
 	mTrackBody->setFriction(0.1f);
 	mTrackBody->setRestitution(0.9f);
+	mTrackBody->setCollisionFlags(mTrackBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+	gContactAddedCallback = CustomMaterialCombinerCallback;
 	Physics::DynamicsWorld->addRigidBody(mTrackBody, 1, 2);
 	mTrackBody->setActivationState(DISABLE_DEACTIVATION);
 }
