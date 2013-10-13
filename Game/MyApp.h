@@ -221,6 +221,11 @@ class MyApp : App
 	btTriangleMesh *						mBoxMesh;
 	btBvhTriangleMeshShape *				mBoxShape;
 	btRigidBody *							mBoxBody;
+
+	btCylinderShape *						mCylinderShape;
+	btTransform								mStartPos;
+	btTransform								mEndPos;
+
 };
 
 //////////////////////////////////////////////////////////////////////

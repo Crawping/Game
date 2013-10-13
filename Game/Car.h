@@ -35,7 +35,7 @@ BEGIN_PARAMSET(WheelPairParams, "BOGUS")
 
 	PARAM(SpringLength,				 5.00f,  2.00f, 10.00f);
 	PARAM(SpringStiffness,			  1200,      1,   2000);
-	PARAM(SpringDamping,			0.005f, 0.0001f, 0.10f);
+	PARAM(SpringDamping,			 0.00f,  0.001f, 0.0005f);
 	PARAM(SpringLoad,				 0.75f,  0.15f,  4.50f);
 	PARAM(SpringAngle,				 DEG(25), DEG(-25), DEG(60));
 

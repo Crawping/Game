@@ -18,7 +18,7 @@ namespace Physics
 	void Physics::Open()
 	{
 		CollisionConfiguration = new btDefaultCollisionConfiguration();
-		Dispatcher = new	btCollisionDispatcher(CollisionConfiguration);
+		Dispatcher = new btCollisionDispatcher(CollisionConfiguration);
 		OverlappingPairCache = new btDbvtBroadphase();
 		Solver = new btSequentialImpulseConstraintSolver;
 		DynamicsWorld = new btDiscreteDynamicsWorld(Dispatcher, OverlappingPairCache, Solver, CollisionConfiguration);

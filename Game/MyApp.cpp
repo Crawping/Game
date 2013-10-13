@@ -85,6 +85,8 @@ void MyApp::OnInit()
 	//scene = assimporter.ReadFile("data\\cube.dae", 0);
 	//DumpNode(scene, scene->mRootNode, 0);
 
+	mCylinderShape = null; 
+
 	mCar = null;
 
 	int gx = editMargin;
@@ -455,8 +457,8 @@ bool MyApp::OnUpdate()
 
 			DrawPhysics();
 
-			DebugSetCamera(&mCamera);
-			DebugText(mCar->mBody->getWorldTransform().getOrigin().get128(), "HELLO");
+//			DebugSetCamera(&mCamera);
+//			DebugText(mCar->mBody->getWorldTransform().getOrigin().get128(), "HELLO");
 
 			if(KeyPressed('E'))
 			{
@@ -806,6 +808,8 @@ void MyApp::OnClose()
 {
 	Delete(mTrack);
 
+	Delete(mCylinderShape);
+
 	mCameraParameters.Height.set(mCameraHeight);
 	mCameraParameters.TargetHeight.set(mCameraTargetHeight);
 	mCameraParameters.Distance.set(mCameraDistance);
@@ -898,10 +902,9 @@ void MyApp::CreateRamp()
 	mTestBody->setRestitution(0.95f);
 
 	mBoxMesh = new btTriangleMesh();
-	mBoxMesh->addTriangle(Vec4(-20, 20, 3), Vec4(-20, -20, 2), Vec4(-40, 1, 1));
-	Vec4f minaabb = Vec4(-40, -20, 1);
-	Vec4f maxaabb = Vec4(-20, 20, 3);
-	mBoxShape = new btBvhTriangleMeshShape(mBoxMesh, true, minaabb, maxaabb, true);
+	mBoxMesh->addTriangle(Vec4(-50, 50, -1), Vec4(-50, -50, -1), Vec4(-190, 1, 10));
+	mBoxShape = new btBvhTriangleMeshShape(mBoxMesh, true);
+	mBoxShape->setMargin(0.1f);
 	mBoxBody = new btRigidBody(0, new btDefaultMotionState(), mBoxShape);
 	Physics::DynamicsWorld->addRigidBody(mBoxBody, -1, -1);
 	mBoxBody->setRestitution(0.5f);
@@ -922,12 +925,15 @@ void MyApp::CreateRamp()
 		Physics::DynamicsWorld->addRigidBody(mBalls[i], -1, -1);
 	}
 
+	mCylinderShape = new btCylinderShape(Vec4(1,1,1));
 }
 
 //////////////////////////////////////////////////////////////////////
 
 void MyApp::DeleteRamp()
 {
+	Delete(mCylinderShape);
+
 	Physics::DeleteRigidBody(mRamp);
 	Physics::DeleteRigidBody(mTestBody);
 	Delete(mRampShape);
@@ -969,12 +975,49 @@ void MyApp::InitPhysics()
 
 //////////////////////////////////////////////////////////////////////
 
+ALIGN(16, struct) ClosestConvexResultCallback : public btCollisionWorld::ConvexResultCallback
+{
+	ClosestConvexResultCallback(const btVector3&	convexFromWorld,const btVector3&	convexToWorld)
+		:m_convexFromWorld(convexFromWorld),
+		m_convexToWorld(convexToWorld),
+		m_hitCollisionObject(0)
+	{
+	}
+
+	btVector3	m_convexFromWorld;//used to calculate hitPointWorld from hitFraction
+	btVector3	m_convexToWorld;
+	btVector3	m_hitNormalWorld;
+	btVector3	m_hitPointWorld;
+	const btCollisionObject*	m_hitCollisionObject;
+
+	virtual	btScalar	addSingleResult(btCollisionWorld::LocalConvexResult& convexResult,bool normalInWorldSpace)
+	{
+		//caller already does the filter on the m_closestHitFraction
+		btAssert(convexResult.m_hitFraction <= m_closestHitFraction);
+
+		m_closestHitFraction = convexResult.m_hitFraction;
+		m_hitCollisionObject = convexResult.m_hitCollisionObject;
+		if (normalInWorldSpace)
+		{
+			m_hitNormalWorld = convexResult.m_hitNormalLocal;
+		} else
+		{
+			///need to transform normal into worldspace
+			m_hitNormalWorld = m_hitCollisionObject->getWorldTransform().getBasis()*convexResult.m_hitNormalLocal;
+		}
+		m_hitPointWorld = convexResult.m_hitPointLocal;
+		return convexResult.m_hitFraction;
+	}
+};
+
+//////////////////////////////////////////////////////////////////////
+
 void MyApp::UpdatePhysics()
 {
 	if(!KeyHeld('X') || KeyPressed('Z'))
 	{
 		float dt = 1.0f/10;
-		int step = 10;
+		int step = 20;
 		Physics::DynamicsWorld->stepSimulation(dt, step, dt/step);
 	}
 
@@ -984,6 +1027,25 @@ void MyApp::UpdatePhysics()
 	}
 	else if(mCar->IsValid())
 	{
+		if(mCylinderShape != null)
+		{
+			mStartPos.setIdentity();
+			mEndPos.setIdentity();
+
+			mStartPos.setOrigin(Vec4(0,0,10));
+			mEndPos.setOrigin(Vec4(0,0,0));
+
+			ClosestConvexResultCallback collisionCallback(mStartPos.getOrigin(), mEndPos.getOrigin());
+
+			Physics::DynamicsWorld->convexSweepTest(mCylinderShape, mStartPos, mEndPos, collisionCallback);
+
+			if(collisionCallback.m_hitCollisionObject != null)
+			{
+				DebugSetCamera(&mCamera);
+				DebugText(collisionCallback.m_hitPointWorld.get128(), "@");
+			}
+		}
+
 		mCar->AntiRoll();
 
 		float slipLeft = mCar->mWheelAssembly[Car::BackLeft]->LateralSlip();	// 1 is full slide (90 degrees), 0 is full grip
@@ -1171,20 +1233,24 @@ void MyApp::UpdateCamera()
 
 //////////////////////////////////////////////////////////////////////
 
-Matrix GetTransform(btRigidBody *body)
+Matrix MatrixFromBulletTransform(btTransform const &trans)
 {
-	btTransform trans;
-	body->getMotionState()->getWorldTransform(trans);
-
 	btVector3 R = trans.getBasis().getColumn(0);
 	btVector3 U = trans.getBasis().getColumn(1);
 	btVector3 L = trans.getBasis().getColumn(2);
 	btVector3 P = trans.getOrigin();
 
 	return Matrix(	R.x(), R.y(), R.z(), 0,
-					U.x(), U.y(), U.z(), 0,
-					L.x(), L.y(), L.z(), 0,
-					P.x(), P.y(), P.z(), 1);
+		U.x(), U.y(), U.z(), 0,
+		L.x(), L.y(), L.z(), 0,
+		P.x(), P.y(), P.z(), 1);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+Matrix GetTransform(btRigidBody *body)
+{
+	return MatrixFromBulletTransform(body->getCenterOfMassTransform());
 }
 
 //////////////////////////////////////////////////////////////////////

@@ -25,8 +25,7 @@ void ParameterSet::CopyParameterSet(char const *name, bool _private)
 
 string Parameter::ToXML() const
 {
-	return Format("\t\t<Parameter Name=\"%s\" Value=\"%f\" MinValue=\"%f\" MaxValue=\"%f\" DefaultValue=\"%f\"/>\n",
-		mName.c_str(), mValue, mMinValue, mMaxValue, mDefaultValue);
+	return Format("\t\t<Parameter Name=\"%s\" Value=\"%f\" />\n", mName.c_str(), mValue);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -72,20 +71,14 @@ void ParameterSet::FromXML(XmlDocument *xmlDocument)
 						{
 							XmlAttribute *name = param->first_attribute("Name");
 							XmlAttribute *value = param->first_attribute("Value");
-							XmlAttribute *minValue = param->first_attribute("MinValue");
-							XmlAttribute *maxValue = param->first_attribute("MaxValue");
-							XmlAttribute *defaultValue = param->first_attribute("DefaultValue");
 
-							if(name != null && value != null && minValue != null && maxValue != null && defaultValue != null)
+							if(name != null && value != null)
 							{
 								for(auto p: mParameters)
 								{
 									if(p->mName.compare(name->value()) == 0)
 									{
-										p->mValue = (float)atof(value->value());
-										p->mMinValue = (float)atof(minValue->value());
-										p->mMaxValue = (float)atof(maxValue->value());
-										p->mDefaultValue = (float)atof(defaultValue->value());
+										p->mValue = Clamp((float)atof(value->value()), p->mMinValue, p->mMaxValue);
 										break;
 									}
 								}

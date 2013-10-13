@@ -13,8 +13,10 @@ uint								Graphics::gDrawCalls = 0;
 
 static HWND							hwnd = null;
 static HINSTANCE					hinstance = GetModuleHandle(null);
-static int							width = 1280;
-static int							height = 768;
+//static int							width = 1280;
+//static int							height = 768;
+static int							width = 640;
+static int							height = 480;
 static float						fwidth = (float)width;
 static float						fheight = (float)height;
 static bool							active;

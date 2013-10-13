@@ -149,4 +149,19 @@ inline float Rad2Deg(float r)
 
 //////////////////////////////////////////////////////////////////////
 
+template <typename T> T Clamp(T v, T mn, T mx)
+{
+	if(v < mn)
+	{
+		v = mn;
+	}
+	if(v > mx)
+	{
+		v = mx;
+	}
+	return v;
+}
+
+//////////////////////////////////////////////////////////////////////
+
 btMatrix3x3 GetOrientedBasis(btVector3 const &z);
