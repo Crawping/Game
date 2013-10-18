@@ -26,7 +26,7 @@ MyApp app;
 
 struct Vert
 {
-	Vec3f	mPosition;
+	Vec3	mPosition;
 	Vec2		mTexCoord;
 	Color		mColor;
 };
@@ -37,7 +37,7 @@ struct Vert
 #pragma push_macro("V2")
 #define N 0.5f
 #define C 0xffffffff	// ABGR
-#define V3 Vec3f
+#define V3 Vec3
 #define V2 Vec2
 
 Vert verts[36] =
@@ -130,7 +130,7 @@ void MyApp::OnInit()
 		float x = sinf(r);
 		float y = cosf(r);
 		Vert v;
-		v.mPosition = Vec3f(x * 0.5f, 0.5f, y * 0.5f);
+		v.mPosition = Vec3(x * 0.5f, 0.5f, y * 0.5f);
 		v.mTexCoord = Vec2(x * 0.5f + 0.5f, y * 0.5f + 0.5f);
 		v.mColor = FromRGBA(255, 255, 255, 255);
 		vertex[i] = v;
@@ -145,7 +145,7 @@ void MyApp::OnInit()
 		float x = sinf(r);
 		float y = cosf(r);
 		Vert v;
-		v.mPosition = Vec3f(x * 0.5f, 0.5f, y * 0.5f);
+		v.mPosition = Vec3(x * 0.5f, 0.5f, y * 0.5f);
 		v.mTexCoord = Vec2(x * 0.5f + 0.5f, y * 0.5f + 0.5f);
 		v.mColor = FromRGBA(255, 255, 255, 255);
 		v.mTexCoord.x = (float)i / step;

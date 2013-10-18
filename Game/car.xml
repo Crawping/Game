@@ -11,15 +11,15 @@
 	<ParameterSet Name="Chassis" ParameterCount="4" Expanded="1">
 		<Parameter Name="Mass" Value="500.000000" />
 		<Parameter Name="Length" Value="15.959983" />
-		<Parameter Name="Width" Value="5.857999" />
-		<Parameter Name="Height" Value="2.228001" />
+		<Parameter Name="Width" Value="3.843997" />
+		<Parameter Name="Height" Value="1.400001" />
 	</ParameterSet>
 	<ParameterSet Name="Rear Wheels" ParameterCount="31" Expanded="1">
-		<Parameter Name="Radius" Value="4.837996" />
+		<Parameter Name="Radius" Value="4.988000" />
 		<Parameter Name="Width" Value="2.532298" />
 		<Parameter Name="Mass" Value="1.000000" />
-		<Parameter Name="Offset_X" Value="1.639999" />
-		<Parameter Name="Offset_Y" Value="9.940001" />
+		<Parameter Name="Offset_X" Value="0.959998" />
+		<Parameter Name="Offset_Y" Value="6.445001" />
 		<Parameter Name="Offset_Z" Value="-3.890000" />
 		<Parameter Name="Friction" Value="9.180003" />
 		<Parameter Name="WheelLinearDamping" Value="0.000000" />
@@ -52,7 +52,7 @@
 		<Parameter Name="Width" Value="1.739196" />
 		<Parameter Name="Mass" Value="1.000000" />
 		<Parameter Name="Offset_X" Value="0.960004" />
-		<Parameter Name="Offset_Y" Value="7.059999" />
+		<Parameter Name="Offset_Y" Value="5.590000" />
 		<Parameter Name="Offset_Z" Value="-1.049998" />
 		<Parameter Name="Friction" Value="6.978999" />
 		<Parameter Name="WheelLinearDamping" Value="0.000000" />
