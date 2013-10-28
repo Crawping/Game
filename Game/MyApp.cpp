@@ -85,7 +85,7 @@ void MyApp::OnInit()
 	//scene = assimporter.ReadFile("data\\cube.dae", 0);
 	//DumpNode(scene, scene->mRootNode, 0);
 
-	mCylinderShape = null; 
+	mTestBallShape = null; 
 
 	mCar = null;
 
@@ -244,6 +244,7 @@ void MyApp::OnInit()
 	UpdateCamera();
 
 	gCurrentCamera = &mCamera;
+	DebugSetCamera(&mCamera);
 
 	InitPhysics();
 
@@ -457,7 +458,6 @@ bool MyApp::OnUpdate()
 
 			DrawPhysics();
 
-//			DebugSetCamera(&mCamera);
 //			DebugText(mCar->mBody->getWorldTransform().getOrigin().get128(), "HELLO");
 
 			if(KeyPressed('E'))
@@ -478,6 +478,7 @@ bool MyApp::OnUpdate()
 	DebugText(Vec2(Graphics::Width() - 120, 15), "DrawCalls:%4d", Graphics::gDrawCalls);
 
 	DebugEndFrame();
+
 	mConsole->Draw();
 
 	Graphics::EndFrame();
@@ -808,7 +809,7 @@ void MyApp::OnClose()
 {
 	Delete(mTrack);
 
-	Delete(mCylinderShape);
+	Delete(mTestBallShape);
 
 	mCameraParameters.Height.set(mCameraHeight);
 	mCameraParameters.TargetHeight.set(mCameraTargetHeight);
@@ -925,14 +926,14 @@ void MyApp::CreateRamp()
 		Physics::DynamicsWorld->addRigidBody(mBalls[i], -1, -1);
 	}
 
-	mCylinderShape = new btCylinderShape(Vec4(1,1,1));
+	mTestBallShape = new btSphereShape(5);
 }
 
 //////////////////////////////////////////////////////////////////////
 
 void MyApp::DeleteRamp()
 {
-	Delete(mCylinderShape);
+	Delete(mTestBallShape);
 
 	Physics::DeleteRigidBody(mRamp);
 	Physics::DeleteRigidBody(mTestBody);
@@ -1027,22 +1028,33 @@ void MyApp::UpdatePhysics()
 	}
 	else if(mCar->IsValid())
 	{
-		if(mCylinderShape != null)
+		if(mTestBallShape != null)
 		{
 			mStartPos.setIdentity();
 			mEndPos.setIdentity();
 
-			mStartPos.setOrigin(Vec4(0,0,10));
-			mEndPos.setOrigin(Vec4(0,0,0));
+			mStartPos.setOrigin(Vec4(10,0,20));
+			mEndPos.setOrigin(Vec4(0,0,-10));
+
+			Vec4f s = Vec4(10, 0, 20);
+			Vec4f e = Vec4(0, 0, -10);
+
+			float r = mTestBallShape->getRadius();
+
+			DebugSphere(e, r, 0xff00ffff, 6);
+			DebugSphere(s, r, 0xffff00ff, 6);
 
 			ClosestConvexResultCallback collisionCallback(mStartPos.getOrigin(), mEndPos.getOrigin());
 
-			Physics::DynamicsWorld->convexSweepTest(mCylinderShape, mStartPos, mEndPos, collisionCallback);
+			Physics::DynamicsWorld->convexSweepTest(mTestBallShape, mStartPos, mEndPos, collisionCallback);
 
 			if(collisionCallback.m_hitCollisionObject != null)
 			{
-				DebugSetCamera(&mCamera);
-				DebugText(collisionCallback.m_hitPointWorld.get128(), "@");
+				DebugText(collisionCallback.m_hitPointWorld.get128(), "*");
+				// Draw a sphere at the start, end and along the path
+
+				Vec4f hitPos = s + (e - s) * collisionCallback.m_closestHitFraction;
+				DebugSphere(hitPos, r, 0xffffffff, 6);
 			}
 		}
 

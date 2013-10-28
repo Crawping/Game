@@ -222,7 +222,7 @@ class MyApp : App
 	btBvhTriangleMeshShape *				mBoxShape;
 	btRigidBody *							mBoxBody;
 
-	btCylinderShape *						mCylinderShape;
+	btSphereShape *							mTestBallShape;
 	btTransform								mStartPos;
 	btTransform								mEndPos;
 

@@ -1,8 +1,8 @@
 <xml>
 	<ParameterSet Name="Camera" ParameterCount="3" Expanded="0">
-		<Parameter Name="Distance" Value="100.000000" />
-		<Parameter Name="Height" Value="42.912838" />
-		<Parameter Name="TargetHeight" Value="9.246690" />
+		<Parameter Name="Distance" Value="59.199112" />
+		<Parameter Name="Height" Value="32.068420" />
+		<Parameter Name="TargetHeight" Value="12.626097" />
 	</ParameterSet>
 	<ParameterSet Name="View0" ParameterCount="3" Expanded="0">
 		<Parameter Name="PanX" Value="-1.917847" />
