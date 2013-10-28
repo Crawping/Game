@@ -926,7 +926,7 @@ void MyApp::CreateRamp()
 		Physics::DynamicsWorld->addRigidBody(mBalls[i], -1, -1);
 	}
 
-	mTestBallShape = new btSphereShape(5);
+	mTestBallShape = new btSphereShape(1);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -1041,8 +1041,9 @@ void MyApp::UpdatePhysics()
 
 			float r = mTestBallShape->getRadius();
 
-			DebugSphere(e, r, 0xff00ffff, 6);
-			DebugSphere(s, r, 0xffff00ff, 6);
+			DebugSphere(e, r, 0xff00ffff);
+			DebugSphere(s, r, 0xffff00ff);
+			DebugOneLine(s, e, 0xff8040ff);
 
 			ClosestConvexResultCallback collisionCallback(mStartPos.getOrigin(), mEndPos.getOrigin());
 
@@ -1050,11 +1051,9 @@ void MyApp::UpdatePhysics()
 
 			if(collisionCallback.m_hitCollisionObject != null)
 			{
-				DebugText(collisionCallback.m_hitPointWorld.get128(), "*");
-				// Draw a sphere at the start, end and along the path
-
 				Vec4f hitPos = s + (e - s) * collisionCallback.m_closestHitFraction;
-				DebugSphere(hitPos, r, 0xffffffff, 6);
+				DebugAxes(hitPos, 3);
+				DebugSphere(hitPos, r, 0xffffffff);
 			}
 		}
 

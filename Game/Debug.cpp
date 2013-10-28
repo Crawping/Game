@@ -174,8 +174,6 @@ static void _DrawCircle(Vec4f pos, int xaxis, int yaxis, int zaxis, float z, flo
 
 	float t0 = 0;
 
-//	float z = i / (segments / radius);
-
 	for(int t=0; t<segments; ++t)
 	{
 		float t1 = (t + 1) / s8p;
@@ -197,28 +195,19 @@ static void _DrawCircle(Vec4f pos, int xaxis, int yaxis, int zaxis, float z, flo
 
 //////////////////////////////////////////////////////////////////////
 
-void DebugSphere(Vec4f const &pos, float radius, Color color, int segments)
+void DebugSphere(Vec4f const &pos, float radius, Color color, int segments, int smoothness)
 {
 	DebugBeginLines();
 
 	float rsquared = radius * radius;
-
-	segments /= 2;
-
 	for(int i=-segments; i<segments; ++i)
 	{
 		float n = (radius * i) / segments;
 		float r = sqrtf(rsquared - n * n);
-
-		int s8 = segments * 8;
-		float s8p = s8 / TWO_PI;
-
-		float t0 = 0;
-
 		float z = i / (segments / radius);
-		_DrawCircle(pos, 0, 1, 2, z, r, s8, color);
-		_DrawCircle(pos, 1, 2, 0, z, r, s8, color);
-		_DrawCircle(pos, 2, 0, 1, z, r, s8, color);
+		_DrawCircle(pos, 0, 1, 2, z, r, smoothness, color);
+		_DrawCircle(pos, 1, 2, 0, z, r, smoothness, color);
+		_DrawCircle(pos, 2, 0, 1, z, r, smoothness, color);
 	}
 	DebugEndLines();
 }
@@ -263,3 +252,14 @@ void DebugOneLine(Vec4f const &start, Vec4f const &end, Color color)
 
 //////////////////////////////////////////////////////////////////////
 
+void DebugAxes(Vec4f const &pos, float length)
+{
+	DebugBeginLines();
+	Vec4f x = Vec4(length, 0, 0);
+	Vec4f y = Vec4(0, length, 0);
+	Vec4f z = Vec4(0, 0, length);
+	DebugLine(pos - x, pos + x, 0xff0000ff);
+	DebugLine(pos - y, pos + y, 0x00ff00ff);
+	DebugLine(pos - z, pos + z, 0x0000ffff);
+	DebugEndLines();
+}
