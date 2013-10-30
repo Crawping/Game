@@ -17,7 +17,7 @@ inline Color FromRGBA(int r, int g, int b, int a)
 
 inline Color FromRGBAf(float r, float g, float b, float a)
 {
-	return FromRGBA((int)(r * 255.0f), (int)(g * 255.0f), (int)(b * 255.0f), (int)(a * 255.0f));
+	return FromRGBA((int)(a * 255.0f), (int)(b * 255.0f), (int)(g * 255.0f), (int)(r * 255.0f));
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -64,12 +64,20 @@ inline int GetAlpha(Color c)
 
 //////////////////////////////////////////////////////////////////////
 
+inline Color ColorFromVec4f(Vec4f v)
+{
+	v *= 255.0f;
+	return FromRGBA((int)GetW(v), (int)GetZ(v), (int)GetY(v), (int)GetX(v));
+}
+
+//////////////////////////////////////////////////////////////////////
+
 inline void SetRGBAFloatsFromColor(float *f, Color c)
 {
-	f[0] = GetAlpha(c) / 255.0f;
-	f[1] = GetBlue(c) / 255.0f;
-	f[2] = GetGreen(c) / 255.0f;
-	f[3] = GetRed(c) / 255.0f;
+	f[0] = GetRed(c) / 255.0f;
+	f[1] = GetGreen(c) / 255.0f;
+	f[2] = GetBlue(c) / 255.0f;
+	f[3] = GetAlpha(c) / 255.0f;
 }
 
 //////////////////////////////////////////////////////////////////////

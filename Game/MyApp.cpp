@@ -1033,11 +1033,11 @@ void MyApp::UpdatePhysics()
 			mStartPos.setIdentity();
 			mEndPos.setIdentity();
 
-			mStartPos.setOrigin(Vec4(10,0,20));
-			mEndPos.setOrigin(Vec4(0,0,-10));
+			Vec4f s = Vec4(0, 0, 2.2f);
+			Vec4f e = Vec4(0, 0, -1);
 
-			Vec4f s = Vec4(10, 0, 20);
-			Vec4f e = Vec4(0, 0, -10);
+			mStartPos.setOrigin(s);
+			mEndPos.setOrigin(e);
 
 			float r = mTestCylinderShape->getRadius();
 
