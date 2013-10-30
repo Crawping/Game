@@ -10,7 +10,7 @@ typedef uint32 Color;
 
 inline Color FromRGBA(int r, int g, int b, int a)
 {
-	return (r & 0xff) | ((g & 0xff) << 8) | ((b & 0xff) << 16) | ((a & 0xff) << 24);
+	return (a & 0xff) | ((b & 0xff) << 8) | ((g & 0xff) << 16) | ((r & 0xff) << 24);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -38,46 +38,46 @@ inline Color FromRGBf(float r, float g, float b)
 
 inline int GetRed(Color c)
 {
-	return (c >>  0) & 0xff;
+	return (c >>  24) & 0xff;
 }
 
 //////////////////////////////////////////////////////////////////////
 
 inline int GetGreen(Color c)
 {
-	return (c >>  8) & 0xff;
+	return (c >>  16) & 0xff;
 }
 
 //////////////////////////////////////////////////////////////////////
 
 inline int GetBlue(Color c)
 {
-	return (c >> 16) & 0xff;
+	return (c >> 8) & 0xff;
 }
 
 //////////////////////////////////////////////////////////////////////
 
 inline int GetAlpha(Color c)
 {
-	return (c >> 24) & 0xff;
+	return (c >> 0) & 0xff;
 }
 
 //////////////////////////////////////////////////////////////////////
 
 inline void SetRGBAFloatsFromColor(float *f, Color c)
 {
-	f[0] = GetRed(c) / 255.0f;
-	f[1] = GetGreen(c) / 255.0f;
-	f[2] = GetBlue(c) / 255.0f;
-	f[3] = GetAlpha(c) / 255.0f;
+	f[0] = GetAlpha(c) / 255.0f;
+	f[1] = GetBlue(c) / 255.0f;
+	f[2] = GetGreen(c) / 255.0f;
+	f[3] = GetRed(c) / 255.0f;
 }
 
 //////////////////////////////////////////////////////////////////////
 
 inline Color GetColorFromRGBAFloats(float *f)
 {
-	return FromRGBA((int)(f[0] * 255.0f),
-					(int)(f[1] * 255.0f),
+	return FromRGBA((int)(f[3] * 255.0f),
 					(int)(f[2] * 255.0f),
-					(int)(f[3] * 255.0f));
+					(int)(f[1] * 255.0f),
+					(int)(f[0] * 255.0f));
 }

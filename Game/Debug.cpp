@@ -152,8 +152,7 @@ void DebugText(Vec4f const &pos, char const *text, ...)
 	
 	Matrix const &m = mCamera->GetTransformMatrix();
 
-	Vec4f r = SplatX(pos) * m.r[0] + SplatY(pos) * m.r[1] + SplatZ(pos) * m.r[2] + m.r[3];
-	r /= SplatW(r);
+	Vec4f r = TransformPoint(pos, m);
 
 	float z = GetZ(r);
 	if(z < 1 && z > 0)
@@ -167,13 +166,11 @@ void DebugText(Vec4f const &pos, char const *text, ...)
 
 //////////////////////////////////////////////////////////////////////
 
-static void _DrawCircle(Vec4f pos, int xaxis, int yaxis, int zaxis, float z, float radius, int segments, Color color)
+static void _DrawCircle(Matrix const &transform, int xaxis, int yaxis, int zaxis, float z, float radius, int segments, Color color)
 {
 	float p[3];
 	float s8p = segments / TWO_PI;
-
 	float t0 = 0;
-
 	for(int t=0; t<segments; ++t)
 	{
 		float t1 = (t + 1) / s8p;
@@ -184,18 +181,18 @@ static void _DrawCircle(Vec4f pos, int xaxis, int yaxis, int zaxis, float z, flo
 		p[xaxis] = x0;
 		p[yaxis] = y0;
 		p[zaxis] = z;
-		Vec4f s = Vec4(p[0], p[1], p[2]) + pos;
+		Vec4f s = Vec4(p[0], p[1], p[2]);
 		p[xaxis] = x1;
 		p[yaxis] = y1;
-		Vec4f e = Vec4(p[0], p[1], p[2]) + pos;
-		DebugLine(s, e, color);
+		Vec4f e = Vec4(p[0], p[1], p[2]);
+		DebugLine(TransformPoint(s, transform), TransformPoint(e, transform), color);
 		t0 = t1;
 	}
 }
 
 //////////////////////////////////////////////////////////////////////
 
-void DebugSphere(Vec4f const &pos, float radius, Color color, int segments, int smoothness)
+void DebugSphere(Matrix const &transform, float radius, Color color, int segments, int smoothness)
 {
 	DebugBeginLines();
 
@@ -205,9 +202,29 @@ void DebugSphere(Vec4f const &pos, float radius, Color color, int segments, int 
 		float n = (radius * i) / segments;
 		float r = sqrtf(rsquared - n * n);
 		float z = i / (segments / radius);
-		_DrawCircle(pos, 0, 1, 2, z, r, smoothness, color);
-		_DrawCircle(pos, 1, 2, 0, z, r, smoothness, color);
-		_DrawCircle(pos, 2, 0, 1, z, r, smoothness, color);
+		_DrawCircle(transform, 0, 1, 2, z, r, smoothness, color);
+		_DrawCircle(transform, 1, 2, 0, z, r, smoothness, color);
+		_DrawCircle(transform, 2, 0, 1, z, r, smoothness, color);
+	}
+	DebugEndLines();
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void DebugCylinder(Matrix const &transform, float radius, float width, Color color, int segments /* = 2 */, int smoothness /* = 16 */)
+{
+	DebugBeginLines();
+	_DrawCircle(transform, 0, 2, 1, -width, radius, smoothness, color);
+	_DrawCircle(transform, 0, 2, 1, +width, radius, smoothness, color);
+	float tscale = segments / TWO_PI;
+	for(int i=0; i<segments; ++i)
+	{
+		float t = i / tscale;
+		float x0 = sinf(t) * radius;
+		float z0 = cosf(t) * radius;
+		float y0 = -width;
+		float y1 = +width;
+		DebugLine(TransformPoint(Vec4(x0, y0, z0), transform), TransformPoint(Vec4(x0, y1, z0), transform), color);
 	}
 	DebugEndLines();
 }

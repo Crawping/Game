@@ -84,6 +84,7 @@ float		Length(Vec4f v);
 Vec4f		Normalize(Vec4f v);
 Vec4f		Cross(Vec4f a, Vec4f b);
 
+
 Vec4f		operator + (Vec4f a, Vec4f b);
 Vec4f		operator - (Vec4f a, Vec4f b);
 Vec4f		operator * (Vec4f a, Vec4f b);

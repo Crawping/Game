@@ -85,7 +85,7 @@ void MyApp::OnInit()
 	//scene = assimporter.ReadFile("data\\cube.dae", 0);
 	//DumpNode(scene, scene->mRootNode, 0);
 
-	mTestBallShape = null; 
+	mTestCylinderShape = null; 
 
 	mCar = null;
 
@@ -809,7 +809,7 @@ void MyApp::OnClose()
 {
 	Delete(mTrack);
 
-	Delete(mTestBallShape);
+	Delete(mTestCylinderShape);
 
 	mCameraParameters.Height.set(mCameraHeight);
 	mCameraParameters.TargetHeight.set(mCameraTargetHeight);
@@ -926,14 +926,14 @@ void MyApp::CreateRamp()
 		Physics::DynamicsWorld->addRigidBody(mBalls[i], -1, -1);
 	}
 
-	mTestBallShape = new btSphereShape(1);
+	mTestCylinderShape = new btCylinderShape(btVector3(2,2,2));
 }
 
 //////////////////////////////////////////////////////////////////////
 
 void MyApp::DeleteRamp()
 {
-	Delete(mTestBallShape);
+	Delete(mTestCylinderShape);
 
 	Physics::DeleteRigidBody(mRamp);
 	Physics::DeleteRigidBody(mTestBody);
@@ -1028,7 +1028,7 @@ void MyApp::UpdatePhysics()
 	}
 	else if(mCar->IsValid())
 	{
-		if(mTestBallShape != null)
+		if(mTestCylinderShape != null)
 		{
 			mStartPos.setIdentity();
 			mEndPos.setIdentity();
@@ -1039,21 +1039,24 @@ void MyApp::UpdatePhysics()
 			Vec4f s = Vec4(10, 0, 20);
 			Vec4f e = Vec4(0, 0, -10);
 
-			float r = mTestBallShape->getRadius();
+			float r = mTestCylinderShape->getRadius();
 
-			DebugSphere(e, r, 0xff00ffff);
-			DebugSphere(s, r, 0xffff00ff);
+			Matrix st = TranslationMatrix(s);
+			Matrix et = TranslationMatrix(e);
+
+			DebugCylinder(et, 2, 2, 0xff00ffff, 8);
+			DebugCylinder(st, 2, 2, 0xff00ffff, 8);
 			DebugOneLine(s, e, 0xff8040ff);
 
 			ClosestConvexResultCallback collisionCallback(mStartPos.getOrigin(), mEndPos.getOrigin());
 
-			Physics::DynamicsWorld->convexSweepTest(mTestBallShape, mStartPos, mEndPos, collisionCallback);
+			Physics::DynamicsWorld->convexSweepTest(mTestCylinderShape, mStartPos, mEndPos, collisionCallback);
 
 			if(collisionCallback.m_hitCollisionObject != null)
 			{
 				Vec4f hitPos = s + (e - s) * collisionCallback.m_closestHitFraction;
 				DebugAxes(hitPos, 3);
-				DebugSphere(hitPos, r, 0xffffffff);
+				DebugCylinder(TranslationMatrix(hitPos), 2, 2, 0xff00ffff, 8);
 			}
 		}
 
