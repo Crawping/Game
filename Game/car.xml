@@ -20,7 +20,7 @@
 		<Parameter Name="Mass" Value="1.000000" />
 		<Parameter Name="Offset_X" Value="0.959998" />
 		<Parameter Name="Offset_Y" Value="6.445001" />
-		<Parameter Name="Offset_Z" Value="-3.890000" />
+		<Parameter Name="Offset_Z" Value="0.969999" />
 		<Parameter Name="Friction" Value="9.180003" />
 		<Parameter Name="WheelLinearDamping" Value="0.000000" />
 		<Parameter Name="WheelAngularDamping" Value="0.000000" />
@@ -53,7 +53,7 @@
 		<Parameter Name="Mass" Value="1.000000" />
 		<Parameter Name="Offset_X" Value="0.960004" />
 		<Parameter Name="Offset_Y" Value="5.590000" />
-		<Parameter Name="Offset_Z" Value="-1.049998" />
+		<Parameter Name="Offset_Z" Value="0.450002" />
 		<Parameter Name="Friction" Value="6.978999" />
 		<Parameter Name="WheelLinearDamping" Value="0.000000" />
 		<Parameter Name="WheelAngularDamping" Value="0.000000" />
