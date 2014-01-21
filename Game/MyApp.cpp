@@ -395,7 +395,7 @@ bool MyApp::OnUpdate()
 
 	mConsole->Update();
 
-	Graphics::BeginFrame(0xff204000);
+	Graphics::BeginFrame(0xff2040ff);
 
 	mSpriteList->Begin();
 	mSpriteList->SetViewport(0, 0, Graphics::Width(), Graphics::Height());
