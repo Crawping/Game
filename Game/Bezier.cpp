@@ -41,22 +41,3 @@ uint CalculateBezier(Vec4f const *ControlPoints, uint NumControlPoints, Vec4f *R
 	return o;
 }
 
-//////////////////////////////////////////////////////////////////////
-
-uint CalculateNumBezierPoints(uint numControlPoints, uint steps)
-{
-	int o = 0;
-	for(uint i=0; i<numControlPoints-3; i+=3)
-	{
-		if(i == 0)
-		{
-			++o;
-		}
-		for(uint j=1; j<=steps; ++j)
-		{
-			++o;
-		}
-	}
-	int n = (numControlPoints / 3) * steps + 1;
-	return n;
-}

@@ -85,6 +85,9 @@ void MyApp::OnInit()
 	//scene = assimporter.ReadFile("data\\cube.dae", 0);
 	//DumpNode(scene, scene->mRootNode, 0);
 
+//	char *a1 = U"hello";
+//	char16_t *a2 = u"hello";
+
 	mTestCylinderShape = null; 
 
 	mCar = null;
@@ -1202,7 +1205,7 @@ void MyApp::UpdateCamera()
 		mCameraPitch -= mouseDeltaTotal.y * 0.0025f;
 		mCamera.CalculateViewMatrix(mCameraPos, 0, mCameraPitch, mCameraYaw);
 
-		Matrix m = XMMatrixTranspose(mCamera.GetViewMatrix());
+		Matrix m = TransposeMatrix(mCamera.GetViewMatrix());
 		Vec4f dx(m.r[0]);
 //		Vec4 dy(m.r[1]);
 		Vec4f dz(m.r[2]);
@@ -1247,24 +1250,9 @@ void MyApp::UpdateCamera()
 
 //////////////////////////////////////////////////////////////////////
 
-Matrix MatrixFromBulletTransform(btTransform const &trans)
-{
-	btVector3 R = trans.getBasis().getColumn(0);
-	btVector3 U = trans.getBasis().getColumn(1);
-	btVector3 L = trans.getBasis().getColumn(2);
-	btVector3 P = trans.getOrigin();
-
-	return Matrix(	R.x(), R.y(), R.z(), 0,
-		U.x(), U.y(), U.z(), 0,
-		L.x(), L.y(), L.z(), 0,
-		P.x(), P.y(), P.z(), 1);
-}
-
-//////////////////////////////////////////////////////////////////////
-
 Matrix GetTransform(btRigidBody *body)
 {
-	return MatrixFromBulletTransform(body->getCenterOfMassTransform());
+	return Physics::btTransformToMatrix(body->getCenterOfMassTransform());
 }
 
 //////////////////////////////////////////////////////////////////////
