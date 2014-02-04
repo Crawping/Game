@@ -29,6 +29,20 @@ namespace Graphics
 
 	void	UpdateMouse();
 
+	template<UINT TNameLength> inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_z_ const char (&name)[TNameLength])
+	{
+#if defined(_DEBUG) || defined(PROFILE)
+		resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
+#endif
+	}
+
+	inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_ string const &name)
+	{
+#if defined(_DEBUG) || defined(PROFILE)
+		resource->SetPrivateData(WKPDID_D3DDebugObjectName, name.length() - 1, name.c_str());
+#endif
+	}
+
 	extern uint	gDrawCalls;
 };
 

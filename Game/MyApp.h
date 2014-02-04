@@ -165,10 +165,7 @@ class MyApp : App
 	Material *								mMaterial;
 	VertexBuffer *							mVertexBuffer;
 	IndexBuffer *							mIndexBuffer;
-	ConstantBuffer *						mConstantBuffer;
 	Mesh *									mMesh;
-
-	Axes *									mAxes;
 
 	Track *									mTrack;
 

@@ -9,7 +9,7 @@ VertexElement VertexElement::sAllVertexElements[] =
 {
 	{	VertexElement::Position2,	"POSITION",	VertexElement::Float,	2	},
 	{	VertexElement::Position3,	"POSITION",	VertexElement::Float,	3	},
-	{	VertexElement::TexCoord,		"TEXCOORD",	VertexElement::Float,	2	},
+	{	VertexElement::TexCoord,	"TEXCOORD",	VertexElement::Float,	2	},
 	{	VertexElement::Normal,		"NORMAL",	VertexElement::Float,	3	},
 	{	VertexElement::Color,		"COLOR",	VertexElement::Byte,	4	}
 };

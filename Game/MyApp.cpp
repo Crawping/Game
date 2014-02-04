@@ -810,7 +810,6 @@ void MyApp::Draw()
 
 void MyApp::OnClose()
 {
-	Delete(mTrack);
 
 	Delete(mTestCylinderShape);
 
@@ -828,37 +827,42 @@ void MyApp::OnClose()
 
 	DebugClose();
 
-	CleanUpPhysics();
+	Release(mModel);
+	Release(mCylinder);
+	Release(mCylinderMesh);
+	Release(mCylinderVB);
+	Release(mCylinderIB);
+	Release(mConsole);
+	Release(mImmediateContext);
+	Release(mSpriteList);
+	Release(mVertexShader);
+	Release(mPixelShader);
+	Release(mTexture);
+	Release(mMaterial);
+	Release(mVertexBuffer);
+	Release(mIndexBuffer);
+	Release(mMesh);
 
-	Release(mLinesVS);
-	Release(mLinesPS);
-	Release(mLinesMaterial);
-	Release(mLinesIC);
+	Delete(mTrack);
 
 	Release(m2DUntexturedVS);
 	Release(m2DUntexturedPS);
 	Release(mUntexturedMaterial);
 	Release(m2DUntexturedIC);
 
-	Delete(mPhysicsDebug);
-	Release(mCylinderIB);
-	Release(mCylinderVB);
-	Release(mCylinderMesh);
-	Release(mCylinder);
-	Release(mMesh);
-	Release(mModel);
-	Release(mConsole);
-	Release(mFixedSysFont);
+	Release(mLinesVS);
+	Release(mLinesPS);
+	Release(mLinesMaterial);
+	Release(mLinesIC);
+
+
 	Release(mDebugFont);
 	Release(mBannerFont);
-	Release(mSpriteList);
-	Release(mImmediateContext);
-	Release(mTexture);
-	Release(mMaterial);
-	Release(mIndexBuffer);
-	Release(mVertexBuffer);
-	Release(mPixelShader);
-	Release(mVertexShader);
+	Release(mFixedSysFont);
+
+	Delete(mPhysicsDebug);
+
+	CleanUpPhysics();
 }
 
 // masses must sum to 1

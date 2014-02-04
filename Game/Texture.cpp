@@ -57,6 +57,10 @@ public:
 		data[0].SysMemPitch = width * 4;
 		data[0].SysMemSlicePitch = 0;
 		D3DDevice->CreateTexture2D(&mDesc, data, &mTexture);
+
+
+		Graphics::SetDebugObjectName(mTexture, Format("%dx%d:%08x", width, height, color).c_str());
+
 		DeleteArray(pixels);
 		D3DDevice->CreateShaderResourceView(mTexture, null, &mShaderResourceView);
 		Finalize();
