@@ -1,27 +1,27 @@
 <xml>
 	<ParameterSet Name="Camera" ParameterCount="3" Expanded="0">
-		<Parameter Name="Distance" Value="100.000000" />
-		<Parameter Name="Height" Value="100.000000" />
-		<Parameter Name="TargetHeight" Value="52.649261" />
+		<Parameter Name="Distance" Value="117.479393" />
+		<Parameter Name="Height" Value="23.022457" />
+		<Parameter Name="TargetHeight" Value="20.795742" />
 	</ParameterSet>
 	<ParameterSet Name="View0" ParameterCount="3" Expanded="0">
 		<Parameter Name="PanX" Value="-1.917847" />
 		<Parameter Name="PanY" Value="-9.169713" />
-		<Parameter Name="Zoom" Value="29.367054" />
+		<Parameter Name="Zoom" Value="68.628387" />
 	</ParameterSet>
 	<ParameterSet Name="View1" ParameterCount="3" Expanded="0">
-		<Parameter Name="PanX" Value="2.668193" />
-		<Parameter Name="PanY" Value="0.009688" />
-		<Parameter Name="Zoom" Value="47.011505" />
+		<Parameter Name="PanX" Value="-0.008565" />
+		<Parameter Name="PanY" Value="-0.004520" />
+		<Parameter Name="Zoom" Value="34.499245" />
 	</ParameterSet>
 	<ParameterSet Name="View2" ParameterCount="3" Expanded="0">
-		<Parameter Name="PanX" Value="-0.178437" />
-		<Parameter Name="PanY" Value="-10.105817" />
+		<Parameter Name="PanX" Value="-0.003272" />
+		<Parameter Name="PanY" Value="-0.121378" />
 		<Parameter Name="Zoom" Value="85.831116" />
 	</ParameterSet>
 	<ParameterSet Name="View3" ParameterCount="3" Expanded="0">
-		<Parameter Name="PanX" Value="1.564240" />
-		<Parameter Name="PanY" Value="0.941252" />
+		<Parameter Name="PanX" Value="-0.026782" />
+		<Parameter Name="PanY" Value="-0.215855" />
 		<Parameter Name="Zoom" Value="70.872787" />
 	</ParameterSet>
 </xml>

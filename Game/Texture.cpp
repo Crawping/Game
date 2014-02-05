@@ -57,8 +57,6 @@ public:
 		data[0].SysMemPitch = width * 4;
 		data[0].SysMemSlicePitch = 0;
 		D3DDevice->CreateTexture2D(&mDesc, data, &mTexture);
-
-
 		Graphics::SetDebugObjectName(mTexture, Format("%dx%d:%08x", width, height, color).c_str());
 
 		DeleteArray(pixels);
@@ -74,6 +72,7 @@ public:
 		//mTexture->QueryInterface(__uuidof(IDXGISurface1), (void **)(&mSurface));
 		CD3D11_SAMPLER_DESC samplerDesc(D3D11_DEFAULT);
 		D3DDevice->CreateSamplerState(&samplerDesc, &mSamplerState);
+		Graphics::SetDebugObjectName(mSamplerState, "SAMPLERSTATE");
 	}
 
 	//////////////////////////////////////////////////////////////////////

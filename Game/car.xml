@@ -10,7 +10,7 @@
 	</ParameterSet>
 	<ParameterSet Name="Chassis" ParameterCount="4" Expanded="1">
 		<Parameter Name="Mass" Value="500.000000" />
-		<Parameter Name="Length" Value="15.959983" />
+		<Parameter Name="Length" Value="20.599998" />
 		<Parameter Name="Width" Value="3.843997" />
 		<Parameter Name="Height" Value="1.400001" />
 	</ParameterSet>
@@ -18,9 +18,9 @@
 		<Parameter Name="Radius" Value="4.988000" />
 		<Parameter Name="Width" Value="2.532298" />
 		<Parameter Name="Mass" Value="1.000000" />
-		<Parameter Name="Offset_X" Value="0.959998" />
-		<Parameter Name="Offset_Y" Value="6.445001" />
-		<Parameter Name="Offset_Z" Value="0.969999" />
+		<Parameter Name="Offset_X" Value="-1.080000" />
+		<Parameter Name="Offset_Y" Value="7.195001" />
+		<Parameter Name="Offset_Z" Value="0.340000" />
 		<Parameter Name="Friction" Value="9.180003" />
 		<Parameter Name="WheelLinearDamping" Value="0.000000" />
 		<Parameter Name="WheelAngularDamping" Value="0.000000" />

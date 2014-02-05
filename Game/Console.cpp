@@ -94,8 +94,9 @@ void Console::Update()
 				mCommandLine.push_back((char)App::LastCharPressed);
 				break;
 			}
+			App::LastCharPressed = 0;
 		}
-		//App::ResetAllInput();
+		App::ResetAllInput();
 	}
 }
 

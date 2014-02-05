@@ -4,7 +4,7 @@
 
 //////////////////////////////////////////////////////////////////////
 
-ALIGN(16, class) App
+ALIGN(16, class) App	// Needs to be aligned in case child class needs it
 {
 public:
 
@@ -14,6 +14,8 @@ public:
 	static bool			KeyPressed(uint keyCode);
 	static bool			KeyHeld(uint keyCode);
 	static bool			KeyReleased(uint keyCode);
+
+	static void			ResetAllInput();
 
 	virtual void		OnInit() = 0;
 	virtual bool		OnUpdate() = 0;
@@ -51,6 +53,5 @@ protected:
 	App();
 	~App();
 	
-	uint32 pad[3];	// +1 for the vtable
-
+	uint32 pad[3];	// +1 for the vtable = 16
 };

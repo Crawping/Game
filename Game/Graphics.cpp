@@ -28,7 +28,10 @@ static uint							windowStyle = WS_BORDER | WS_CAPTION | WS_SYSMENU | WS_VISIBLE
 
 static const DXGI_FORMAT			kBackBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
 
+#if defined(_DEBUG)
 static ID3D11Debug *				debug = null;
+#endif
+
 static IDXGISwapChain *				swapChain = null;
 static ID3D11RenderTargetView *		backBuffer = null;
 static ID3D11DepthStencilView *		depthStencilView = null;
@@ -179,14 +182,6 @@ void Graphics::SetZBufferMode(ZBufferMode mode)
 
 void Graphics::Close()
 {
-	ID3D11SamplerState *v[4] = { 0 };
-
-	D3DContext->OMSetBlendState(null, null, 0xffffffff);
-	D3DContext->OMSetDepthStencilState(null, 0);
-	D3DContext->RSSetState(null);
-	D3DContext->PSSetSamplers(0, 4, v);
-	D3DContext->Flush();
-
 	for(uint i=0; i<BM_NumBlendModes; ++i)
 	{
 		Release(blendState[i]);
@@ -203,12 +198,11 @@ void Graphics::Close()
 
 	D3DContext->ClearState();
 	D3DContext->Flush();
-	D3DContext->ClearState();
-	D3DContext->Flush();
 
 	Release(D3DContext);
 	Release(D3DDevice);
 
+#if defined(_DEBUG)
 	if(debug != null)
 	{
 		TRACE("D3D ==================================================================\n");
@@ -216,6 +210,7 @@ void Graphics::Close()
 		TRACE("======================================================================\n");
 	}
 	Release(debug);
+#endif
 
 	CloseWindow(hwnd);
 }
@@ -387,12 +382,16 @@ bool InitD3D()
 	DX(D3D11CreateDeviceAndSwapChain(	null, D3D_DRIVER_TYPE_HARDWARE, null, flags,
 										null, 0, D3D11_SDK_VERSION, &scd, &swapChain,
 										&D3DDevice, null, &D3DContext));
+	Graphics::SetDebugObjectName(D3DContext, "CONTEXT");
 
+#if defined(_DEBUG)
 	DX(D3DDevice->QueryInterface(__uuidof(ID3D11Debug), (VOID **)&debug));
+#endif
 
 	ID3D11Texture2D *pBackBuffer;
 	DX(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer));
 	DX(D3DDevice->CreateRenderTargetView(pBackBuffer, null, &backBuffer));
+	Graphics::SetDebugObjectName(pBackBuffer, "BACKBUFFER");
 	Release(pBackBuffer);
 
 	D3D11_TEXTURE2D_DESC descDepth = { 0 };
@@ -405,6 +404,7 @@ bool InitD3D()
 	descDepth.Usage = D3D11_USAGE_DEFAULT;
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	DX(D3DDevice->CreateTexture2D(&descDepth, NULL, &depthBuffer));
+	Graphics::SetDebugObjectName(depthBuffer, "DEPTHBUFFER");
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
 	ZeroMemory(&dsvd, sizeof(dsvd));
@@ -412,6 +412,7 @@ bool InitD3D()
 	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvd.Texture2D.MipSlice = 0;
 	DX(D3DDevice->CreateDepthStencilView(depthBuffer, &dsvd, &depthStencilView));
+	Graphics::SetDebugObjectName(depthStencilView, "DEPTHSTENCILVIEW");
 
 	D3D11_DEPTH_STENCIL_DESC dsDesc = { 0 };
 	dsDesc.DepthEnable = true;
