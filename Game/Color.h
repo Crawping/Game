@@ -74,14 +74,14 @@ inline Color ColorFromVec4f(Vec4f v)
 
 inline Vec4f Vec4FromColor_RGBA(Color c)
 {
-	return Vec4(GetRed(c), GetGreen(c), GetBlue(c), GetAlpha(c)) / 255.0f;;
+	return Vec4((float)GetRed(c), (float)GetGreen(c), (float)GetBlue(c), (float)GetAlpha(c)) / 255.0f;;
 }
 
 //////////////////////////////////////////////////////////////////////
 
 inline Vec4f Vec4FromColor_ABGR(Color c)
 {
-	return Vec4(GetAlpha(c), GetBlue(c), GetGreen(c), GetRed(c)) / 255.0f;;
+	return Vec4((float)GetAlpha(c), (float)GetBlue(c), (float)GetGreen(c), (float)GetRed(c)) / 255.0f;;
 }
 
 //////////////////////////////////////////////////////////////////////

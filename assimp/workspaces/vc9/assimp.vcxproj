@@ -264,6 +264,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug-st|Win32'">
     <IncludePath>$(SolutionDir)assimp\code\BoostWorkaround;$(IncludePath)</IncludePath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
+    <IncludePath>$(SolutionDir)assimp\code\BoostWorkaround;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
