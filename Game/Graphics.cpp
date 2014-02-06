@@ -451,12 +451,9 @@ void Flip()
 
 void Clear(Color color)
 {
-	float abgr[4];
-	for(uint i=0; i<4; ++i)
-	{
-		abgr[i] = ((color >> (i * 8)) & 0xff) / 255.0f;
-	}
-	D3DContext->ClearRenderTargetView(backBuffer, abgr);
+	float f[4];
+	_mm_storeu_ps(f, Vec4FromColor_ABGR(color));
+	D3DContext->ClearRenderTargetView(backBuffer, f);
 }
 
 //////////////////////////////////////////////////////////////////////
