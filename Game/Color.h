@@ -108,8 +108,8 @@ inline void SetABGRFloatsFromColor(float *f, Color c)
 
 inline Color GetColorFromRGBAFloats(float *f)
 {
-	return FromRGBA((int)(f[3] * 255.0f),
-					(int)(f[2] * 255.0f),
+	return FromRGBA((int)(f[0] * 255.0f),
 					(int)(f[1] * 255.0f),
-					(int)(f[0] * 255.0f));
+					(int)(f[2] * 255.0f),
+					(int)(f[3] * 255.0f));
 }

@@ -37,4 +37,19 @@ namespace Physics
 	}
 
 	//////////////////////////////////////////////////////////////////////
+
+	inline Matrix btTransformToMatrix(btTransform const &trans)
+	{
+		btVector3 R = trans.getBasis().getColumn(0);
+		btVector3 U = trans.getBasis().getColumn(1);
+		btVector3 L = trans.getBasis().getColumn(2);
+		btVector3 P = trans.getOrigin();
+
+		return Matrix(	R.x(), R.y(), R.z(), 0,
+						U.x(), U.y(), U.z(), 0,
+						L.x(), L.y(), L.z(), 0,
+						P.x(), P.y(), P.z(), 1);
+	}
+
+	//////////////////////////////////////////////////////////////////////
 }

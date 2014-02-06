@@ -97,6 +97,8 @@
 
 //////////////////////////////////////////////////////////////////////
 
+#include "Vehicle.h"
+
 #include "Debug.h"
 #include "PhysicsDebug.h"
 #include "Axes.h"
