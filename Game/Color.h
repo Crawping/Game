@@ -72,12 +72,36 @@ inline Color ColorFromVec4f(Vec4f v)
 
 //////////////////////////////////////////////////////////////////////
 
+inline Vec4f Vec4FromColor_RGBA(Color c)
+{
+	return Vec4(GetRed(c), GetGreen(c), GetBlue(c), GetAlpha(c)) / 255.0f;;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline Vec4f Vec4FromColor_ABGR(Color c)
+{
+	return Vec4(GetAlpha(c), GetBlue(c), GetGreen(c), GetRed(c)) / 255.0f;;
+}
+
+//////////////////////////////////////////////////////////////////////
+
 inline void SetRGBAFloatsFromColor(float *f, Color c)
 {
 	f[0] = GetRed(c) / 255.0f;
 	f[1] = GetGreen(c) / 255.0f;
 	f[2] = GetBlue(c) / 255.0f;
 	f[3] = GetAlpha(c) / 255.0f;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+inline void SetABGRFloatsFromColor(float *f, Color c)
+{
+	f[0] = GetAlpha(c) / 255.0f;
+	f[1] = GetBlue(c) / 255.0f;
+	f[2] = GetGreen(c) / 255.0f;
+	f[3] = GetRed(c) / 255.0f;
 }
 
 //////////////////////////////////////////////////////////////////////
