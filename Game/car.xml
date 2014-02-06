@@ -34,7 +34,7 @@
 		<Parameter Name="HubWidth" Value="0.647200" />
 		<Parameter Name="HubHeight" Value="2.000000" />
 		<Parameter Name="HubLength" Value="0.594000" />
-		<Parameter Name="SpringLength" Value="6.151999" />
+		<Parameter Name="SpringLength" Value="10.000000" />
 		<Parameter Name="SpringStiffness" Value="2000.000000" />
 		<Parameter Name="SpringDamping" Value="0.000500" />
 		<Parameter Name="SpringLoad" Value="4.500000" />

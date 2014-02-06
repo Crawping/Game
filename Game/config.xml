@@ -1,6 +1,6 @@
 <xml>
 	<ParameterSet Name="Camera" ParameterCount="3" Expanded="0">
-		<Parameter Name="Distance" Value="100.000000" />
+		<Parameter Name="Distance" Value="235.972260" />
 		<Parameter Name="Height" Value="100.000000" />
 		<Parameter Name="TargetHeight" Value="52.649261" />
 	</ParameterSet>
