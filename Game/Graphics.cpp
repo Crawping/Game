@@ -291,11 +291,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WM_KEYDOWN:
-		App::LastKeyPressed = wParam;
+		App::LastKeyPressed = (int)wParam;
 		break;
 
 	case WM_CHAR:
-		App::LastCharPressed = wParam;
+		App::LastCharPressed = (int)wParam;
 		break;
 
 	case WM_ACTIVATE:

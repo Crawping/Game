@@ -171,7 +171,7 @@ void MyApp::OnInit()
 
 	uint32 mask = VertexElement::Position3 + VertexElement::TexCoord + VertexElement::Color;
 
-	mCylinderVB = VertexBuffer::Create(vertex.size(), mask, &vertex[0]);
+	mCylinderVB = VertexBuffer::Create((uint)vertex.size(), mask, &vertex[0]);
 
 	for(uint16 i=0; i<step-1; ++i)
 	{
@@ -201,7 +201,7 @@ void MyApp::OnInit()
 		index.push_back(s2 + i1);
 	}
 
-	mCylinderIB = IndexBuffer::Create(&index[0], index.size(), IndexBuffer::IT_UINT16);
+	mCylinderIB = IndexBuffer::Create(&index[0], (uint)index.size(), IndexBuffer::IT_UINT16);
 
 	uint32 simpleMask = VertexElement::Position3 + VertexElement::Color;
 
@@ -210,7 +210,7 @@ void MyApp::OnInit()
 	mPixelShader = PixelShader::Load(L"PixelShader");
 	mMaterial = Material::Create(mPixelShader, mVertexShader, BM_None, mTexture);
 
-	mCylinderMesh = Mesh::Create(MT_Triangles, 0, 0, index.size(), mMaterial);
+	mCylinderMesh = Mesh::Create(MT_Triangles, 0, 0, (uint)index.size(), mMaterial);
 	mCylinder = Model::Create(mCylinderVB, mCylinderIB);
 	mCylinder->GetRootNode()->AddMesh(mCylinderMesh);
 
@@ -528,7 +528,7 @@ void MyApp::CountParameters()
 			++mNumParameterLines;
 			if(s->mExpanded)
 			{
-				mNumParameterLines += s->mParameters.size();
+				mNumParameterLines += (int)s->mParameters.size();
 			}
 		}
 	}

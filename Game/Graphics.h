@@ -39,7 +39,7 @@ namespace Graphics
 	inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_ string const &name)
 	{
 #if defined(_DEBUG) || defined(PROFILE)
-		resource->SetPrivateData(WKPDID_D3DDebugObjectName, name.length() - 1, name.c_str());
+		resource->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)name.length() - 1, name.c_str());
 #endif
 	}
 

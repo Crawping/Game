@@ -25,7 +25,7 @@ BEGIN_PRIVATE_PARAMSET(ViewParameters, "View")
 
 END_PARAMSET()
 
-class MyApp : App
+ALIGN(16, class) MyApp : App
 {
 	void		OnInit() override;
 	bool		OnUpdate() override;
@@ -122,16 +122,17 @@ class MyApp : App
 
 	void DrawViewWindow(ViewWindow *w);
 
+	uint									mFrame;
+	Timer									mTimer;
+	double									mElapsedTime;
+	float									mDeltaTime;
+
 	Vec4f									mCameraPos;
 	Vec4f									mPosition;
 	Vec4f									mTarget;
 
 	Matrix									mCarOrientation;
 
-	uint									mFrame;
-	Timer									mTimer;
-	double									mElapsedTime;
-	float									mDeltaTime;
 	Camera									mCamera;
 
 	int										mEditMargin;

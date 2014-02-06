@@ -16,10 +16,10 @@ public:
 		mFormat = (type == IT_UINT16) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
 		D3D11_BUFFER_DESC desc = { 0 };
 		desc.Usage = D3D11_USAGE_DYNAMIC;
-		desc.ByteWidth = numIndices * size;
+		desc.ByteWidth = (UINT)(numIndices * size);
 		desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		desc.StructureByteStride = size;
+		desc.StructureByteStride = (UINT)size;
 		D3D11_SUBRESOURCE_DATA data = { 0 };
 		data.pSysMem = indices; 
 		DX(D3DDevice->CreateBuffer(&desc, &data, &mBuffer));

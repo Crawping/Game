@@ -241,6 +241,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <OutDir>./../../lib/$(ProjectName)_$(Configuration)_$(Platform)\</OutDir>
     <IntDir>./../../obj/$(ProjectName)_$(Configuration)_$(Platform)\</IntDir>
+    <IncludePath>$(SolutionDir)assimp\code\BoostWorkaround;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
     <IntDir>./../../obj/$(ProjectName)_$(Configuration)_$(Platform)\</IntDir>
@@ -262,6 +263,9 @@
     <IncludePath>$(SolutionDir)assimp\code\BoostWorkaround;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug-st|Win32'">
+    <IncludePath>$(SolutionDir)assimp\code\BoostWorkaround;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <IncludePath>$(SolutionDir)assimp\code\BoostWorkaround;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

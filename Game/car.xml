@@ -1,6 +1,6 @@
 <xml>
 	<ParameterSet Name="Engine" ParameterCount="7" Expanded="1">
-		<Parameter Name="Power" Value="12.863003" />
+		<Parameter Name="Power" Value="13.058007" />
 		<Parameter Name="Mass" Value="466.206024" />
 		<Parameter Name="VerticalOffset" Value="-2.180001" />
 		<Parameter Name="HorizontalOffset" Value="-7.920001" />
@@ -12,15 +12,15 @@
 		<Parameter Name="Mass" Value="500.000000" />
 		<Parameter Name="Length" Value="20.599998" />
 		<Parameter Name="Width" Value="3.843997" />
-		<Parameter Name="Height" Value="1.400001" />
+		<Parameter Name="Height" Value="2.687000" />
 	</ParameterSet>
 	<ParameterSet Name="Rear Wheels" ParameterCount="31" Expanded="1">
 		<Parameter Name="Radius" Value="4.988000" />
 		<Parameter Name="Width" Value="2.532298" />
 		<Parameter Name="Mass" Value="1.000000" />
-		<Parameter Name="Offset_X" Value="-1.080000" />
+		<Parameter Name="Offset_X" Value="0.960000" />
 		<Parameter Name="Offset_Y" Value="7.195001" />
-		<Parameter Name="Offset_Z" Value="0.340000" />
+		<Parameter Name="Offset_Z" Value="-2.569999" />
 		<Parameter Name="Friction" Value="9.180003" />
 		<Parameter Name="WheelLinearDamping" Value="0.000000" />
 		<Parameter Name="WheelAngularDamping" Value="0.000000" />
@@ -34,7 +34,7 @@
 		<Parameter Name="HubWidth" Value="0.647200" />
 		<Parameter Name="HubHeight" Value="2.000000" />
 		<Parameter Name="HubLength" Value="0.594000" />
-		<Parameter Name="SpringLength" Value="6.151999" />
+		<Parameter Name="SpringLength" Value="6.183999" />
 		<Parameter Name="SpringStiffness" Value="2000.000000" />
 		<Parameter Name="SpringDamping" Value="0.000500" />
 		<Parameter Name="SpringLoad" Value="4.500000" />
@@ -53,7 +53,7 @@
 		<Parameter Name="Mass" Value="1.000000" />
 		<Parameter Name="Offset_X" Value="0.960004" />
 		<Parameter Name="Offset_Y" Value="5.590000" />
-		<Parameter Name="Offset_Z" Value="0.450002" />
+		<Parameter Name="Offset_Z" Value="-2.609997" />
 		<Parameter Name="Friction" Value="6.978999" />
 		<Parameter Name="WheelLinearDamping" Value="0.000000" />
 		<Parameter Name="WheelAngularDamping" Value="0.000000" />

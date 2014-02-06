@@ -13,11 +13,11 @@ protected:
 	}
 
 	virtual bool IsValid() const = 0;
-	virtual long Size() = 0;
-	virtual long Position() = 0;
-	virtual void Seek(long offset, int mode = SEEK_SET) = 0;
-	virtual long Read(void *p, long s) = 0;
-	virtual long Write(void const *p, long s) = 0;
+	virtual size_t Size() = 0;
+	virtual size_t Position() = 0;
+	virtual void Seek(size_t offset, int mode = SEEK_SET) = 0;
+	virtual size_t Read(void *p, size_t s) = 0;
+	virtual size_t Write(void const *p, size_t s) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -73,9 +73,9 @@ public:
 
 	//////////////////////////////////////////////////////////////////////
 
-	long Size()
+	size_t Size()
 	{
-		long len = 0;
+		size_t len = 0;
 		if(IsValid())
 		{
 			Seek(0, SEEK_END);
@@ -87,11 +87,11 @@ public:
 
 	//////////////////////////////////////////////////////////////////////
 
-	long Position()
+	size_t Position()
 	{
 		if(IsValid())
 		{
-			return ftell(mHandle);
+			return _ftelli64(mHandle);
 		}
 		else
 		{
@@ -101,17 +101,17 @@ public:
 
 	//////////////////////////////////////////////////////////////////////
 
-	void Seek(long offset, int mode = SEEK_SET)
+	void Seek(size_t offset, int mode = SEEK_SET)
 	{
 		if(IsValid())
 		{
-			fseek(mHandle, (long)offset, mode);
+			_fseeki64(mHandle, (long)offset, mode);
 		}
 	}
 
 	//////////////////////////////////////////////////////////////////////
 
-	long Read(void *p, long s)
+	size_t Read(void *p, size_t s)
 	{
 		if(IsValid())
 		{
@@ -125,7 +125,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////
 
-	long Write(void const *p, long s)
+	size_t Write(void const *p, size_t s)
 	{
 		if(IsValid())
 		{
