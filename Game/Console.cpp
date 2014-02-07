@@ -95,7 +95,7 @@ void Console::Update()
 				break;
 			}
 		}
-		//App::ResetAllInput();
+		App::ResetKeyboardInput();
 	}
 }
 

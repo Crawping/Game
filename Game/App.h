@@ -15,6 +15,8 @@ public:
 	static bool			KeyHeld(uint keyCode);
 	static bool			KeyReleased(uint keyCode);
 
+	static void			ResetKeyboardInput();
+
 	virtual void		OnInit() = 0;
 	virtual bool		OnUpdate() = 0;
 	virtual void		OnClose() = 0;

@@ -423,7 +423,7 @@ Vec2 Font::MeasureString(char const *text, Vec2 *offset, vector<Link> *links) co
 
 string Font::WrapText(string txt, uint pixelWidth, string lineBreak)
 {
-	int lineBreakLength = lineBreak.size();
+	int lineBreakLength = (int)lineBreak.size();
 	uint lastGood = 1;
 	Vec2 offset;
 
