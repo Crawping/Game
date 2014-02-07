@@ -35,7 +35,7 @@ void ModelNode::RemoveChild(uint index)
 
 uint ModelNode::GetNumChildren()
 {
-	return mChildren.size();
+	return (uint)mChildren.size();
 }
 
 //////////////////////////////////////////////////////////////////////

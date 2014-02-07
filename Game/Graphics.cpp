@@ -7,6 +7,10 @@
 ID3D11Device *						D3DDevice = null;
 ID3D11DeviceContext *				D3DContext = null;
 
+#if defined(_DEBUG)
+ID3D11Debug *						D3DDebug = null;
+#endif
+
 uint								Graphics::gDrawCalls = 0;
 
 //////////////////////////////////////////////////////////////////////
@@ -194,6 +198,11 @@ void Graphics::Close()
 	Release(backBuffer);
 	Release(swapChain);
 	Release(D3DContext);
+
+#if defined(_DEBUG)
+
+#endif
+
 	Release(D3DDevice);
 	CloseWindow(hwnd);
 }
