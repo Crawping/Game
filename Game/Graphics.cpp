@@ -197,9 +197,16 @@ void Graphics::Close()
 	Release(depthBuffer);
 	Release(backBuffer);
 	Release(swapChain);
+	
+	D3DContext->ClearState();
+	D3DContext->Flush();
+	
 	Release(D3DContext);
 
 #if defined(_DEBUG)
+	DX(D3DDevice->QueryInterface(__uuidof(ID3D11Debug), (void **)&D3DDebug));
+	D3DDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+	Release(D3DDebug);
 
 #endif
 
