@@ -54,19 +54,19 @@ void Console::Trace(char const *msg, ...)
 
 void Console::Update()
 {
-	if(App::LastCharPressed == '`')
+	if(Keyboard::LastCharPressed == '`')
 	{
 		mActive = !mActive;
 		mTimer.Reset();
-		App::LastCharPressed = 0;
+		Keyboard::LastCharPressed = 0;
 	}
 	if(mActive)
 	{
-		if(App::LastCharPressed != 0)
+		if(Keyboard::LastCharPressed != 0)
 		{
 			mTimer.Reset();
 
-			switch(App::LastCharPressed)
+			switch(Keyboard::LastCharPressed)
 			{
 			case VK_BACK:
 				if(!mCommandLine.empty())
@@ -91,11 +91,11 @@ void Console::Update()
 				break;
 
 			default:
-				mCommandLine.push_back((char)App::LastCharPressed);
+				mCommandLine.push_back((char)Keyboard::LastCharPressed);
 				break;
 			}
 		}
-		App::ResetKeyboardInput();
+		Keyboard::Reset();
 	}
 }
 

@@ -192,7 +192,7 @@ class MyApp : App
 
 	float									mSteering;
 
-	Vec2									mOldMouseDelta;
+	Vec2									mOldMouse;
 	float									mCameraYaw;
 	float									mCameraPitch;
 

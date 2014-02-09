@@ -12,10 +12,10 @@ ID3D11Debug *						D3DDebug = null;
 #endif
 
 uint								Graphics::gDrawCalls = 0;
+HWND								Graphics::hwnd = null;
 
 //////////////////////////////////////////////////////////////////////
 
-static HWND							hwnd = null;
 static HINSTANCE					hinstance = GetModuleHandle(null);
 static int							width = 1280;
 static int							height = 768;
@@ -62,19 +62,6 @@ bool Graphics::Open()
 
 void Graphics::UpdateMouse()
 {
-	POINT p;
-	GetCursorPos(&p);
-	ScreenToClient(hwnd, &p);
-	App::MousePosition = Vec2((float)p.x, (float)p.y);
-	if(App::GetMouseMode() == App::MouseMode::Captured)
-	{
-		POINT c;
-		c.x	= width / 2;
-		c.y	= height / 2;
-		App::MouseDelta = Vec2(p.x - c.x, p.y - c.y);
-		ClientToScreen(hwnd, &c);
-		SetCursorPos(c.x, c.y);
-	}
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -120,7 +107,7 @@ void Graphics::Draw(MeshType type, uint vertexBase, uint vertexCount)
 void Graphics::EndFrame()
 {
 	Flip();
-	App::MouseWheelDelta = 0;
+	Mouse::WheelDelta = 0;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -223,9 +210,9 @@ bool Graphics::Update()
 	{
 		WaitMessage();
 	}
-	App::LastKeyPressed = 0;
-	App::MousePressed = 0;
-	App::MouseReleased = 0;
+	Keyboard::LastKeyPressed = 0;
+	Mouse::Pressed = 0;
+	Mouse::Released = 0;
 	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
@@ -263,7 +250,7 @@ bool CreateTheWindow()
 	int wide = rc.right - rc.left;
 	int high = rc.bottom - rc.top;
 
-	hwnd = CreateWindow(windowClassName, windowTitle, windowStyle,
+	Graphics::hwnd = CreateWindow(windowClassName, windowTitle, windowStyle,
 						GetSystemMetrics(SM_CXMAXIMIZED) / 2 - wide / 2,
 						GetSystemMetrics(SM_CYMAXIMIZED) / 2 - high / 2,
 						wide, high, null, null, hinstance, null);
@@ -273,10 +260,10 @@ bool CreateTheWindow()
 	POINT p;
 	p.x = width/2;
 	p.y = height/2;
-	ClientToScreen(hwnd, &p);
+	ClientToScreen(Graphics::hwnd, &p);
 	SetCursorPos(p.x, p.y);
 
-	return hwnd != null;
+	return Graphics::hwnd != null;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -290,11 +277,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WM_KEYDOWN:
-		App::LastKeyPressed = (int)wParam;
+		Keyboard::LastKeyPressed = (int)wParam;
 		break;
 
 	case WM_CHAR:
-		App::LastCharPressed = (int)wParam;
+		Keyboard::LastCharPressed = (int)wParam;
 		break;
 
 	case WM_ACTIVATE:
@@ -303,7 +290,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		case WA_ACTIVE:
 			{
 				active = true;
-				if(App::GetMouseMode() == App::MouseMode::Captured)
+				if(Mouse::GetMode() == Mouse::Mode::Captured)
 				{
 					SetCapture(hWnd);
 					POINT p;
@@ -317,7 +304,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			break;
 
 		case WA_INACTIVE:
-			if(App::GetMouseMode() == App::MouseMode::Captured)
+			if(Mouse::GetMode() == Mouse::Mode::Captured)
 			{
 				ReleaseCapture();
 			}
@@ -329,29 +316,29 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WM_LBUTTONDOWN:
-		App::MousePressed |= App::MouseButton::Left;
-		App::MouseHeld |= App::MouseButton::Left;
+		Mouse::Pressed |= Mouse::Button::Left;
+		Mouse::Held |= Mouse::Button::Left;
 		break;
 
 	case WM_LBUTTONUP:
-		App::MouseReleased |= App::MouseButton::Left;
-		App::MouseHeld &= ~App::MouseButton::Left;
+		Mouse::Released |= Mouse::Button::Left;
+		Mouse::Held &= ~Mouse::Button::Left;
 		break;
 
 	case WM_RBUTTONDOWN:
-		App::MousePressed |= App::MouseButton::Right;
-		App::MouseHeld |= App::MouseButton::Right;
+		Mouse::Pressed |= Mouse::Button::Right;
+		Mouse::Held |= Mouse::Button::Right;
 		break;
 
 	case WM_RBUTTONUP:
-		App::MouseReleased |= App::MouseButton::Right;
-		App::MouseHeld &= ~App::MouseButton::Right;
+		Mouse::Released |= Mouse::Button::Right;
+		Mouse::Held &= ~Mouse::Button::Right;
 		break;
 
 	case WM_MOUSEWHEEL:
 		{
 			short delta = HIWORD(wParam);
-			App::MouseWheelDelta = (float)delta/WHEEL_DELTA;
+			Mouse::WheelDelta = (float)delta/WHEEL_DELTA;
 		}
 		break;
 
@@ -369,7 +356,7 @@ bool InitD3D()
 	scd.BufferCount = 1;
 	scd.BufferDesc.Format = kBackBufferFormat;
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	scd.OutputWindow = hwnd;
+	scd.OutputWindow = Graphics::hwnd;
 	scd.SampleDesc.Count = 1;
 	scd.Windowed = TRUE;
 

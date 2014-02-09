@@ -79,6 +79,8 @@
 #include "Camera.h"
 #include "Graphics.h"
 #include "Joypad.h"
+#include "Keyboard.h"
+#include "Mouse.h"
 #include "App.h"
 #include "Texture.h"
 #include "VertexElement.h"
