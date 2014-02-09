@@ -10,13 +10,13 @@
 	</ParameterSet>
 	<ParameterSet Name="Chassis" ParameterCount="4" Expanded="1">
 		<Parameter Name="Mass" Value="500.000000" />
-		<Parameter Name="Length" Value="15.959983" />
+		<Parameter Name="Length" Value="15.879987" />
 		<Parameter Name="Width" Value="3.843997" />
 		<Parameter Name="Height" Value="1.400001" />
 	</ParameterSet>
 	<ParameterSet Name="Rear Wheels" ParameterCount="31" Expanded="1">
-		<Parameter Name="Radius" Value="4.988000" />
-		<Parameter Name="Width" Value="2.532298" />
+		<Parameter Name="Radius" Value="5.000000" />
+		<Parameter Name="Width" Value="2.570798" />
 		<Parameter Name="Mass" Value="1.000000" />
 		<Parameter Name="Offset_X" Value="0.959998" />
 		<Parameter Name="Offset_Y" Value="6.445001" />
