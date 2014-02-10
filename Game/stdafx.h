@@ -79,6 +79,8 @@
 #include "Camera.h"
 #include "Graphics.h"
 #include "Joypad.h"
+#include "Keyboard.h"
+#include "Mouse.h"
 #include "App.h"
 #include "Texture.h"
 #include "VertexElement.h"
@@ -96,6 +98,8 @@
 #include "Physics.h"
 
 //////////////////////////////////////////////////////////////////////
+
+#include "Vehicle.h"
 
 #include "Debug.h"
 #include "PhysicsDebug.h"

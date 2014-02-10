@@ -12,7 +12,7 @@ public:
 
 	VertexBufferImpl(uint numvertices, VertexElement::Field vertexFields, void *vertices)
 	{
-		mStride = VertexElement::GetVertexSize(vertexFields);
+		mStride = (uint32)VertexElement::GetVertexSize(vertexFields);
 		D3D11_BUFFER_DESC vertexBufferDesc = { 0 };
 		vertexBufferDesc.Usage = (vertices != null) ? D3D11_USAGE_IMMUTABLE : D3D11_USAGE_DYNAMIC;
 		vertexBufferDesc.ByteWidth = mStride * numvertices;

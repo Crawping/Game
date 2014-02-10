@@ -149,11 +149,8 @@ void DebugText(Vec4f const &pos, char const *text, ...)
 	va_list v;
 	va_start(v, text);
 	_vsnprintf_s(buffer, ARRAYSIZE(buffer), text, v);
-	
-	Matrix const &m = mCamera->GetTransformMatrix();
 
-	Vec4f r = TransformPoint(pos, m);
-
+	Vec4f r = TransformPoint(pos, mCamera->GetTransformMatrix());
 	float z = GetZ(r);
 	if(z < 1 && z > 0)
 	{

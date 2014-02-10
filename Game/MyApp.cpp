@@ -85,6 +85,9 @@ void MyApp::OnInit()
 	//scene = assimporter.ReadFile("data\\cube.dae", 0);
 	//DumpNode(scene, scene->mRootNode, 0);
 
+//	char *a1 = U"hello";
+//	char16_t *a2 = u"hello";
+
 	mTestCylinderShape = null; 
 
 	mCar = null;
@@ -168,7 +171,7 @@ void MyApp::OnInit()
 
 	uint32 mask = VertexElement::Position3 + VertexElement::TexCoord + VertexElement::Color;
 
-	mCylinderVB = VertexBuffer::Create(vertex.size(), mask, &vertex[0]);
+	mCylinderVB = VertexBuffer::Create((uint)vertex.size(), mask, &vertex[0]);
 
 	for(uint16 i=0; i<step-1; ++i)
 	{
@@ -198,7 +201,7 @@ void MyApp::OnInit()
 		index.push_back(s2 + i1);
 	}
 
-	mCylinderIB = IndexBuffer::Create(&index[0], index.size(), IndexBuffer::IT_UINT16);
+	mCylinderIB = IndexBuffer::Create(&index[0], (uint)index.size(), IndexBuffer::IT_UINT16);
 
 	uint32 simpleMask = VertexElement::Position3 + VertexElement::Color;
 
@@ -207,7 +210,7 @@ void MyApp::OnInit()
 	mPixelShader = PixelShader::Load(L"PixelShader");
 	mMaterial = Material::Create(mPixelShader, mVertexShader, BM_None, mTexture);
 
-	mCylinderMesh = Mesh::Create(MT_Triangles, 0, 0, index.size(), mMaterial);
+	mCylinderMesh = Mesh::Create(MT_Triangles, 0, 0,(uint)index.size(), mMaterial);
 	mCylinder = Model::Create(mCylinderVB, mCylinderIB);
 	mCylinder->GetRootNode()->AddMesh(mCylinderMesh);
 
@@ -231,7 +234,7 @@ void MyApp::OnInit()
 	mUntexturedMaterial = Material::Create(m2DUntexturedPS, m2DUntexturedVS, BM_Modulate);
 	m2DUntexturedIC = ImmediateContext::Create(mask, 65536, 65536);
 
-	mOldMouseDelta = Vec2(0,0);
+	mOldMouse = Vec2(0,0);
 
 	mCarOrientation = IdentityMatrix;
 
@@ -283,35 +286,35 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	btTransform const &carTransform = mCar->mBody->getWorldTransform();
 	Vec4f carPosition = carTransform.getOrigin().get128();
 
-	bool in = MousePosition.x > l && MousePosition.x < r && MousePosition.y > t && MousePosition.y < b;
+	bool in = Mouse::Position.x > l && Mouse::Position.x < r && Mouse::Position.y > t && Mouse::Position.y < b;
 
 	switch(w->mControlMode)
 	{
 	case Idle:
-		if(in && MousePressed == MouseButton::Left && w->mOrtho)
+		if(in && Mouse::Pressed == Mouse::Button::Left && w->mOrtho)
 		{
 			w->mControlMode = Pan;
-			SetMouseMode(MouseMode::Captured);
+			Mouse::SetMode(Mouse::Mode::Captured);
 		}
-		else if(in && MousePressed == MouseButton::Right && !w->mOrtho)
+		else if(in && Mouse::Pressed == Mouse::Button::Right && !w->mOrtho)
 		{
 			w->mControlMode = Rotate;
-			SetMouseMode(MouseMode::Captured);
+			Mouse::SetMode(Mouse::Mode::Captured);
 		}
 		break;
 
 	case Pan:
-		if(!(MouseHeld & MouseButton::Left))
+		if(!(Mouse::Held & Mouse::Button::Left))
 		{
-			SetMouseMode(MouseMode::Free);
+			Mouse::SetMode(Mouse::Mode::Free);
 			w->mControlMode = Idle;
 		}
 		break;
 
 	case Rotate:
-		if(!(MouseHeld & MouseButton::Right))
+		if(!(Mouse::Held & Mouse::Button::Right))
 		{
-			SetMouseMode(MouseMode::Free);
+			Mouse::SetMode(Mouse::Mode::Free);
 			w->mControlMode = Idle;
 		}
 		break;
@@ -322,24 +325,24 @@ void MyApp::DrawViewWindow(ViewWindow *w)
 	case Idle:
 		if(in)
 		{
-			w->mTargetZoom = max((w->mTargetZoom * (1.0f - MouseWheelDelta * 0.05f)), 1.0f);
+			w->mTargetZoom = max((w->mTargetZoom * (1.0f - Mouse::WheelDelta * 0.05f)), 1.0f);
 		}
 		break;
 
 	case Pan:
-		w->mPan += MouseDelta * panScale;
+		w->mPan += Mouse::Delta * panScale;
 		break;
 
 	case Rotate:
-		if(MouseDelta.x != 0 || MouseDelta.y != 0)
+		if(Mouse::Delta.x != 0 || Mouse::Delta.y != 0)
 		{
 			Vec4f v = Vec4(2.5f, 2.0f, 4.0f);
 			Vec4f x = Cross(v, Vec4(0,0,1));
 			v = Normalize(v);
 			x = Normalize(x);
 			mCarOrientation *= TranslationMatrix(carPosition * -1);
-			mCarOrientation *= RotationMatrix(v, MouseDelta.x * 0.01f);
-			mCarOrientation *= RotationMatrix(x, MouseDelta.y * -0.01f);
+			mCarOrientation *= RotationMatrix(v, Mouse::Delta.x * 0.01f);
+			mCarOrientation *= RotationMatrix(x, Mouse::Delta.y * -0.01f);
 			mCarOrientation *= TranslationMatrix(carPosition);
 		}
 		break;
@@ -407,7 +410,7 @@ bool MyApp::OnUpdate()
 	mYaw = mFrame / 40.0f;
 
 	float speed = 20;
-	if(KeyHeld(VK_SHIFT))
+	if(Keyboard::Held(VK_SHIFT))
 	{
 		speed = 2;
 	}
@@ -424,7 +427,7 @@ bool MyApp::OnUpdate()
 			Draw2DAxes(editMargin, 0, Graphics::Width() - editMargin, Graphics::Height());
 			DrawParameters();
 			m2DUntexturedIC->End();
-			if(KeyPressed('D'))
+			if(Keyboard::Pressed('D'))
 			{
 				mEditMode = Drive;
 				Delete(mTrack);
@@ -435,7 +438,7 @@ bool MyApp::OnUpdate()
 
 	case EditMode::Drive:
 		{
-			if(KeyHeld('D'))
+			if(Keyboard::Held('D'))
 			{
 				mCar->Create();
 				CreateRamp();
@@ -460,7 +463,7 @@ bool MyApp::OnUpdate()
 
 //			DebugText(mCar->mBody->getWorldTransform().getOrigin().get128(), "HELLO");
 
-			if(KeyPressed('E'))
+			if(Keyboard::Pressed('E'))
 			{
 				DeleteRamp();
 				Delete(mTrack);
@@ -483,7 +486,7 @@ bool MyApp::OnUpdate()
 
 	Graphics::EndFrame();
 
-	return LastKeyPressed != 27;
+	return Keyboard::LastKeyPressed != 27;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -525,7 +528,7 @@ void MyApp::CountParameters()
 			++mNumParameterLines;
 			if(s->mExpanded)
 			{
-				mNumParameterLines += s->mParameters.size();
+				mNumParameterLines += (uint)s->mParameters.size();
 			}
 		}
 	}
@@ -546,13 +549,13 @@ void MyApp::DrawParameters()
 
 	CountParameters();
 
-	if(MouseReleased & MouseButton::Left)
+	if(Mouse::Released & Mouse::Button::Left)
 	{
 		if(mode == Modify)
 		{
 			mCar->mParameterSets.Save();
 		}
-		SetMouseMode(MouseMode::Free);
+		Mouse::SetMode(Mouse::Mode::Free);
 		currentParameterIndex = 0;
 		mode = Pick;
 	}
@@ -566,9 +569,9 @@ void MyApp::DrawParameters()
 	float scrollBarHeight = ratio * Graphics::FHeight();
 	float maxS = Graphics::FHeight() - scrollBarHeight;
 
-	if(MousePosition.x > 0 && MousePosition.x < margin)
+	if(Mouse::Position.x > 0 && Mouse::Position.x < margin)
 	{
-		mScrollBarVelocity -= MouseWheelDelta * fh * 0.5f;
+		mScrollBarVelocity -= Mouse::WheelDelta * fh * 0.5f;
 	}
 
 	if(fabsf(mScrollBarVelocity) < 0.1f || mode == Modify)
@@ -600,7 +603,7 @@ void MyApp::DrawParameters()
 		if(!s->mPrivate)
 		{
 			Vec2 tl(0.0f, y);
-			bool hover = MousePosition.x < margin - sbw && MousePosition.y >= tl.y && MousePosition.y < tl.y + fh;
+			bool hover = Mouse::Position.x < margin - sbw && Mouse::Position.y >= tl.y && Mouse::Position.y < tl.y + fh;
 
 			if(tl.y > -fh && tl.y < Graphics::FHeight())
 			{
@@ -611,7 +614,7 @@ void MyApp::DrawParameters()
 			if(hover)
 			{
 				Draw2DUntexturedRectangle(m2DUntexturedIC, tl, tl + Vec2(margin - sbw, (float)fh), 0xff808080);
-				if(mode == Pick && (MousePressed & MouseButton::Left))
+				if(mode == Pick && (Mouse::Pressed & Mouse::Button::Left))
 				{
 					s->mExpanded = !s->mExpanded;
 				}
@@ -623,17 +626,17 @@ void MyApp::DrawParameters()
 				for(auto p: s->mParameters)
 				{
 					Vec2 tl(0.0f, y);
-					bool hover = MousePosition.x < margin - sbw && MousePosition.y >= tl.y && MousePosition.y < tl.y + fh;
+					bool hover = Mouse::Position.x < margin - sbw && Mouse::Position.y >= tl.y && Mouse::Position.y < tl.y + fh;
 					if(tl.y > -fh && tl.y < Graphics::FHeight())
 					{
 						bool drawRect = false;
 						Color textColor(0);
 						Color rectColor(0);
 
-						if(hover && mode == Pick && (MousePressed & MouseButton::Left))
+						if(hover && mode == Pick && (Mouse::Pressed & Mouse::Button::Left))
 						{
 							// yes, set it as the selected one and start tracking the mouse delta
-							SetMouseMode(MouseMode::Captured);
+							Mouse::SetMode(Mouse::Mode::Captured);
 							currentParameterIndex = p->mIndex;
 							mode = Modify;
 						}
@@ -666,7 +669,7 @@ void MyApp::DrawParameters()
 							float high = p->mMaxValue;
 							float range = high - low;
 							float tick = range / w;
-							p->mValue += MouseDelta.x * tick;
+							p->mValue += Mouse::Delta.x * tick;
 							if(p->mValue < low)
 							{
 								p->mValue = low;
@@ -1015,7 +1018,7 @@ ALIGN(16, struct) ClosestConvexResultCallback : public btCollisionWorld::ConvexR
 
 void MyApp::UpdatePhysics()
 {
-	if(!KeyHeld('X') || KeyPressed('Z'))
+	if(!Keyboard::Held('X') || Keyboard::Pressed('Z'))
 	{
 		float dt = 1.0f/10;
 		int step = 20;
@@ -1077,26 +1080,26 @@ void MyApp::UpdatePhysics()
 			mCar->ApplyPower(20000, power * Joypad::Trigger(0, 1));
 		}
 
-		if(KeyHeld(VK_UP))
+		if(Keyboard::Held(VK_UP))
 		{
 			mCar->ApplyPower(20000, power);
 		}
 
-		if(KeyHeld(VK_DOWN))
+		if(Keyboard::Held(VK_DOWN))
 		{
 			mCar->ApplyPower(-20, power);
 		}
 
 		float steeringf = 0.3f;
 
-		if(KeyHeld(VK_LEFT))
+		if(Keyboard::Held(VK_LEFT))
 		{
 			mCar->mWheelAssembly[Car::FrontRight]->mSteeringHingeUpper->setLimit(steeringf, steeringf);
 			mCar->mWheelAssembly[Car::FrontLeft]->mSteeringHingeUpper->setLimit(steeringf, steeringf);
 			mCar->mWheelAssembly[Car::FrontRight]->mSteeringHingeLower->setLimit(steeringf, steeringf);
 			mCar->mWheelAssembly[Car::FrontLeft]->mSteeringHingeLower->setLimit(steeringf, steeringf);
 		}
-		else if(KeyHeld(VK_RIGHT))
+		else if(Keyboard::Held(VK_RIGHT))
 		{
 			mCar->mWheelAssembly[Car::FrontRight]->mSteeringHingeUpper->setLimit(-steeringf, -steeringf);
 			mCar->mWheelAssembly[Car::FrontLeft]->mSteeringHingeUpper->setLimit(-steeringf, -steeringf);
@@ -1122,9 +1125,9 @@ void MyApp::UpdateCamera()
 
 	bool oldFollow = follow;
 
-	//DebugText("%01x\n", App::MouseHeld);
+	//DebugText("%01x\n", Mouse::Held);
 
-	if(KeyPressed(VK_BACK))
+	if(Keyboard::Pressed(VK_BACK))
 	{
 		follow = !follow;
 	}
@@ -1137,28 +1140,28 @@ void MyApp::UpdateCamera()
 		btVector3 const &d = (mCar != null) ? mCar->mBody->getWorldTransform().getBasis().getRow(0) : btVector3(-1,0,0);
 		float angle = atan2f(d.x(), d.y()) - (float)M_PI / 2.0f;
 
-		if(KeyHeld(VK_PRIOR))
+		if(Keyboard::Held(VK_PRIOR))
 		{
 			mCameraDistance += 40 * mDeltaTime;
 		}
-		if(KeyHeld(VK_NEXT))
+		if(Keyboard::Held(VK_NEXT))
 		{
 			mCameraDistance -= 40 * mDeltaTime;
 		}
 
-		if(KeyHeld(VK_HOME))
+		if(Keyboard::Held(VK_HOME))
 		{
 			mCameraHeight += 40 * mDeltaTime;
 		}
-		if(KeyHeld(VK_END))
+		if(Keyboard::Held(VK_END))
 		{
 			mCameraHeight -= 40 * mDeltaTime;
 		}
-		if(KeyHeld(VK_INSERT))
+		if(Keyboard::Held(VK_INSERT))
 		{
 			mCameraTargetHeight += 40 * mDeltaTime;
 		}
-		if(KeyHeld(VK_DELETE))
+		if(Keyboard::Held(VK_DELETE))
 		{
 			mCameraTargetHeight -= 40 * mDeltaTime;
 		}
@@ -1190,50 +1193,50 @@ void MyApp::UpdateCamera()
 		mCamera.CalculateViewProjectionMatrix();
 
 	}
-	else if((App::MouseHeld & App::MouseButton::Left) != 0)
+	else if((Mouse::Held & Mouse::Button::Left) != 0)
 	{
-		SetMouseMode(MouseMode::Captured);
-		//DebugText(Vec2(100, 100), "%f,%f", App::MouseDelta.x, App::MouseDelta.y);
+		Mouse::SetMode(Mouse::Mode::Captured);
+		//DebugText(Vec2(100, 100), "%f,%f", App::Mouse::Delta.x, App::Mouse::Delta.y);
 
-		Vec2 mouseDeltaTotal = (mOldMouseDelta + App::MouseDelta) / 2;
-		mOldMouseDelta = App::MouseDelta;
+		Vec2 MouseDeltaTotal = (mOldMouse + Mouse::Delta) / 2;
+		mOldMouse = Mouse::Delta;
 
-		mCameraYaw -= mouseDeltaTotal.x * 0.0025f;
-		mCameraPitch -= mouseDeltaTotal.y * 0.0025f;
+		mCameraYaw -= MouseDeltaTotal.x * 0.0025f;
+		mCameraPitch -= MouseDeltaTotal.y * 0.0025f;
 		mCamera.CalculateViewMatrix(mCameraPos, 0, mCameraPitch, mCameraYaw);
 
-		Matrix m = XMMatrixTranspose(mCamera.GetViewMatrix());
+		Matrix m = TransposeMatrix(mCamera.GetViewMatrix());
 		Vec4f dx(m.r[0]);
 //		Vec4 dy(m.r[1]);
 		Vec4f dz(m.r[2]);
 
 		float speed = 0.05f;
-		if(!KeyHeld(VK_SHIFT))
+		if(!Keyboard::Held(VK_SHIFT))
 		{
 			speed = 1.0f;
 		}
 
-		if(KeyHeld('W'))
+		if(Keyboard::Held('W'))
 		{
 			mCameraPos = mCameraPos + dz * speed;
 		}
-		if(KeyHeld('S'))
+		if(Keyboard::Held('S'))
 		{
 			mCameraPos = mCameraPos - dz * speed;
 		}
-		if(KeyHeld('A'))
+		if(Keyboard::Held('A'))
 		{
 			mCameraPos = mCameraPos - dx * speed;
 		}
-		if(KeyHeld('D'))
+		if(Keyboard::Held('D'))
 		{
 			mCameraPos = mCameraPos + dx * speed;
 		}
-		if(KeyHeld('R'))
+		if(Keyboard::Held('R'))
 		{
 			mCameraPos = mCameraPos + Vec4(0,0,speed);
 		}
-		if(KeyHeld('F'))
+		if(Keyboard::Held('F'))
 		{
 			mCameraPos = mCameraPos - Vec4(0,0,speed);
 		}
@@ -1241,30 +1244,15 @@ void MyApp::UpdateCamera()
 	}
 	else
 	{
-		SetMouseMode(MouseMode::Free);
+		Mouse::SetMode(Mouse::Mode::Free);
 	}
-}
-
-//////////////////////////////////////////////////////////////////////
-
-Matrix MatrixFromBulletTransform(btTransform const &trans)
-{
-	btVector3 R = trans.getBasis().getColumn(0);
-	btVector3 U = trans.getBasis().getColumn(1);
-	btVector3 L = trans.getBasis().getColumn(2);
-	btVector3 P = trans.getOrigin();
-
-	return Matrix(	R.x(), R.y(), R.z(), 0,
-		U.x(), U.y(), U.z(), 0,
-		L.x(), L.y(), L.z(), 0,
-		P.x(), P.y(), P.z(), 1);
 }
 
 //////////////////////////////////////////////////////////////////////
 
 Matrix GetTransform(btRigidBody *body)
 {
-	return MatrixFromBulletTransform(body->getCenterOfMassTransform());
+	return Physics::btTransformToMatrix(body->getCenterOfMassTransform());
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -1274,7 +1262,7 @@ void MyApp::DrawPhysics()
 	//static uint options = btIDebugDraw::DBG_DrawWireframe | btIDebugDraw::DBG_DrawConstraints | btIDebugDraw::DBG_DrawConstraintLimits | btIDebugDraw::DBG_DrawText | btIDebugDraw::DBG_DrawFeaturesText;
 	//static uint options = btIDebugDraw::DBG_DrawWireframe| btIDebugDraw::DBG_DrawConstraints;
 	static uint options = btIDebugDraw::DBG_DrawWireframe| btIDebugDraw::DBG_DrawConstraints | btIDebugDraw::DBG_DrawContactPoints;
-	if(KeyPressed('1'))
+	if(Keyboard::Pressed('1'))
 	{
 		options ^= btIDebugDraw::DBG_DrawWireframe;
 	}
