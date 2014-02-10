@@ -9,17 +9,6 @@ static App *sApp = null;
 
 //////////////////////////////////////////////////////////////////////
 
-void App::ResetAllInput()
-{
-	LastCharPressed = 0;
-	LastKeyPressed = 0;
-	memset(kbHeld, 0, sizeof(kbHeld));
-	memset(kbPressed, 0, sizeof(kbPressed));
-	memset(kbReleased, 0, sizeof(kbReleased));
-}
-
-//////////////////////////////////////////////////////////////////////
-
 App::App()
 {
 	assert(sApp == null);

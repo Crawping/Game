@@ -94,7 +94,6 @@ void Console::Update()
 				mCommandLine.push_back((char)Keyboard::LastCharPressed);
 				break;
 			}
-			App::LastCharPressed = 0;
 		}
 		Keyboard::Reset();
 	}

@@ -69,22 +69,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(SolutionDir)Bullet\lib;$(SolutionDir)assimp\lib\assimp_Debug_Win32;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)Bullet\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Bullet\src;$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(SolutionDir)Bullet\lib;$(SolutionDir)assimp\lib\assimp_Debug_Win32;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)Bullet\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Bullet\src;$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(SolutionDir)Bullet\lib;$(SolutionDir)assimp\lib\assimp_Release_Win32;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)Bullet\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Bullet\src;$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(SolutionDir)Bullet\lib;$(SolutionDir)assimp\lib\assimp_Release_Win32;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)Bullet\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Bullet\src;$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

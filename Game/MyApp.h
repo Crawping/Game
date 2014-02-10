@@ -122,11 +122,6 @@ ALIGN(16, class) MyApp : App
 
 	void DrawViewWindow(ViewWindow *w);
 
-	uint									mFrame;
-	Timer									mTimer;
-	double									mElapsedTime;
-	float									mDeltaTime;
-
 	Vec4f									mCameraPos;
 	Vec4f									mPosition;
 	Vec4f									mTarget;
@@ -134,6 +129,11 @@ ALIGN(16, class) MyApp : App
 	Matrix									mCarOrientation;
 
 	Camera									mCamera;
+
+	uint									mFrame;
+	Timer									mTimer;
+	double									mElapsedTime;
+	float									mDeltaTime;
 
 	int										mEditMargin;
 	ViewWindow *							mViewWindow[4];
