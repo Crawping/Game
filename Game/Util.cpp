@@ -119,11 +119,11 @@ byte *LoadFile(TCHAR const *filename, size_t *size)
 	File f(filename, File::AccessRead);
 	if(f.IsValid())
 	{
-		long fsize = f.Size();
+		size_t fsize = f.Size();
 		buf = new byte[fsize + sizeof(WCHAR)];
 		if(buf != null)
 		{
-			long s = f.Read(buf, fsize);
+			size_t s = f.Read(buf, fsize);
 			if(s != fsize)
 			{
 				DeleteArray(buf);

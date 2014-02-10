@@ -105,7 +105,7 @@ public:
 	{
 		if(IsValid())
 		{
-			_fseeki64(mHandle, (long)offset, mode);
+			_fseeki64(mHandle, (size_t)offset, mode);
 		}
 	}
 

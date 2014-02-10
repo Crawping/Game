@@ -44,6 +44,7 @@ namespace Graphics
 	}
 
 	extern uint	gDrawCalls;
+	extern HWND hwnd;
 };
 
 extern ID3D11Device *			D3DDevice;

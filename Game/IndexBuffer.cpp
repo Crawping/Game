@@ -12,7 +12,7 @@ public:
 
 	IndexBufferImpl(void *indices, uint numIndices, IndexBuffer::Type type)
 	{
-		size_t size = (type == IT_UINT16) ? sizeof(uint16) : sizeof(uint32);
+		UINT size = (type == IT_UINT16) ? sizeof(uint16) : sizeof(uint32);
 		mFormat = (type == IT_UINT16) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
 		D3D11_BUFFER_DESC desc = { 0 };
 		desc.Usage = D3D11_USAGE_DYNAMIC;

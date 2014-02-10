@@ -27,10 +27,10 @@ public:
 		{
 		}
 
+		Vec4f				mOffset;	// current position relative to car origin, in car space
 		float				mRadius;
 		float				mWidth;
 		btCylinderShapeX *	mShape;
-		Vec4f				mOffset;	// current position relative to car origin, in car space
 
 	};
 
