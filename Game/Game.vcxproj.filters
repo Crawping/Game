@@ -25,6 +25,18 @@
     <Filter Include="Bullet">
       <UniqueIdentifier>{4679f2d8-f4e0-4edd-8d2b-81580045aa65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Box2D">
+      <UniqueIdentifier>{d8cf60f6-869f-47ab-96e7-7ae93f219e46}</UniqueIdentifier>
+      <Extensions>Box2D\*</Extensions>
+    </Filter>
+    <Filter Include="Box2D\Header">
+      <UniqueIdentifier>{f3e7a389-5b61-46d6-9468-122c38a4429b}</UniqueIdentifier>
+      <Extensions>*.h</Extensions>
+    </Filter>
+    <Filter Include="Box2D\Source">
+      <UniqueIdentifier>{84162c5f-5bc1-4aef-ab66-be9a113d1234}</UniqueIdentifier>
+      <Extensions>*.cpp</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

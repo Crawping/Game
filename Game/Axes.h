@@ -4,13 +4,10 @@
 
 //////////////////////////////////////////////////////////////////////
 
-class Axes
+namespace Axes
 {
-public:
-
-	static void Draw(ImmediateContext *mIC, Vec4f origin, Vec4f extents, Color x, Color y, Color z);
-	static void DrawGrid(ImmediateContext *mIC, Vec4f origin, Vec4f extents, int step, Color color);
-
+	void Draw(ImmediateContext *mIC, Vec4f origin, Vec4f extents, Color x, Color y, Color z);
+	void DrawGrid(ImmediateContext *mIC, Vec4f origin, Vec4f extents, int step, Color color);
 };
 
 //////////////////////////////////////////////////////////////////////

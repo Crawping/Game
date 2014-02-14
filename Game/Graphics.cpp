@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "Graphics.h"
 
 //////////////////////////////////////////////////////////////////////
 
@@ -31,6 +32,10 @@ static uint							windowStyle = WS_BORDER | WS_CAPTION | WS_SYSMENU | WS_VISIBLE
 
 static const DXGI_FORMAT			kBackBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
 
+#if defined(_DEBUG)
+static ID3D11Debug *				debug = null;
+#endif
+
 static IDXGISwapChain *				swapChain = null;
 static ID3D11RenderTargetView *		backBuffer = null;
 static ID3D11DepthStencilView *		depthStencilView = null;
@@ -39,8 +44,6 @@ static ID3D11Texture2D *			depthBuffer = null;
 static ID3D11RasterizerState *		rasterizerState = null;
 
 static ID3D11BlendState *			blendState[BM_NumBlendModes] = { 0 };
-
-static ID3D11Buffer *				constantBuffer = null;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -62,7 +65,7 @@ bool Graphics::Open()
 
 void Graphics::UpdateMouse()
 {
-}
+	}
 
 //////////////////////////////////////////////////////////////////////
 
@@ -179,7 +182,6 @@ void Graphics::Close()
 		Release(depthStencilState[i]);
 	}
 	Release(rasterizerState);
-	Release(constantBuffer);
 	Release(depthStencilView);
 	Release(depthBuffer);
 	Release(backBuffer);
@@ -198,6 +200,17 @@ void Graphics::Close()
 #endif
 
 	Release(D3DDevice);
+
+#if defined(_DEBUG)
+	if(debug != null)
+	{
+		TRACE("D3D ==================================================================\n");
+		debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		TRACE("======================================================================\n");
+	}
+	Release(debug);
+#endif
+
 	CloseWindow(hwnd);
 }
 
@@ -368,10 +381,16 @@ bool InitD3D()
 	DX(D3D11CreateDeviceAndSwapChain(	null, D3D_DRIVER_TYPE_HARDWARE, null, flags,
 										null, 0, D3D11_SDK_VERSION, &scd, &swapChain,
 										&D3DDevice, null, &D3DContext));
+	Graphics::SetDebugObjectName(D3DContext, "CONTEXT");
+
+#if defined(_DEBUG)
+	DX(D3DDevice->QueryInterface(__uuidof(ID3D11Debug), (VOID **)&debug));
+#endif
 
 	ID3D11Texture2D *pBackBuffer;
 	DX(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer));
 	DX(D3DDevice->CreateRenderTargetView(pBackBuffer, null, &backBuffer));
+	Graphics::SetDebugObjectName(pBackBuffer, "BACKBUFFER");
 	Release(pBackBuffer);
 
 	D3D11_TEXTURE2D_DESC descDepth = { 0 };
@@ -384,6 +403,7 @@ bool InitD3D()
 	descDepth.Usage = D3D11_USAGE_DEFAULT;
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	DX(D3DDevice->CreateTexture2D(&descDepth, NULL, &depthBuffer));
+	Graphics::SetDebugObjectName(depthBuffer, "DEPTHBUFFER");
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
 	ZeroMemory(&dsvd, sizeof(dsvd));
@@ -391,27 +411,32 @@ bool InitD3D()
 	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvd.Texture2D.MipSlice = 0;
 	DX(D3DDevice->CreateDepthStencilView(depthBuffer, &dsvd, &depthStencilView));
+	Graphics::SetDebugObjectName(depthStencilView, "DEPTHSTENCILVIEW");
 
 	D3D11_DEPTH_STENCIL_DESC dsDesc = { 0 };
 	dsDesc.DepthEnable = true;
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 	DX(D3DDevice->CreateDepthStencilState(&dsDesc, &depthStencilState[ZB_Enable]));
+	Graphics::SetDebugObjectName(depthStencilState[ZB_Enable], "DSS_ENABLE");
 
 	dsDesc.DepthEnable = false;
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 	dsDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
 	DX(D3DDevice->CreateDepthStencilState(&dsDesc, &depthStencilState[ZB_Disable]));
+	Graphics::SetDebugObjectName(depthStencilState[ZB_Disable], "DSS_DISABLE");
 
 	CD3D11_RASTERIZER_DESC rd(D3D11_DEFAULT);
 //	rd.CullMode = D3D11_CULL_NONE;
 //	rd.FillMode = D3D11_FILL_WIREFRAME;
 	DX(D3DDevice->CreateRasterizerState(&rd, &rasterizerState));
 	D3DContext->RSSetState(rasterizerState);
+	Graphics::SetDebugObjectName(rasterizerState, "MYRASTERIZER");
 
 	CD3D11_BLEND_DESC bd(D3D11_DEFAULT);
 	bd.RenderTarget[0].BlendEnable = FALSE;
 	DX(D3DDevice->CreateBlendState(&bd, &blendState[BM_None]));
+	Graphics::SetDebugObjectName(blendState[BM_None], "BS_NONE");
 
 	bd.RenderTarget[0].BlendEnable = TRUE;
 	bd.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
@@ -422,6 +447,7 @@ bool InitD3D()
 	bd.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	bd.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	DX(D3DDevice->CreateBlendState(&bd, &blendState[BM_Additive]));
+	Graphics::SetDebugObjectName(blendState[BM_Additive], "BS_ADDITIVE");
 
 	bd.RenderTarget[0].BlendEnable = TRUE;
 	bd.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
@@ -432,13 +458,15 @@ bool InitD3D()
 	bd.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	bd.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	DX(D3DDevice->CreateBlendState(&bd, &blendState[BM_Modulate]));
+	Graphics::SetDebugObjectName(blendState[BM_Modulate], "BS_MODULATE");
 
 	Graphics::SetViewport(0, 0, width, height);
-
 
 	//D3DContext->OMSetRenderTargets(1, &backBuffer, null);
 	D3DContext->OMSetRenderTargets(1, &backBuffer, depthStencilView);
 	D3DContext->OMSetDepthStencilState(depthStencilState[ZB_Enable], 1);
+
+	//Texture::Create(8, 8, 0xffffffff);
 
 	return true;
 }

@@ -91,7 +91,7 @@ public:
 	{
 		if(IsValid())
 		{
-			return ftell(mHandle);
+			return (size_t)_ftelli64(mHandle);
 		}
 		else
 		{

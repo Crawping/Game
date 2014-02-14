@@ -509,6 +509,11 @@ void ImmediateContext::End()
 				cmd += sizeof(IMC_DrawCommand);
 			}
 			break;
+
+		default:
+			assert(false && "Unknown Immediate Mode Context command encountered...");
+			i = mNumCommands;	// break out of for loop
+			break;
 		}
 	}
 

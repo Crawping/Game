@@ -26,7 +26,7 @@ public:
 		bd.Usage = D3D11_USAGE_DEFAULT;
 		bd.CPUAccessFlags = 0;
 #endif
-		bd.ByteWidth = size;
+		bd.ByteWidth = (UINT)size;
 		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		DX(D3DDevice->CreateBuffer(&bd, NULL, &mBuffer));
 	}

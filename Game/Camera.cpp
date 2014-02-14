@@ -28,7 +28,7 @@ Matrix Camera::ViewMatrix(Vec4f target, Vec4f position, Vec4f up)
 
 Matrix Camera::ViewMatrix(Vec4f position, float yaw, float pitch, float roll)
 {
-	Matrix m = DirectX::XMMatrixIdentity();
+	Matrix m = IdentityMatrix;
 	m.r[3] = SetW(Negate(position), 1.0f);
 	m *= DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
 	return m;

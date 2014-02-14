@@ -25,7 +25,7 @@ BEGIN_PRIVATE_PARAMSET(ViewParameters, "View")
 
 END_PARAMSET()
 
-class MyApp : App
+ALIGN(16, class) MyApp : App
 {
 	void		OnInit() override;
 	bool		OnUpdate() override;
@@ -128,11 +128,12 @@ class MyApp : App
 
 	Matrix									mCarOrientation;
 
+	Camera									mCamera;
+
 	uint									mFrame;
 	Timer									mTimer;
 	double									mElapsedTime;
 	float									mDeltaTime;
-	Camera									mCamera;
 
 	int										mEditMargin;
 	ViewWindow *							mViewWindow[4];
@@ -165,10 +166,7 @@ class MyApp : App
 	Material *								mMaterial;
 	VertexBuffer *							mVertexBuffer;
 	IndexBuffer *							mIndexBuffer;
-	ConstantBuffer *						mConstantBuffer;
 	Mesh *									mMesh;
-
-	Axes *									mAxes;
 
 	Track *									mTrack;
 

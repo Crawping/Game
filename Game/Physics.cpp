@@ -30,18 +30,21 @@ namespace Physics
 	void Physics::Close()
 	{
 		// brute force cleanup
-		TRACE("Deleting %d orphaned physics objects\n", DynamicsWorld->getNumCollisionObjects());
-
-		for (int i = DynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--)
+		if(DynamicsWorld->getNumCollisionObjects() > 0)
 		{
-			btCollisionObject* obj = DynamicsWorld->getCollisionObjectArray()[i];
-			btRigidBody* body = btRigidBody::upcast(obj);
-			if (body && body->getMotionState())
+			TRACE("Deleting %d orphaned physics objects\n", DynamicsWorld->getNumCollisionObjects());
+
+			for (int i = DynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--)
 			{
-				delete body->getMotionState();
+				btCollisionObject* obj = DynamicsWorld->getCollisionObjectArray()[i];
+				btRigidBody* body = btRigidBody::upcast(obj);
+				if (body && body->getMotionState())
+				{
+					delete body->getMotionState();
+				}
+				DynamicsWorld->removeCollisionObject( obj );
+				delete obj;
 			}
-			DynamicsWorld->removeCollisionObject( obj );
-			delete obj;
 		}
 
 		//delete dynamics world

@@ -4,7 +4,7 @@
 
 //////////////////////////////////////////////////////////////////////
 
-ALIGN(16, class) App
+ALIGN(16, class) App	// Needs to be aligned in case child class needs it
 {
 public:
 
@@ -22,6 +22,5 @@ protected:
 	App();
 	~App();
 	
-	uint32 pad[3];	// +1 for the vtable
-
+	uint32 pad[3];	// +1 for the vtable = 16
 };

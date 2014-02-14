@@ -10,17 +10,13 @@ void Axes::Draw(ImmediateContext *mIC, Vec4f origin, Vec4f extents, Color x, Col
 	Vec4f vy = MaskY(extents);
 	Vec4f vz = MaskZ(extents);
 
-	Vec4f wx = Negate(vx);
-	Vec4f wy = Negate(vy);
-	Vec4f wz = Negate(vz);
+	Vec4f wx = Negate(vx) + origin;
+	Vec4f wy = Negate(vy) + origin;
+	Vec4f wz = Negate(vz) + origin;
 	
 	vx += origin;
 	vy += origin;
 	vz += origin;
-	
-	wx += origin;
-	wy += origin;
-	wz += origin;
 	
 	mIC->BeginVertex();	mIC->SetPosition3(vx);	mIC->SetColor(x);	mIC->EndVertex();
 	mIC->BeginVertex();	mIC->SetPosition3(wx);	mIC->SetColor(x);	mIC->EndVertex();

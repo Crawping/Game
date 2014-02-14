@@ -28,8 +28,7 @@ private:
 	string				mCommandLine;
 	Timer				mTimer;
 
-	// all this for drawing a black rectangle
-	// there must be a better way...
+	// all this for drawing a black rectangle, there must be a better way...
 	ImmediateContext *	mDrawContext;
 	Material *			mBlackMaterial;
 	PixelShader *		m2DSimplePixelShader;
