@@ -7,12 +7,12 @@
 	<ParameterSet Name="View0" ParameterCount="3" Expanded="0">
 		<Parameter Name="PanX" Value="-1.917847" />
 		<Parameter Name="PanY" Value="-9.169713" />
-		<Parameter Name="Zoom" Value="29.367054" />
+		<Parameter Name="Zoom" Value="21.888111" />
 	</ParameterSet>
 	<ParameterSet Name="View1" ParameterCount="3" Expanded="0">
-		<Parameter Name="PanX" Value="2.668193" />
-		<Parameter Name="PanY" Value="0.009688" />
-		<Parameter Name="Zoom" Value="47.011505" />
+		<Parameter Name="PanX" Value="-0.001417" />
+		<Parameter Name="PanY" Value="-0.003303" />
+		<Parameter Name="Zoom" Value="43.537560" />
 	</ParameterSet>
 	<ParameterSet Name="View2" ParameterCount="3" Expanded="0">
 		<Parameter Name="PanX" Value="-0.178437" />

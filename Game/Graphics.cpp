@@ -63,15 +63,8 @@ bool Graphics::Open()
 
 //////////////////////////////////////////////////////////////////////
 
-void Graphics::UpdateMouse()
-{
-	}
-
-//////////////////////////////////////////////////////////////////////
-
 void Graphics::BeginFrame(Color clearColor)
 {
-	UpdateMouse();
 	Clear(clearColor);
 	ClearDepth();
 	gDrawCalls = 0;

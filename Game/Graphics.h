@@ -27,8 +27,6 @@ namespace Graphics
 	bool	Update();
 	void	Close();
 
-	void	UpdateMouse();
-
 	template<UINT TNameLength> inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_z_ const char (&name)[TNameLength])
 	{
 #if defined(_DEBUG) || defined(PROFILE)
