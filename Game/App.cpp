@@ -30,13 +30,6 @@ App &App::Get()
 
 //////////////////////////////////////////////////////////////////////
 
-void App::Close()
-{
-	Graphics::Close();
-}
-
-//////////////////////////////////////////////////////////////////////
-
 int App::Run()
 {
 	if(Graphics::Open())
@@ -55,7 +48,7 @@ int App::Run()
 		}
 
 		OnClose();
-		Close();
+		Graphics::Close();
 	}
 	return 0;
 }

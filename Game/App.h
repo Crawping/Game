@@ -9,7 +9,6 @@ ALIGN(16, class) App	// Needs to be aligned in case child class needs it
 public:
 
 	int					Run();
-	void				Close();
 
 	virtual void		OnInit() = 0;
 	virtual bool		OnUpdate() = 0;
