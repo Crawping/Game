@@ -63,6 +63,7 @@
 #include "Constants.h"
 #include "Util.h"
 #include "LinkedList.h"
+#include "List.h"
 #include "Refcount.h"
 #include "File.h"
 #include "UTF8.h"
