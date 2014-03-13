@@ -9,7 +9,6 @@
 
 static linked_list<Font, &Font::mListNode> sAllFonts;
 
-
 Font *FontManager::Load(wchar const *name)
 {
 	wstring l = ToLower(name);

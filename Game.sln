@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BulletCollision", "Bullet\b
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BulletDynamics", "Bullet\build\vs2010\BulletDynamics.vcxproj", "{54F6843D-7E00-7344-A79D-2E1F8577E04C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bullet", "Bullet", "{E33DF2AE-76A3-4CD4-9CBC-C35D5186D82C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -70,5 +72,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{54F6843D-7E00-7344-A79D-2E1F8577E04C} = {E33DF2AE-76A3-4CD4-9CBC-C35D5186D82C}
+		{3E00FFD5-5596-A746-A2EE-77253AC3F7B6} = {E33DF2AE-76A3-4CD4-9CBC-C35D5186D82C}
+		{28E20CDA-FA7F-EE45-8220-78DE15E31D6A} = {E33DF2AE-76A3-4CD4-9CBC-C35D5186D82C}
 	EndGlobalSection
 EndGlobal

@@ -117,9 +117,6 @@
     <ClInclude Include="Font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LinkedList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Refcount.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -205,6 +202,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mouse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="linked_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

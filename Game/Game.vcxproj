@@ -204,7 +204,7 @@
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Joypad.h" />
     <ClInclude Include="Keyboard.h" />
-    <ClInclude Include="LinkedList.h" />
+    <ClInclude Include="linked_list.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Mesh.h" />
