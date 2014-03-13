@@ -7,7 +7,25 @@
 
 //////////////////////////////////////////////////////////////////////
 
-List<Font> Font::sAllFonts;
+static linked_list<Font, &Font::mListNode> sAllFonts;
+
+
+Font *FontManager::Load(wchar const *name)
+{
+	wstring l = ToLower(name);
+	for(auto &f : sAllFonts)
+	{
+		if(f.mName == name)
+		{
+			f.AddRef();
+			return &f;
+		}
+	}
+	Font *f = new Font();
+	f->LoadFromFile(name);
+	return f;
+}
+
 
 //////////////////////////////////////////////////////////////////////
 
@@ -60,14 +78,14 @@ Font::Font()
 	, mGraphics(null)
 	, mSpriteList(null)
 {
-	sAllFonts.AddTail(this);
+	sAllFonts.push_back(this);
 }
 
 //////////////////////////////////////////////////////////////////////
 
 Font::~Font()
 {
-	sAllFonts.Remove(this);
+	sAllFonts.remove(this);
 	for(int i=0; i<mPageCount; ++i)
 	{
 		::Release(mPages[i]);
@@ -718,20 +736,4 @@ float Font::GetBaseline() const
 }
 
 //////////////////////////////////////////////////////////////////////
-
-Font *Font::Load(wchar const *name)
-{
-	wstring l = ToLower(name);
-	for(Font *f = Font::sAllFonts.head; f != null; f = f->next)
-	{
-		if(f->mName == name)
-		{
-			f->AddRef();
-			return f;
-		}
-	}
-	Font *f = new Font();
-	f->LoadFromFile(name);
-	return f;
-}
 

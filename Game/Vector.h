@@ -356,6 +356,7 @@ inline Vec4f Cross(Vec4f a, Vec4f b)
 
 // Hmmm - bullet defines conflicting functions
 #if !defined (BT_USE_SSE_IN_API)
+#ifdef BT_NO_SIMD_OPERATOR_OVERLOADS
 
 inline Vec4f operator + (Vec4f a, Vec4f b)
 {
@@ -375,6 +376,7 @@ inline Vec4f operator * (Vec4f a, Vec4f b)
 {
 	return _mm_mul_ps(a, b);
 }
+#endif
 #endif
 
 //////////////////////////////////////////////////////////////////////

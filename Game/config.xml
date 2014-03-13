@@ -10,9 +10,9 @@
 		<Parameter Name="Zoom" Value="21.888111" />
 	</ParameterSet>
 	<ParameterSet Name="View1" ParameterCount="3" Expanded="0">
-		<Parameter Name="PanX" Value="-0.001417" />
-		<Parameter Name="PanY" Value="-0.003303" />
-		<Parameter Name="Zoom" Value="43.537560" />
+		<Parameter Name="PanX" Value="-0.108472" />
+		<Parameter Name="PanY" Value="-0.044628" />
+		<Parameter Name="Zoom" Value="32.118538" />
 	</ParameterSet>
 	<ParameterSet Name="View2" ParameterCount="3" Expanded="0">
 		<Parameter Name="PanX" Value="-0.178437" />

@@ -62,8 +62,9 @@
 #include "Types.h"
 #include "Constants.h"
 #include "Util.h"
-#include "LinkedList.h"
-#include "List.h"
+#include "linked_list.h"
+using chs::linked_list;
+using chs::linked_list_node;
 #include "Refcount.h"
 #include "File.h"
 #include "UTF8.h"

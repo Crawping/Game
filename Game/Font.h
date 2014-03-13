@@ -13,7 +13,7 @@ struct Link
 
 //////////////////////////////////////////////////////////////////////
 
-class Font : public Node<Font>, public RefCount
+class Font : public RefCount
 {
 public:
 
@@ -49,14 +49,16 @@ public:
 	void DrawStringMultiple(char const *text, Vec2 &pos, HorizontalAlign horizAlign = HLeft, VerticalAlign vertAlign = VTop);
 	void EndMultipleStrings();
 
-	static Font *Load(wchar const *name);
-
 	wstring mName;
+
+	linked_list_node<Font> mListNode;
 
 private:
 
 	Font();
 	~Font();
+
+	friend class FontManager;
 
 	void DrawStringInternal(SpriteList *spriteList, char const *text, Vec2 &pos, Font::HorizontalAlign horizAlign, Font::VerticalAlign vertAlign);
 
@@ -86,9 +88,12 @@ private:
 	KerningValue *		mKerningValues;
 	Graphic *			mGraphics;
 	SpriteList *		mSpriteList;
-
-	static List<Font>	sAllFonts;
 };
 
 //////////////////////////////////////////////////////////////////////
 
+class FontManager
+{
+public:
+	static Font *Load(wchar const *name);
+};

@@ -16,7 +16,7 @@ Console::Console()
 	mDrawContext = ImmediateContext::Create(mask, 16384, 64);
 	mDrawContext->SetZBufferMode(ZB_Disable);
 	mSpriteList = SpriteList::Create();
-	mFont = Font::Load(L"console");
+	mFont = FontManager::Load(L"console");
 	Trace("Console");
 	mTimer.Reset();
 }

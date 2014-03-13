@@ -25,7 +25,7 @@ void DebugOpen()
 	mPS = PixelShader::Load(L"UntexturedPixelShader");
 	mMaterial = Material::Create(mPS, mVS, BM_Modulate);
 	mIC = ImmediateContext::Create(mask, 65536, 65536);
-	mFont = Font::Load(L"debug");
+	mFont = FontManager::Load(L"debug");
 	mSpriteList = SpriteList::Create();
 	opened = true;
 }

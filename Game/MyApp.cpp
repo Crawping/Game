@@ -220,9 +220,9 @@ void MyApp::OnInit()
 	mVertexBuffer = VertexBuffer::Create(ARRAYSIZE(verts), mask, verts);
 	mMesh = Mesh::Create(MT_Triangles, 0, 0, 36, mMaterial);
 
-	mFixedSysFont = Font::Load(L"console");
-	mDebugFont = Font::Load(L"debug");
-	mBannerFont = Font::Load(L"banner");
+	mFixedSysFont = FontManager::Load(L"console");
+	mDebugFont = FontManager::Load(L"debug");
+	mBannerFont = FontManager::Load(L"banner");
 
 	mImmediateContext = ImmediateContext::Create(mask, 65536, sizeof(Matrix));
 

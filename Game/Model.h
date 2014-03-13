@@ -10,7 +10,7 @@ class Mesh;
 
 //////////////////////////////////////////////////////////////////////
 
-class Model : public RefCount
+class Model : public Aligned16, public RefCount 
 {
 public:
 
@@ -23,7 +23,7 @@ private:
 	Model();
 	~Model();
 
+	ModelNode		mRootNode;
 	VertexBuffer *	mVertexBuffer;
 	IndexBuffer *	mIndexBuffer;
-	ModelNode		mRootNode;
 };
