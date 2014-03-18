@@ -51,7 +51,7 @@ public:
 
 	wstring mName;
 
-	linked_list_node<Font> mListNode;
+	list_node<Font> mListNode;
 
 private:
 
