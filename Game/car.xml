@@ -12,7 +12,7 @@
 		<Parameter Name="Mass" Value="500.000000" />
 		<Parameter Name="Length" Value="15.879987" />
 		<Parameter Name="Width" Value="3.843997" />
-		<Parameter Name="Height" Value="1.400001" />
+		<Parameter Name="Height" Value="1.130001" />
 	</ParameterSet>
 	<ParameterSet Name="Rear Wheels" ParameterCount="31" Expanded="1">
 		<Parameter Name="Radius" Value="5.000000" />
