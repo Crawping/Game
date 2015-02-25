@@ -191,7 +191,7 @@ ALIGN(16, class) MyApp : App
 	float									mSteering;
 
 	Vec2									mOldMouse;
-	float									mCameraYaw;
+	float									mCameraRoll;
 	float									mCameraPitch;
 
 	Car *									mCar;

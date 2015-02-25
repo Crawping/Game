@@ -238,7 +238,7 @@ void MyApp::OnInit()
 
 	mCarOrientation = IdentityMatrix;
 
-	mCameraYaw = HALF_PI;
+	mCameraRoll = HALF_PI;
 	mCameraPitch = PI + QUARTER_PI;
 	mCameraPos = Vec4(25, 0, 25);
 	mTarget = Vec4(35, 0, 5);
@@ -1205,9 +1205,9 @@ void MyApp::UpdateCamera()
 		Vec2 MouseDeltaTotal = (mOldMouse + Mouse::Delta) / 2;
 		mOldMouse = Mouse::Delta;
 
-		mCameraYaw -= MouseDeltaTotal.x * 0.0025f;
+		mCameraRoll -= MouseDeltaTotal.x * 0.0025f;
 		mCameraPitch -= MouseDeltaTotal.y * 0.0025f;
-		mCamera.CalculateViewMatrix(mCameraPos, 0, mCameraPitch, mCameraYaw);
+		mCamera.CalculateViewMatrix(mCameraPos, 0, mCameraPitch, mCameraRoll);
 
 		Matrix m = TransposeMatrix(mCamera.GetViewMatrix());
 		Vec4f dx(m.r[0]);
